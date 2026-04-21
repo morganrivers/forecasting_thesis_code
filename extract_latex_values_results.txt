@@ -1,0 +1,501 @@
+% Pairwise ranking accuracy (%) of the Ridge Baseline (risks + org features only, no LLM) on the held-out test set
+\newcommand{\PairwiseHuman}{51}
+% Pairwise ranking accuracy (%) of the RF+ET ensemble (all features + year corr) on the held-out test set
+\newcommand{\PairwiseModel}{60}
+% Lower bound of bootstrap 95% CI for PairwiseModel (%)
+\newcommand{\PairwiseCILow}{51}
+% Upper bound of bootstrap 95% CI for PairwiseModel (%)
+\newcommand{\PairwiseCIHigh}{66}
+% Projected pairwise ranking accuracy (%) of RF+ET extrapolated to 5x the current training population size
+\newcommand{\PairwiseModelExtrapolated}{64}
+
+% AccInt of RF+ET (all features + year corr) on held-out test set: fraction of predictions within the correct integer rating interval (raw float, e.g. 0.52)
+\newcommand{\Rsqfrac}{0.485}
+% R^2 of RF+ET (all features including LLM features, with year correction) on the held-out test set
+\newcommand{\Rsqheldoutratingsllmfeatures}{-0.009}
+% R^2 of the Ridge Baseline (risks + org features only, no LLM features) on the held-out test set
+\newcommand{\Rsqheldoutridgebaseline}{-0.053}
+% R^2 of RF+ET trained without any LLM-derived features on the held-out test set
+\newcommand{\Rsqnollmfrac}{-0.026}
+% R^2 of RF+ET with all features but without year correction on the held-out test set
+\newcommand{\Rsqwithllmfrac}{-0.004}
+% Pairwise ordering accuracy (%) of RF+ET for predicting cost-effectiveness (ZAGG score) on the held-out test set
+\newcommand{\CostEffect}{54}
+% Lower bound of 95% CI for CostEffect (%)
+\newcommand{\CostCILow}{47}
+% Upper bound of 95% CI for CostEffect (%)
+\newcommand{\CostCIHigh}{62}
+
+% Average WG pairwise ranking accuracy (%) across all outcome tag classifiers on the test set (averaged over nolimits and feat-sel runs)
+\newcommand{\OutcomeTagPairwiseAvg}{60}
+% Average WG pairwise ranking accuracy (%) across all outcome tag classifiers on the test set (nolimits run only)
+\newcommand{\OutcomeTagPairwiseAvgNolimits}{61}
+% Lowest WG pairwise ranking accuracy (%) among all outcome tag classifiers on the test set (averaged over nolimits and feat-sel runs)
+\newcommand{\OutcomeTagPairwiseMin}{48}
+% Lowest WG pairwise ranking accuracy (%) among all outcome tag classifiers on the test set (nolimits run only)
+\newcommand{\OutcomeTagPairwiseMinNolimits}{48}
+% Highest WG pairwise ranking accuracy (%) among all outcome tag classifiers on the test set (averaged over nolimits and feat-sel runs)
+\newcommand{\OutcomeTagPairwiseMax}{77}
+% Highest WG pairwise ranking accuracy (%) among all outcome tag classifiers on the test set (nolimits run only)
+\newcommand{\OutcomeTagPairwiseMaxNolimits}{77}
+% Average WG pairwise ranking accuracy (%) across outcome tag classifiers after feature selection on the test set
+\newcommand{\OutcomeTagPairwiseAvgFeatSel}{60}
+% Lowest WG pairwise ranking accuracy (%) among outcome tag classifiers after feature selection on the test set
+\newcommand{\OutcomeTagPairwiseMinFeatSel}{48}
+% Highest WG pairwise ranking accuracy (%) among outcome tag classifiers after feature selection on the test set
+\newcommand{\OutcomeTagPairwiseMaxFeatSel}{77}
+% Average extrapolated WG pairwise ranking accuracy (%) across outcome tag classifiers projected to N=5000 activities
+\newcommand{\OutcomeTagPairwiseAvgExtrapolated}{65}
+% Brier Skill Score of outcome tag predictions relative to baseline (higher is better; 0 = no skill)
+\newcommand{\OutcomeTagBSS}{0.072}
+% Number of outcome tags (out of 14 curated) with WG-POP p < 0.05 under permutation test
+\newcommand{\NumberTagsBetterThanChance}{7}
+% Weighted accuracy (%) of the constant majority-class baseline for the 14 curated outcome tags (Block B: curated tags incl. const_base fallbacks)
+\newcommand{\OutcomeTagAccBaseline}{62.6}
+% Weighted accuracy (%) of the chosen model for the 14 curated outcome tags (Block B: curated tags incl. const_base fallbacks)
+\newcommand{\OutcomeTagAccModel}{67.9}
+% Percentage point improvement in weighted accuracy over the majority-class baseline for the 14 curated outcome tags
+\newcommand{\OutcomeTagAccImprovement}{5.3}
+% Number of activities in the test set that received at least one outcome tag prediction from the real (non-curated) model
+\newcommand{\NumCuratedPredicted}{14}
+% Percentage of activity pairs in the test set that have at least one differing outcome tag (denominator for pairwise ranking evaluation)
+\newcommand{\DifferingOutcomePairsFrac}{45}
+
+% Narrative similarity grades
+% Mean narrative similarity grade (0-1 scale) of the best-performing model across all configurations
+\newcommand{\BestNarrativeGrade}{88.19}
+% Mean narrative similarity grade (0-1 scale) when using risks-only summaries as a human-proxy baseline
+\newcommand{\RisksOnlyGrade}{80.69}
+
+% Rating vs cost-effectiveness correlation
+% Pearson r between overall activity ratings and cost-effectiveness (ZAGG) scores across the entire dataset
+\newcommand{\RatingCostCorr}{0.0688}
+
+% Within-training-set R^2
+% Reduced (adjusted) R^2 of RF+ET on the combined train+val set (in-sample fit, adjusted for number of features)
+\newcommand{\RsqTraining}{0.32}
+% OLS R^2 on the training set (unadjusted, measures in-sample fit of the linear model)
+\newcommand{\RsqTrainingOLS}{0.18}
+% Adjusted OLS R^2 on the training set (penalises for number of predictors)
+\newcommand{\RsqAdjTrainingOLS}{0.14}
+
+% Tag--rating Pearson correlations
+% Pearson r between 'targets met or exceeded' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrTargetsMet}{+0.3930}
+% Pearson r between 'high beneficiary satisfaction or reach' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrBeneficiarySatisfaction}{+0.3416}
+% Pearson r between 'private sector engagement success' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrPrivateSectorEngagement}{+0.3200}
+% Pearson r between 'policy/regulatory reforms success' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrPolicyReforms}{+0.3172}
+% Pearson r between 'capacity building delivered' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrCapacityBuilding}{+0.2655}
+% Pearson r between 'improved financial performance' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrFinancialPerformance}{+0.1566}
+% Pearson r between 'funds cancelled or unutilized' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrActivitiesNotCompleted}{-0.2177}
+% Pearson r between 'project restructured' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrImplementationDelays}{-0.0944}
+% Pearson r between 'funds reallocated' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrProjectRestructured}{+0.0183}
+% Pearson r between 'targets revised' outcome tag and six_overall_rating (all activities)
+\newcommand{\TagCorrTargetsRevised}{-0.0525}
+
+% Pairs with differing outcomes (test set)
+
+% Evaluation set sizes (total N per dataset)
+% Total number of activities in the overall ratings evaluation dataset (train + val + test)
+\newcommand{\NOverallRatings}{1181}
+% Total number of activities in the outcome tags evaluation dataset (train + val + test)
+\newcommand{\NOutcomeTags}{1176}
+% Total number of activities in the cost-effectiveness evaluation dataset (train + val + test)
+\newcommand{\NCostEffectiveness}{533}
+% Total number of activities in the AI forecasting evaluation dataset
+\newcommand{\NAiForecasting}{283}
+
+
+% ================================================================
+% LATEX TABLES
+% ================================================================
+
+
+% ================================================================
+% LEAKAGE REPORT (O_leakage_report.py)
+% ================================================================
+LOOK FOR: Forecast-leakage (test), Forecast-leakage (val), Grade-leakage (test), Grade-leakage overall of val+test, Any leakage (test),.
+================================================================================
+
+============================================================
+LLM GRADE FEATURE LEAKAGE  (test set only)
+============================================================
+  Test set size              : 200
+  Grade-leakage items (test) : 10  (5.0% of test set)
+  Grade-leakage items (val)  : 5
+  Grade-leakage overall      : 15  (3.0% of val+test combined)
+
+============================================================
+LLM FORECAST NARRATIVE LEAKAGE  (val vs test)
+============================================================
+  Val  set size              : 299
+  Test set size              : 200
+  Forecast-leakage (val)     : 6  (2.0% of val set)
+  Forecast-leakage (test)    : 69  (34.5% of test set)
+
+============================================================
+COMBINED  (any leakage, test set)
+============================================================
+  Any leakage                : 71  (35.5% of test set)
+    Grade-only               : 2
+    Forecast-only            : 61
+    Both grade + forecast    : 8
+
+
+
+
+
+
+
+
+
+
+
+ALL SCRIPTS COMPLETE.
+
+
+% ================================================================
+% FEATURE LISTS (N_data_analysis_print_features.py)
+% ================================================================
+LOOK FOR: Feature lists for overall_rating, outcome_tag_nolimits, cost_effectiveness, and llm_forecasting models.
+================================================================================
+
+============================================================
+MODEL: overall_rating  (59 features)
+  Features:
+      1. finance
+      2. integratedness
+      3. implementer_performance
+      4. targets
+      5. context
+      6. risks
+      7. complexity
+      8. activity_scope
+      9. gdp_percap
+     10. cpia_score
+     11. region_AFE
+     12. region_AFW
+     13. region_EAP
+     14. region_ECA
+     15. region_LAC
+     16. region_MENA
+     17. region_SAS
+     18. finance_is_loan
+     19. planned_duration
+     20. planned_expenditure
+     21. rep_org_0
+     22. rep_org_1
+     23. rep_org_2
+     24. umap3_x
+     25. umap3_y
+     26. umap3_z
+     27. sector_distance
+     28. country_distance
+     29. sector_cluster_increased_food_production
+     30. sector_cluster_Green_growth_initiatives
+     31. sector_cluster_Road_safety_improvements
+     32. sector_cluster_Contingencies
+     33. sector_cluster_Improved_transport_infrastructure
+     34. sector_cluster_Capacity_Building_and_Technical_Assistance
+     35. sector_cluster_increased_managed_forest_land
+     36. sector_cluster_reduced_PM2.5_air_pollution
+     37. sector_cluster_Climate_adaptation
+     38. sector_cluster_Institutional_capacity_building
+     39. sector_cluster_reduced_CO2_emissions
+     40. sector_cluster_Project_Management
+     41. sector_cluster_more_people_with_drinking_water_services
+     42. sector_cluster_Land_acquisition_and_resettlement
+     43. sector_cluster_Urban_flood_protection
+     44. sector_cluster_Financing_charges
+     45. llm_features_missing_count
+     46. llm_features_present_ratio
+     47. governance_missing_count
+     48. feature_completeness_ratio
+     49. cpia_missing
+     50. sector_clusters_missing
+     51. gdp_percap_missing
+     52. planned_expenditure_missing
+     53. planned_duration_missing
+     54. wgi_any_missing
+     55. umap_missing
+     56. governance_composite
+     57. expenditure_x_complexity
+     58. expenditure_per_year_log
+     59. log_planned_expenditure
+
+============================================================
+MODEL: outcome_tag_nolimits  (45 features)
+  Features:
+      1. finance
+      2. integratedness
+      3. implementer_performance
+      4. targets
+      5. context
+      6. risks
+      7. complexity
+      8. activity_scope
+      9. gdp_percap
+     10. region_AFE
+     11. region_AFW
+     12. region_EAP
+     13. region_ECA
+     14. region_LAC
+     15. region_MENA
+     16. region_SAS
+     17. finance_is_loan
+     18. planned_duration
+     19. planned_expenditure
+     20. log_planned_expenditure
+     21. expenditure_per_year_log
+     22. rep_org_0
+     23. rep_org_1
+     24. rep_org_2
+     25. umap3_x
+     26. umap3_y
+     27. umap3_z
+     28. sector_distance
+     29. country_distance
+     30. sector_cluster_increased_food_production
+     31. sector_cluster_increased_managed_forest_land
+     32. sector_cluster_Capacity_development_and_institutional_strengtheni
+     33. sector_cluster_Integrated_Water_Resources_Management
+     34. sector_cluster_Contingency_Emergency_Response
+     35. sector_cluster_Project_Management
+     36. sector_cluster_Financing_charges
+     37. sector_cluster_Contingencies
+     38. sector_cluster_Road_safety_improvements
+     39. sector_cluster_Other_social_services
+     40. sector_cluster_more_people_with_drinking_water_services
+     41. sector_cluster_Urban_flood_protection
+     42. sector_cluster_Improved_transport_infrastructure
+     43. sector_cluster_reduced_CO2_emissions
+     44. sector_cluster_Institutional_capacity_building
+     45. sector_cluster_reduced_PM2.5_air_pollution
+
+============================================================
+MODEL: cost_effectiveness  (66 features)
+  Features:
+      1. finance
+      2. integratedness
+      3. implementer_performance
+      4. targets
+      5. context
+      6. risks
+      7. complexity
+      8. activity_scope
+      9. gdp_percap
+     10. cpia_score
+     11. finance_is_loan
+     12. planned_duration
+     13. planned_expenditure
+     14. rep_org_0
+     15. rep_org_1
+     16. rep_org_2
+     17. region_AFE
+     18. region_AFW
+     19. region_EAP
+     20. region_ECA
+     21. region_LAC
+     22. region_MENA
+     23. region_SAS
+     24. umap3_x
+     25. umap3_y
+     26. umap3_z
+     27. sector_cluster_increased_food_production
+     28. sector_cluster_Green_growth_initiatives
+     29. sector_cluster_Road_safety_improvements
+     30. sector_cluster_Contingencies
+     31. sector_cluster_Improved_transport_infrastructure
+     32. sector_cluster_Capacity_Building_and_Technical_Assistance
+     33. sector_cluster_increased_managed_forest_land
+     34. sector_cluster_reduced_PM2.5_air_pollution
+     35. sector_cluster_Climate_adaptation
+     36. sector_cluster_Institutional_capacity_building
+     37. sector_cluster_reduced_CO2_emissions
+     38. sector_cluster_Project_Management
+     39. sector_cluster_more_people_with_drinking_water_services
+     40. sector_cluster_Land_acquisition_and_resettlement
+     41. sector_cluster_Urban_flood_protection
+     42. sector_cluster_Financing_charges
+     43. llm_features_missing_count
+     44. llm_features_present_ratio
+     45. governance_missing_count
+     46. feature_completeness_ratio
+     47. cpia_missing
+     48. sector_clusters_missing
+     49. gdp_percap_missing
+     50. planned_expenditure_missing
+     51. planned_duration_missing
+     52. wgi_any_missing
+     53. umap_missing
+     54. sector_distance
+     55. country_distance
+     56. governance_composite
+     57. expenditure_x_complexity
+     58. expenditure_per_year_log
+     59. log_planned_expenditure
+     60. grp_benefit_cost_ratios__ratio
+     61. grp_co2_emission_reductions__tonnes_co2e
+     62. grp_co2_emission_reductions__tonnes_co2e_per_year
+     63. grp_economic_rate_of_return__percent
+     64. grp_financial_rate_of_return__percent
+     65. grp_generation_capacity__mw
+     66. grp_water_connections__connections
+
+============================================================
+MODEL: llm_forecasting  (15 features)
+  NOTE: Text sections + structured metadata included in the LLM forecast prompt (exactly_like_halawi_et_al_rag_added variants). KNN lessons and RAG evidence are optional augmentations, not listed here.
+  Features:
+      1. description
+      2. targets_summary
+      3. activity_context
+      4. complexity_details
+      5. how_integrated_description
+      6. finance_summary
+      7. implementer_performance_text
+      8. risks_summary
+      9. possibilities_summary
+     10. activity_scope
+     11. planned_disbursement_usd
+     12. country_location
+     13. gdp_percap
+     14. reporting_orgs
+     15. implementing_org_type
+
+
+
+
+
+
+
+
+
+
+================================================================================
+
+============================================================
+TABLE: \label{tab:feature_importance}
+============================================================
+\begin{table}[t]
+\centering
+\caption{Random-forest drop-one feature importance, sorted by impact.}
+\begin{tabular}{p{6cm}rrrr}
+\toprule
+Feature & Miss \% & $\Delta R^2$ $\uparrow$ & $\Delta$Pairwise $\uparrow$ & $\Delta$pred\_1sd \\
+\midrule
+Target achievability (LLM: 100=easy, 0=impossible) & 7.0 & 0.0100 & 0.0231 & 0.0878 \\[2pt]
+Document embedding Z axis & 8.5 & 0.0104 & 0.0139 & -0.0666 \\[2pt]
+External context (LLM: 100=enabling, 0=hostile) & 6.5 & 0.0060 & 0.0089 & 0.0640 \\[2pt]
+Sector: capacity building & 47.0 & 0.0039 & 0.0032 & -0.0448 \\[2pt]
+Region: East Asia \& Pacific & 0.0 & 0.0135 & 0.0334 & 0.0404 \\[2pt]
+Implementer quality (LLM: 100=excellent, 0=poor) & 5.5 & 0.0050 & 0.0089 & 0.0339 \\[2pt]
+Annual expenditure (log) & 8.5 & 0.0006 & -0.0080 & 0.0289 \\[2pt]
+Document embedding Y axis & 8.5 & 0.0036 & 0.0067 & 0.0236 \\[2pt]
+Planned duration & 0.5 & -0.0003 & 0.0029 & -0.0268 \\[2pt]
+Expenditure x complexity & 11.0 & 0.0037 & 0.0037 & 0.0231 \\[2pt]
+Reporting org: World Bank & 0.0 & 0.0301 & -0.0057 & 0.0225 \\[2pt]
+Geographic scope & 0.0 & 0.0034 & -0.0091 & -0.0191 \\[2pt]
+Region: Middle East \& North Africa & 0.0 & 0.0015 & 0.0076 & -0.0174 \\[2pt]
+Finance adequacy (LLM: 100=well-funded, 0=underfunded) & 9.0 & 0.0087 & 0.0160 & 0.0149 \\[2pt]
+Document embedding X axis & 8.5 & 0.0068 & 0.0117 & -0.0126 \\[2pt]
+Country governance quality (CPIA) & 31.5 & 0.0025 & 0.0005 & 0.0124 \\[2pt]
+Sector: contingencies & 47.0 & 0.0044 & 0.0031 & 0.0124 \\[2pt]
+Region: Europe \& Central Asia & 0.0 & 0.0031 & 0.0009 & 0.0098 \\[2pt]
+Finance type: loan & 0.0 & 0.0026 & 0.0058 & -0.0089 \\[2pt]
+Log planned expenditure & 5.5 & 0.0025 & -0.0028 & -0.0002 \\[2pt]
+GDP per capita & 7.5 & 0.0047 & 0.0005 & 0.0086 \\[2pt]
+Sector: project management & 47.0 & 0.0053 & 0.0079 & 0.0074 \\[2pt]
+Region: Latin America \& Caribbean & 0.0 & 0.0044 & 0.0039 & -0.0068 \\[2pt]
+sector clusters missing & 0.0 & 0.0037 & -0.0003 & -0.0062 \\[2pt]
+sector cluster increased managed forest land & 47.0 & 0.0051 & 0.0056 & -0.0053 \\[2pt]
+\bottomrule
+\end{tabular}
+\end{table}
+
+============================================================
+TABLE: \label{tab:method_comparison_validation}
+============================================================
+\begin{table}[t]
+\centering
+\begin{tabular}{p{7cm}rrrrrr}
+\toprule
+Method & $R^2$ $\uparrow$ & RMSE $\downarrow$ & MAE $\downarrow$ & Acc. $\uparrow$ & WG Spear. $\uparrow$ & WG Pair. Rank. $\uparrow$ \\
+\midrule
+\textcolor{orange}{RF+ET + LLM Forecast (simple avg)} & \textcolor{orange}{\textbf{0.067}} & \textcolor{orange}{\textbf{0.894}} & \textcolor{orange}{0.662} & \textcolor{orange}{0.460} & \textcolor{orange}{\textbf{0.303}} & \textcolor{orange}{\textbf{0.645}} \\[3pt]
+RF+ET all features (no year corr) & -0.004 & 0.928 & 0.684 & 0.465 & 0.205 & 0.597 \\[3pt]
+RF+ET all features + year corr & -0.009 & 0.930 & 0.704 & \textbf{0.485} & 0.205 & 0.597 \\[3pt]
+XGBoost all features & -0.013 & 0.932 & 0.693 & 0.460 & 0.144 & 0.567 \\[3pt]
+\textcolor{orange}{RF+ET + LLM Forecast (ridge)} & \textcolor{orange}{-0.023} & \textcolor{orange}{0.936} & \textcolor{orange}{0.702} & \textcolor{orange}{0.475} & \textcolor{orange}{0.149} & \textcolor{orange}{0.574} \\[3pt]
+RF+ET, no LLM features & -0.026 & 0.938 & 0.680 & 0.475 & 0.070 & 0.541 \\[3pt]
+RF+ET (default params) & -0.047 & 0.947 & 0.709 & 0.455 & 0.185 & 0.590 \\[3pt]
+Ridge Baseline (risks + org only) & -0.053 & 0.950 & 0.695 & 0.465 & 0.004 & 0.507 \\[3pt]
+Mode of reporting-org score baseline & -0.079 & 0.962 & \textbf{0.658} & 0.460 &  &  \\[3pt]
+Plain OLS GLM & -0.114 & 0.977 & 0.767 & 0.410 & 0.070 & 0.535 \\[3pt]
+\bottomrule
+\end{tabular}
+\end{table}
+
+============================================================
+TABLE: \label{tab:tag_model_results}
+============================================================
+\begin{table}[htbp]
+\caption{Outcome tag prediction results on the test set. $p < 0.05$ determined via permutation sampling on the test set. Consistent features shown are those in the top 10 by |SHAP|, with the same sign, and at least 5\,\% of total importance, in every split of 3 equal random training splits (RF and ET averaged). Features are ordered by mean importance across splits; features absent from any split's top 10 or exhibiting a sign flip are omitted. $\overrightarrow{{\color[HTML]{006400}\text{Green}}}$ and $\overleftarrow{{\color[HTML]{8B0000}\text{Red}}}$ indicate positive and negative relationships respectively. Tmp.\ Corr.: temporal correction in units of 1/100\,\%/yr. Feature abbreviations: $U_x$/$U_y$/$U_z$ = UMAP semantic embedding coordinates; dist = similarity distance group (sector + country distance combined); dur = planned duration; exp = planned expenditure group (raw/log/log-per-year combined); scp = activity scope; WB = World Bank reporting-org fixed effect.
+Groups and tags sorted by accuracy vs.\ baseline descending. }
+\label{tab:tag_model_results}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.87cm} r r r r r r r r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+Tag (\* shown if $p<0.05$) & \makecell{WG\\Pair.\\Prob.} & \makecell{WG\\Spear.} & \makecell{Brier} & \makecell{Brier\\Base.} & Acc. & \makecell{Acc.\\Base.} & \makecell{Frac.\ True\\(train,\ test)} & $N_\mathrm{test}$ & \makecell{Tmp.\\Corr.} & \makecell{Consistent\\Features} \\
+\midrule
+\multicolumn{11}{@{}l}{\textbf{Activity Rescoping}} \\
+Closing Date Extended$^{\ast}$ & 0.77 & 0.44 & 0.184 & 0.258 & 0.73 & 0.53 & 0.53,\ 0.40 & 186 & -0.65 & $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$ \\
+Project Restructured$^{\ast}$ & 0.75 & 0.43 & 0.198 & 0.267 & 0.69 & 0.60 & 0.60,\ 0.46 & 186 & -0.22 & $\overrightarrow{{\color[HTML]{006400}\text{WB}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{dur}}}$ \\
+Targets Revised$^{\ast}$ & 0.63 & 0.21 & 0.226 & 0.259 & 0.61 & 0.58 & 0.58,\ 0.48 & 186 & +0.13 & $\overrightarrow{{\color[HTML]{006400}\text{WB}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$ \\
+\noalign{\vspace{0.5ex}}
+\multicolumn{11}{@{}l}{\textbf{Finance \& Budget}} \\
+Funds Cancelled or Unutilized$^{\ast}$ & 0.68 & 0.28 & 0.217 & 0.265 & 0.67 & 0.60 & 0.60,\ 0.48 & 186 & -0.35 & $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$ \\
+Improved Financial Performance & 0.56 & 0.09 & 0.243 & 0.250 & 0.59 & 0.51 & 0.51,\ 0.48 & 186 & +0.02 & \textemdash \\
+High Disbursement & 0.56 & 0.11 & 0.243 & 0.247 & 0.58 & 0.57 & 0.43,\ 0.44 & 186 & None & $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+Over Budget$^{\ast}$ & 0.66 & 0.24 & 0.223 & 0.232 & 0.67 & 0.56 & 0.44,\ 0.32 & 63 & -0.50 & $\overleftarrow{{\color[HTML]{8B0000}U_z}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{dist}}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+Funds Reallocated$^{\ast}$ & 0.64 & 0.24 & 0.214 & 0.222 & 0.67 & 0.60 & 0.40,\ 0.31 & 186 & +0.05 & $\overleftarrow{{\color[HTML]{8B0000}\text{WB}}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{scp}}}$ \\
+\noalign{\vspace{0.5ex}}
+\multicolumn{11}{@{}l}{\textbf{Target Achievement}} \\
+Targets Met or Exceeded$^{\ast}$ & 0.60 & 0.17 & 0.244 & 0.253 & 0.55 & 0.58 & 0.42,\ 0.47 & 171 & +0.13 & $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+Capacity Building Delivered & 0.59 & 0.12 & 0.122 & 0.123 & 0.86 & 0.84 & 0.84,\ 0.86 & 146 & +0.47 & $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+Gender-Equitable Outcomes & 0.48 & -0.04 & 0.193 & 0.193 & 0.75 & 0.80 & 0.80,\ 0.75 & 106 & +0.39 & \textemdash \\
+High Beneficiary Satisfaction or Reach & 0.53 & 0.04 & 0.156 & 0.155 & 0.81 & 0.79 & 0.79,\ 0.81 & 146 & +0.14 & \textemdash \\
+Policy and Regulatory Reforms & 0.57 & 0.09 & 0.176 & 0.177 & 0.78 & 0.72 & 0.72,\ 0.78 & 138 & +0.53 & \textemdash \\
+Private Sector Engagement & 0.51 & 0.01 & 0.233 & 0.233 & 0.64 & 0.59 & 0.59,\ 0.64 & 81 & +0.34 & $\overrightarrow{{\color[HTML]{006400}\text{dist}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+============================================================
+TABLE: \label{tab:eval_set_sizes}
+============================================================
+\begin{table}[t]
+\centering
+\small
+\caption{Sizes of the four evaluation datasets used in this thesis, broken down by train/validation/test split. The AI forecasting set uses only the validation split (the LLM was run on validation activities only due to API Sizes of the four evaluation datasets used in this thesis, broken down by train/validation/test split. The AI forecasting set shows only the validation split (due to API cost and temporal leakage on the test set).}
+\label{tab:eval_set_sizes}
+\begin{tabular}{lrrrr}
+\toprule
+Dataset & Train & Val & Test & Total \\
+\midrule
+Overall ratings & 682 & 299 & 200 & 1181 \\
+Outcome tags & 681 & 299 & 196 & 1176 \\
+Cost-effectiveness & 348 & 127 & 58 & 533 \\
+AI forecasting & -- & 283 & -- & 283 \\
+\bottomrule
+\end{tabular}
+\end{table}

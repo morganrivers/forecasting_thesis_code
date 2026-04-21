@@ -1,0 +1,99 @@
+\subsubsection{Outcome Tag Forecasting}
+\label{subsubsub:outcome_tag_forecasting}
+
+For each outcome tag, an RF+ET ensemble classifier was trained using the same initial feature set and time-ordered split as the overall rating model (train (start date on or before February 6, 2013; validation: February 7, 2013 through June 6, 2016; test: after June 6, 2016 and before January 1, 2020, see Figure \ref{fig:splits}). 
+
+The model for the outcome tag was judged as ineligible for test-set prediction unless the Brier skill score was strictly positive and the within-group pairwise ranking probability exceeded 50\%. Otherwise the chosen model was reverted to the constant baseline, indicating low confidence that the RF+ET ensemble would perform better than the validation set.
+
+The forecasted tags were:
+\begin{itemize}
+    \item \textbf{Funds Cancelled or Unutilized:} Project funds were cancelled, not disbursed, or significantly underutilized.
+    \item \textbf{Funds Reallocated:} Project funds were reallocated across components or activities.
+    \item \textbf{High Disbursement:} Project achieved high or full disbursement of funds.
+    \item \textbf{Improved Financial Performance:} Improved revenues, profitability, financial management, or financial capacity of beneficiary institutions were significantly achieved.
+    \item \textbf{Project Restructured:} Project was formally restructured, including changes to scope, components, or objectives.
+    \item \textbf{Closing Date Extended:} Project closing date was extended beyond the original plan.
+    \item \textbf{Targets Revised:} Project targets, indicators, or results framework were revised during implementation.
+    \item \textbf{Policy and Regulatory Reforms:} Policy, regulatory, or legal frameworks were significantly and successfully developed, strengthened, or operationalized.
+    \item \textbf{Targets Met or Exceeded:} Project targets were met as planned, or exceeded.
+    \item \textbf{Over Budget:} Project had to exceed the original budget.
+    \item \textbf{Capacity Building Delivered:} Capacity building, training, or institutional strengthening activities were significantly delivered.
+    \item \textbf{High Beneficiary Satisfaction or Reach:} High beneficiary satisfaction, broad beneficiary reach, or high uptake was achieved.
+    \item \textbf{Gender-Equitable Outcomes:} Outcomes affecting women and girls were equitable or positive.
+    \item \textbf{Private Sector Engagement:} Success in attracting private sector investment or improving the business environment was achieved at or above targets.
+\end{itemize}
+
+The tags which were not predicted on the test set due to poor validation performance were as follows:  Monitoring and Evaluation Challenges, Energy Sector Improvements, Improved Livelihoods, Improved Service Delivery, Infrastructure Completed, Activities Not Completed, Design or Appraisal Shortcomings, External Factors Affected Outcomes, Implementation Delays. Many of these had very few negative examples or a highly imbalanced true/false split, leading to the weak model performance. 
+
+
+\textbf{Feature selection}
+
+An ablation experiment for all tags was conducted on the validation set. The RF+ET model uses 62 independent features, which may not be appropriate for all outcome tags. A series of experiments were conducted to assess which features should be used per-tag.
+
+Features were grouped into llm grades, governance indicators, regions, budget, org structure, UMAP features, sector clusters, economic context, and missingness flags.
+
+Features were also assessed on a per-tag basis. Use of all non-ablated features for all tags was found to reduce model performance. Some tags were unrelated to many features, and the imbalanced True/False divide and lack of tag data for some training activities meant that the effective training data are much smaller for some tags, thus increasing the risk of overfitting.
+
+A feature-selection sweep tested four strategies: the full baseline set of all 45 features (no reduction), and subsets of the top-5, top-10, and top-30 features ranked by RF feature importance on the training set. To select among these candidates for each tag without capitalising on a by-chance best result, a pairwise tournament across brier skill score, accuracy ratio, and within-group pairwise ranking skill was used. 
+
+Small losses on one metric (below 1.5 percentage points) were forgiven if a compensating gain on another metric was at least 20\% of the loss. The candidate with more net wins was selected; ties were broken by Brier skill score.
+
+Because this selection was made on the same validation set used to evaluate final performance, there was a risk that the feature reduction reflected overfitting to that split rather than a genuine regularisation benefit. To check this, the selected feature set for each tag was re-evaluated inside the three-fold temporal cross-validation on the training set alone, where the validation set played no role. 
+
+Ultimately, it was unclear whether per-tag aggressive feature reduction or a more permissive set of features would generalize better to the held-out set. Therefore, both the limited per-tag feature set and the full-feature set were used for the forecast on the held-out test set.
+
+A group-level ablation additionally revealed that governance indicators (World Governance Indicators, CPIA score) and missingness-flag features were introducing more noise than signal. These 17 features (6 governance, 11 missingness) were dropped from all tags, leaving 45 features available for per-tag selection. The drop was confirmed to improve scores on the k-fold temporal cross-validation on the training set. For each tag assigned a reduced feature subset, k-fold performance was at least as good as the full-feature alternative, indicating that the reduction reflects a genuine generalisation benefit.
+
+\textbf{RF+ExtraTrees ensemble}
+
+RF and ET both used classifier models rather than regressors as in the ratings training, as the method is intended for binary probabilistic prediction rather than a regression prediction. XGBoost, and LightGBM were both tested against the RF+ET model, but early experiments showed they performed significantly worse and use of other models was not continued.
+
+In the case of binary tags, three options were evaluated: The \texttt{class\_weight} parameter was set to always \texttt{none}, always \texttt{balanced}, and a tag-dependent scheme. The tag-dependent scheme selected a threshold where above 65\% of training examples were positive, \texttt{class\_weight=None} was used allowing the model to predict near the natural base rate, and below 65\% \texttt{class\_weight=``balanced''} was used to prevent the ensemble from collapsing to the majority class.
+
+Optimal parameters for the RF+ET classifier ensemble were identified by exploring 20 LLM-generated parameter sets, with the second set of 10 varied near the maximal score of the first set. These included variations in tree depth, leaf size, feature sampling width, row subsampling, and pruning strength, as well as between-RF and ET variations.
+
+The base configuration (\texttt{min\_samples\_leaf}=5, \texttt{max\_features}=\texttt{"sqrt"}, \texttt{n\_estimators}=500, \texttt{max\_depth}=\texttt{None}, \texttt{min\_samples\_split}=2, \texttt{ccp\_alpha}=0), with bootstrap \texttt{True} for the RF and \texttt{False} for the ET, was found to perform best across most tags on the validation set. Ten tags use per-tag hyperparameter overrides identified during the parameter sweep: five tags (high disbursement, policy and regulatory reforms, capacity building delivered, private sector engagement, and gender-equitable outcomes) use \texttt{min\_samples\_leaf}=20; one tag (over budget) uses \texttt{min\_samples\_leaf}=40; one tag (funds reallocated) uses \texttt{min\_samples\_leaf}=10; and three tags (high beneficiary satisfaction or reach, targets met or exceeded, and monitoring and evaluation challenges) use \texttt{max\_depth}=10. Although quite similar to the default \texttt{RandomForestClassifier} and \texttt{ExtraTreesClassifier} configuration, this specification constrains model capacity to reduce overfitting on the small training sets involved. Requiring at least five training examples at each leaf limits fine-grained partitioning of the feature space, and restricting the feature subset at each split (\texttt{max\_features}=\texttt{"sqrt"} rather than considering all features) increases tree diversity. Compared to defaults, these choices accept less precise fits on the training data in exchange for predictions that are more stable across unseen examples. XGBoost and LightGBM were both tested and performed worse on every tag assessed.
+
+The RF+ET ensemble was otherwise trained identically to how ratings were trained. 
+
+
+\textbf{Start-year trend correction}
+
+After training, predictions were corrected for a linear temporal trend in the residuals.
+A ridge regression (penalty $\alpha=50$) was fitted on training data to predict the residual $r_i = y_i - \hat{p}_i$ from the activity start year:
+\[
+\hat{r}_i := \gamma_0 + \gamma_1 \cdot \text{year}_i ,
+\]
+and the corrected probability was:
+\[
+\hat{p}^{\text{corr}}_i := \operatorname{clip}_{[0,1]}\!\left(\hat{p}_i + \hat{r}_i\right).
+\]
+The strong ridge penalty shrinks the slope toward zero to avoid overcorrecting on noisy year--residual relationships. This correction was adopted wherever it improved validation set performance.
+The correction multiplier was validated by sweeping values in $\{0, 0.1, 0.2, 0.5, 1.0, 1.5, 2.0\}$ and evaluating mean within-group pairwise ranking, Brier skill, and accuracy skill on the validation set across all corrected tags. A multiplier of 1.0 (full correction) achieved the best mean pairwise ranking, Brier skill, and accuracy, and was therefore retained. The correction was applied to the RF model alone before averaging with ET, as this was found to outperform correcting the ensemble average on the validation set. The correction was applied to all tags except the monitoring and evaluation tag and the high disbursement tag, where the year trend were found to hurt validation set performance.
+
+
+\textbf{Tag group averaging}
+Analysis of outcome tags in the training data revealed that certain groups of tags are strongly correlated. For example, tags relating to targets being met correlate with good financial performance. Three factor groups were identified in the data; two are used for direct blending and a third contributes indirectly:
+
+\begin{itemize}
+    \item Success Group: average of six outcome tags (targets met,  beneficiary satisfaction, private sector engagement, capacity building, policy reforms,  and financial performance).
+    \item Financing Group: disbursement tag, funds-cancelled tag (inverted).
+    \item Rescoping Group: Project Restructured, Targets Revised, Closing Date Extended, Funds Reallocated. This group's RF+ET regressor is trained and its predicted score is used as an OLS predictor input when reconstructing per-tag probabilities for blended tags, but rescoping-group tags are not directly blended (the group influences other tags via OLS rather than being a direct mixture target).
+\end{itemize}
+
+For each group, an RF+ET regressor on the 45 features was trained to predict the group score from features. The per-tag probabilities were then reconstructed from predicted group scores via a OLS linear regression fitted on training data.
+
+It was observed that the group average probability was typically more informative for low-data tags. For this the minority class count in training was used, which is the minimum between the number of true or false tags in the training data. 50 different blend selection options were swept across, varying the minority-class training point threshold and the mix ratio of the group and tag average above that threshold.
+
+The best performing blend on the validation set was a linear increase from 100 to 400 minority-class training points:
+\[
+\hat{p}^{\text{final}}_i = w \cdot \hat{p}^{\text{model}}_i + (1 - w) \cdot \hat{p}^{\text{group}}_i ,
+\]
+where $w = \operatorname{clip}\!\left(\tfrac{m - 100}{400 - 100},\, 0,\, 1\right)$ and $m$ is the minority class count. Below 100 training points the group average is used exclusively; above 400 the per-tag model prediction is used exclusively.
+
+
+\textbf{LLM correction}
+
+An LLM-based correction step was tested for tag forecasting, analogous to the approach described for the overall rating model. For each of the 14 tags whose statistical model beat the constant baseline, \emph{deepseek-V3.2} with thinking enabled was prompted with the activity title, an LLM-generated summary of the pre-activity documents, the tag label and definition, and the training-set base rate. The model was instructed to reason like a superforecaster: enumerating reasons the outcome was likely true, then likely false, then anchoring on the base rate, before producing a final probability. Forecasts were produced for 150 random training activities and all validation activities. A trial of blending LLM probabilities with statistical model probabilities was attempted. A sweep of 20 blend weights in increments of 5\% from 0\% to 100\% LLM was conducted, measuring mean within-group ranking skill, accuracy, and Brier skill score across the 14 non-baseline tags on the validation set. Mean accuracy declined monotonically with LLM weight; within-group ranking skill and Brier skill showed only marginal gains at 5--10\% LLM before deteriorating; at 70\% LLM the mean Brier skill score turned negative. The LLM correction was therefore discarded and the statistical model predictions are used as the final tag forecasts.
+
+

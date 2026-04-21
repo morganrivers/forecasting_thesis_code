@@ -1,0 +1,116 @@
+\subsection{Data Processing}
+
+In order to accurately extract overall success ratings for each activity and useful textual information about the project for forecasting, each PDF document was processed using the following data processing pipeline:
+
+All document pages had their rotation detected, and were rotated to vertical before processing via the Gemini API. Documents with ``.odt'', ``.doc'', or ``.docx'' extensions were converted to PDFs with a custom script. The pages when converted to PDFs were counted and zero-page documents were excluded.
+
+Documents were then ranked and categorized, and structured information from the PDFs was systematically extracted via \emph{gemini-2.5-flash}.
+
+\subsubsection{Ranking PDF Documents by Usefulness}
+Documents were first sorted by their pdf metadata date as pre-activity and post-activity. Pre-activity documents were created at the latest $\frac{1}{4}$ of the way through the activity, and post-activity documents were created at earliest $\frac{3}{4}$ of the way through. If a date was missing, standard titles such as `Project Information Document' or `Ex-Post Evaluation' were used to sort the documents into pre- and post-activity. Also, the documents were given a preliminary ranking (without an LLM query). Pre-activity documents that were closest to the activity start, and the latest post-activity documents were prioritized. Documents in a 3-20 page length were also prioritized above very short or very long documents.
+
+Documents were then given a final ranking with \emph{gemini-2.5-flash}, ranking from most to least useful for either forecasting the outcome for pre-activity documents or evaluating the results for post-activity documents. Each activity was processed in two separate API calls, one \emph{gemini-2.5-flash} query for pre-activity documents and a similar \emph{gemini-2.5-flash} query for post-activity documents. In each call, the first three pages of every candidate document were uploaded alongside a single prompt. This prompt contained the activity title, description, official date range, and per-document metadata (title, language, IATI document category codes, page count, and PDF metadata date). A rubric specifying the information an ideal document would contain was included to anchor the grading scale. The model was instructed to return a single structured JSON response ranking all candidate documents from most to least relevant, assigning each a letter grade (A+ to F) and an include/exclude flag. Letter grades were selected in accordance with standard grading examples from Google Gemini documentation. Structured output was enforced via a JSON schema so that every document received exactly one rank and grade in a single response. Documents that were duplicates in a non-English language were excluded if the equivalent was available in English. For outcomes, if there were multiple progress reports, all the earlier ones were excluded and only the latest were kept in the rankings. After ranking, 2,312 documents had sufficiently informative activity information and activity evaluation documents.
+
+
+\subsubsection{Categorizing Pages within PDF Documents}
+The highest ranking documents then had each of their pages categorized with what information was present on them. Manual inspection determined this was more effective than semantic embedding search for long documents. To process the pages, PDFs were split into 3-page chunks. Each 3-page chunk was sent in PDF form to \emph{gemini-2.5-flash}. Several random documents were read and categorized by-hand to understand common sections, and the resulting categories, which informed the automated categorization selection. The pages were categorized differently based on whether the document was a pre-activity or post-activity document. Categories for outcomes allowed retrieval based on whether final evaluation in quantitative or qualitative form were present on the page, deviations from plans or other types of outcomes were detailed, or if the pages were simply overviews of the activity. Specifically, the allowed categorizations for pre-activity document pages were ``condensed summary'', ``sub activities outlined'', ``detailed implementation plans'', ``broad objectives'', ``possible outcomes'', ``quantitative targets'', ``qualitative targets'', ``risks as word or numeric'', ``risks or dangers generally'', ``plans to address key risks'', ``positive indicators'', ``progress reports'', ``similar cases outcomes'', ``implementation context country'', ``contextual challenges'', ``financing details'', ``budget and legal'', ``who implements'', ``whether part of larger program'', ``partner identity or skill'', ``whether skin in the game'', ``other stakeholder engagement'', or ``activity monitoring details''. For post-activity document pages, the allowed categorizations were ``expected outcomes'', ``deviation from plans'', ``preliminary results'', ``final outcomes'', ``delays or early completion'', ``over or under spending'', ``overview as was planned'', or ``unrelated to evaluation''.
+
+Upon manual inspection, it was revealed that pages often pertained to more than one category such as a page which documents final outcomes while also documenting project delays. The two most relevant category choices among these were therefore assigned for each page in the documents, to prevent less relevant categories from polluting the page tags.
+
+In order to exclude irrelevant pages, the pages were also given a second categorization type, for post-activity document pages as ``glossary'', ``blank page'', ``table of contents'', ``outcome evaluation'', ``activity description'', ``references'', or ``other'', and for pre-activity document pages the same categories were options, in addition to ``core activities'', ``theory of change'', ``targets'', ``broader context'', and ``preliminary results''. Only one category choice among these was possible per page as these categories were found to typically be mutually exclusive.
+
+
+\subsubsection{Structured Information Extraction}
+\subsubsubsection{Extracting Ratings}
+Two separate methods were used to extract ratings. Inspection of randomly selected pages revealed that ratings often appeared on pages with a high rating for relevance to evaluation, where a threshold of approximately 7/10 separated matches from bad fits. Therefore, the first method sends each individual post-activity document page rated above 7/10 for relevance to evaluation, or with a ``quantitative targets'' categorization, to \emph{gemini-2.5-flash} to extract any overall ratings, and a second script summarized the overall ratings into a single value for the document. However, this was often insufficient to capture the overall ratings. Another ``fallback'' script involved a custom generated word search with approximately 500 different rephrasings of ``overall rating'', ``final result'', ``synthesized score'', etc, in English, and searched the PDFs directly for an exact match on those terms, prioritizing pages with one or more exact text matches of such terms. Otherwise, if such words could not be found, the earliest pages in the document which were not categorized as ``blank page'', ``appendix'', ``glossary'', ``table of contents'', ``references'', or ``activity description'' were included. \emph{gemini-2.5-flash} was then queried to extract the overall rating from those pages.
+
+%A slightly different process was done for UNDP activities. The fallback script was used again, but documents were judged by \emph{gemini-2.5-flash} for whether the outcomes represented an ``overall successful'' or ``overall unsuccessful'' activity, and this was entered as the result, as UNDP rarely delivers directly an overall rating for the activity. # we don't use these anymore
+
+For BMZ/KfW/GIZ documents, pre-activity documents were extremely rare. For this reason, the evaluation document was treated as a pre-activity document for the purposes of forecasting activity success. Categorization for these evaluations also was via the pre-activity document method described above. When grading or summarizing the features of the evaluation document, \emph{gemini-2.5-flash} was instructed to only describe what could have been known at the beginning of the activity. The model was instructed under no circumstances to reveal the final outcome. Manual inspection of extracted information from these documents did not reveal any resulting temporal leakage.  BMZ/KfW/GIZ overall ratings were similarly predictable to World Bank ratings on the held-out set, despite this information leakage possibility.
+For BMZ/KfW/GIZ documents, pre-activity documents were extremely rare. For this reason, the evaluation document was treated as a pre-activity document for the purposes of forecasting activity success. Categorization for these evaluations also was via the pre-activity document method described above. When grading or summarizing the features of the evaluation document, \emph{gemini-2.5-flash} was instructed to only describe what could have been known at the beginning of the activity, and to under no circumstances reveal the final outcome of the activity. Manual inspection of extracted information from these documents did not reveal any resulting temporal leakage.  BMZ/KfW/GIZ overall ratings were similarly predictable to World Bank ratings on the held-out set, despite this information leakage possibility. BMZ/KfW/GIZ activities comprised approximately 16\% of the overall dataset, with around 17\% of activities in the training and validation sets but only 10\% in the held-out test set. The lower share in the held-out test set means that results on BMZ activities are less robustly characterised than those for other reporting organisations, and care should be taken when generalising the leakage findings to a future deployment context in which BMZ represents a larger share of activities.
+
+
+
+
+
+\subsubsubsection{Interpreting Ratings}
+Ratings were reported both with the rating itself, and a maximum and minimum possible rating. The World Bank rating scale from 1 (``Highly Unsatisfactory'') to 6 (``Highly Satisfactory'') was used as the template rating, and other ratings were rescaled to match the 1 to 6 rating scale. Notably, BMZ/KfW/GIZ ratings were inverted to reach this scale. A ``Satisfactory'' score was considered equivalent to scores such as ``successful'', ``On Track'', or ``met expectations''. Scores listed as percentages or fractions were re-scaled to the 1 to 6 scale as well. In order to ensure ratings were fairly compared, only the top four most common organizations with ratings were included for training and validation of the forecasting system. 
+
+\FloatBarrier
+\subsubsubsection{Extracting cost-effectiveness}
+In addition to extracting ratings, a similar approach was used with \emph{gemini-2.5-flash} and \emph{gemini-2.5-flash-lite} to extract quantitative cost-effectiveness-related outcomes. 
+
+Cost-effectiveness of international aid activities was defined as the ratio of measured quantitative outcomes aiming to improve the environment or sustainability to the expenditures used to achieve that outcome. Quantitative outcomes were extracted by language model prompts as described below (the numerator), and the majority of international aid activities in IATI directly publish the overall activity expenditure (the denominator). 
+
+Quantitative outcomes were extracted from all pages which were categorized as containing outcomes, and marked as containing quantitative information. Unlike with ratings, extraction was not limited to the top 4 reporting organizations, as reporting ratings is more susceptible to between-reporting-organization variation and gaming than the reportable quantitative outcomes of projects \citep{goldembergMindingGapAid2025}.
+
+Once these PDF pages were extracted, a combination of manual examination of the extracted outcomes and a frequency analysis of bigrams was used to identify outcome variables that could be compared between projects. For each common outcome category, a list of words and phrases was compiled that would commonly match reports of these outcome variables in the description, as well as appropriate units. Each script ensures implausible or non-numeric values are dropped. Domain-specific filters also reduced false positives (e.g., wastewater context for pollution loads, water context for connections, agriculture context for yields).
+
+
+\textbf{Comparable Outcome Categories}
+
+Using manual inspection and frequency statistics of common bigrams, a set of outcome categories was defined that recur across evaluations and are interpretable across projects. One challenge encountered was ensuring sufficient quantities of comparable outcomes between activities. In order to ensure statistically significant quantities of activities were required for training, only outcomes categories were used that remained after ensuring each contained at least 50 activities in the training set. This threshold was selected to ensure reliable performance on the validation set, as below 50 points the model became unstable, while a higher restriction left too few points to evaluate the final prediction. The final set included:
+\begin{itemize}[noitemsep,topsep=0pt]
+  % \item \textbf{Benefit/cost ratios (B/C):} benefit-cost ratio outcomes.
+  % \item \textbf{Rates of return:} economic rate of return (ERR/EIRR) and financial rate of return (FRR/FIRR), in percent.
+  % \item \textbf{Emissions reductions:} CO\textsubscript{2} or CO\textsubscript{2}e reductions (total or per-year) in tonnes.
+  % \item \textbf{Water and sanitation connections:} counts of service connections, either new or repaired.
+  % % \item \textbf{Pollution load removed:} wastewater pollutant load reductions (e.g., BOD/COD/nutrients), in tonnes and categorized by time basis (total, per-year, per-day).
+  % % \item \textbf{Forest indicators:} trees/seedlings planted (counts) and area-based forest outcomes (reforested, under management, protected) in hectares.
+  % % \item \textbf{Irrigation outcomes:} increases in irrigated area (hectares), computed as a positive increase relative to baseline where available.
+  % \item \textbf{Energy outcomes:} installed generation capacity, in MW (or occasionally GWh where the source reported capacity in energy units).
+  % % \item \textbf{Air quality (PM2.5):} PM2.5 reductions reported as concentration, emissions, or percent, kept as separate distributions.
+  % % \item \textbf{Clean cooking stoves:} counts of stoves distributed/installed.
+  % % \item \textbf{Agricultural yields:} yield increases expressed either as level changes (normalized to tonnes per hectare when possible) or as percent increases.
+\item \textbf{Benefit/cost ratios (B/C):} benefit-cost ratio outcomes. (train: 62, val: 18, test: 15, total: 77)
+\item \textbf{Rates of return:} economic rate of return (ERR/EIRR) and financial rate of return (FRR/FIRR), in percent. (ERR — train: 396, val: 103, test: 43, total: 440; FRR — train: 190,  val: 43, test: 15, total: 205)
+\item \textbf{Emissions reductions:} CO\textsubscript{2} or CO\textsubscript{2}e reductions in tonnes. (train: 61, val: 23, test: 10, total: 72)
+\item \textbf{Water and sanitation connections:} counts of service connections, either new or repaired. (train: 96, val: 25, test: 9, total: 105)
+\item \textbf{Energy outcomes:} installed generation capacity, in MW (or occasionally GWh where the source reported capacity in energy units). (train: 64, val: 20, test: 12, total: 79)
+
+\end{itemize}
+Although pollution load removed, forest indicators, trees planted, air quality (PM2.5), clean cooking stove distribution, and agricultural yield improvement were parsed, none of these contributed sufficient counts to be useful for further outcome forecasting.
+
+All extracted outcome groups per category per activity were sent to an aggregation prompt for \emph{gemini-2.5-flash} to produce a final baseline, target, and outcome value. Where multiple extracted values conflicted, overlapped, or reflected different levels of aggregation (e.g., component-level versus project-level figures), the model was instructed to adjudicate between them and select or combine values to reflect a single coherent project-level outcome. The model was instructed to distinguish duplicates from additive components, prioritize project-level totals over subcomponent figures, aggregate only non-overlapping quantities, and return a null response when no coherent representative value could be determined.
+
+\textbf{Outcome aggregation and cost-effectiveness computation}
+
+Once outcomes were extracted and aggregated to project level, cost-per-unit estimates were constructed. The total expenditure for each activity reported by IATI served as the cost denominator (in USD), with the exception of benefit-cost ratios and rates of return, which are inherently unit-free or already normalised.
+
+Outcome-level funding splits are not published in the IATI database. To avoid implicitly treating multi-outcome activities as having multiple full budgets, a custom algorithm allocates total activity expenditure across the non-overlapping funded sub-activities and activity reports. Benefit/cost ratios and economic and financial rates of return are excluded from monetary allocation; all other outcome categories are eligible. To avoid double-counting when two indicators are alternative measurements of the same underlying result, closely related indicators are first grouped into shared conceptual buckets (e.g., protected area paired with area under management; different yield-increase measures; tree planting paired with reforested area).
+
+Once the components are bucketed, each bucket receives an equal share of the activity’s allocatable funding. Every component inside a bucket inherits that same share, so ``alternative measures of the same thing'' draw on one portion of the allocation rather than each taking a separate slice.
+
+Carbon dioxide reductions are handled as a special case because they can act as a summary metric that overlaps with other mitigation outputs. If CO$_2$ reductions are reported without any closely linked mitigation outputs (such as improved stoves, added generation capacity, or trees planted), CO$_2$ reductions receive an equal share like any other bucket. If CO$_2$ reductions are reported alongside any of those linked outputs, they inherit the combined allocation already assigned to the CO$_2$-mitigating expenditures for that activity, preventing CO$_2$ from inflating allocated spending when it is a co-reported consequence of other outcomes.
+
+Empirical inspection found that most cost-per-unit outcomes are approximately log-normally distributed. The $\log_{10}$ transform was therefore applied to all outcome categories except benefit-cost ratios and rates of return before modelling.
+
+The cost-effectiveness aggregate Z-score is standardised using training-set mean and standard deviation (population stddev, ddof=0) applied to all splits. The Random Forest used for cost-effectiveness forecasting is trained with 3$\times$ sample weight on the most recent 20\% of training observations, as this improved performance on the validation set (and later on the test set). A ridge regression on the residuals with $\alpha=50$, as used for outcome tags and overall rating prediction, was also applied due to its performance improvement on the validation set.
+
+\subsubsubsection{Extracting Outcome Tags}
+\label{sec:outcome_tags_methods}
+All evaluations were summarized, common outcome tags were assessed from a random sample of these summaries, and then the value of each true/false tag was determined for all outcome summaries.
+
+\textbf{Extracting Outcome Summaries}
+
+For each activity, up to ten post-activity document pages were selected for outcome summarization, prioritising pages categorised as containing deviations from plans, delays or early completion, and over- or under-spending. Surrounding pages were included when insufficient high-relevance pages were available. If an activity had no categorised pages meeting the threshold, a fallback retrieved the highest-scoring uncategorised outcome pages directly from the document. These pages, together with the activity title, planned date range, scope, and an optional pre-activity description (where available), were submitted in a single \emph{gemini-2.5-flash} prompt. The model was instructed to return a summary in bullet point format of what occurred as a result of the activity. The model was instructed to report both successes and shortfalls and any quantitative outcomes relating to the activity's core aims while explicitly withholding any overall evaluation rating. To avoid unnecessary duplication, the model was also instructed to avoid introductions or conclusions. The resulting outcome summaries were used as the input for outcome tag classification.
+
+\textbf{Discovery of Common Tags}
+
+The tag taxonomy was developed inductively from the evaluation corpus itself rather than imposed from an external framework. A random sample of 250 outcome summaries from completed activities was drawn. This sample was divided into batches of 10 outcome summaries each. Each batch was submitted to \emph{gemini-2.5-flash} with a prompt requesting identification of all recurring outcome types present across the summaries in the batch. A set of seed examples determined from manual inspection of random activity summaries was provided to anchor the initial vocabulary (e.g., ``implementation delays,'' ``high beneficiary satisfaction,'' ``project was restructured,'' ``capacity building training was delivered''). The model was instructed to generate additional tags for any distinct outcome type appearing in more than one summary. All 25 batches were then deduplicated and merged via manual inspection, resulting in 23 outcome tags covering finance and budget outcomes, activity rescoping outcomes, process and implementation challenges, and target achievement outcomes.
+
+\textbf{Unsigned and Signed Tags}
+
+The 23 tags were divided into two conceptually distinct types based on whether their presence implies a value judgement.
+
+Of the 23 tags, 12 were interpreted as not having occurred if not mentioned. These are applicable to any project and would be very likely to be mentioned in the summary if it occurred. For example, whether the project was delayed. The remaining 12 tags were not recorded as false if missing. Instead, information as to whether they occur was recorded only if explicitly mentioned, such as having successfully completing or failing to complete infrastructure, or whether livelihoods were significantly achieved by the project. For unsigned tags, the LLM is asked whether the phenomenon was clearly described as occurring, and the response is a single boolean per tag.
+
+
+\textbf{Applying Tags at Scale}
+
+The finalized set of tags were extracted for all activities with overall activity ratings within the four reporting organizations using two separate LLM passes over each activity's post-activity outcome summary. In the first pass, all 12 unsigned tags were evaluated together in a single prompt per activity, with the model asked to return a JSON object mapping using structured JSON output enforced via a schema. 
+
+
+
+\FloatBarrier
+

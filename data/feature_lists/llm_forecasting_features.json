@@ -1,0 +1,22 @@
+{
+  "model": "llm_forecasting",
+  "n_features": 15,
+  "note": "Text sections + structured metadata included in the LLM forecast prompt (exactly_like_halawi_et_al_rag_added variants). KNN lessons and RAG evidence are optional augmentations, not listed here.",
+  "features": [
+    "description",
+    "targets_summary",
+    "activity_context",
+    "complexity_details",
+    "how_integrated_description",
+    "finance_summary",
+    "implementer_performance_text",
+    "risks_summary",
+    "possibilities_summary",
+    "activity_scope",
+    "planned_disbursement_usd",
+    "country_location",
+    "gdp_percap",
+    "reporting_orgs",
+    "implementing_org_type"
+  ]
+}

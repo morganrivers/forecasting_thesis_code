@@ -1,0 +1,246 @@
+\section{Conclusion}
+\subsection{LLM vs Statistical Models}
+We conclude with a summary of how statistical models and LLM forecasting techniques compare. Both strategies were found to have both strengths and weaknesses:
+\begin{figure}[!htbp]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{0.45\linewidth} p{0.45\linewidth}}
+
+\textbf{Strengths} &
+\textbf{Weaknesses} \\
+
+\textbf{LLM Forecasting}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item Can explicitly reason and identify missing information
+  \item General reasoning skills may transfer across domains
+  \item Can produce text-based forecasts of specific events
+\end{itemize}
+
+\textbf{Statistical Models}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item Cheap and fast to iterate
+  \item Can use large numbers of features without context limits
+  \item Can incorporate LLM forecasts and grades as features
+  \item Efficiently generalize over large datasets
+  \item Easier to prevent future leakage
+  \item Mature methodology
+\end{itemize}
+
+&
+\textbf{LLM Forecasting}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item Expensive and slow to iterate
+  \item Difficult to calibrate
+  \item Fine-tuning is expensive, and unavailable for best models
+  \item Limited interpretability of model reasoning
+  \item Best models are closed-source
+  \item Risk of training-data leakage
+  \item Limited context window constrains attention and calibration
+\end{itemize}
+
+\textbf{Statistical Models}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item Cannot perform explicit reasoning
+  \item Cannot directly use rich textual or world knowledge
+  \item More prone to overfitting dataset-specific quirks
+\end{itemize}
+
+\\
+\end{tabular}
+% \caption{Strengths and Weaknesses of Large Language Models and Statistical Models for Forecasting}
+\label{fig:forecast_strengths_weaknesses}
+\end{figure}
+
+\FloatBarrier
+\subsection{Summary of Experimental Methods}
+
+Table \ref{sub:methodssummary} below summarises the key experimental methods tested in this thesis.
+
+\textbf{Statistical model (overall rating).}
+The baseline methods were a mode-of-organisation predictor and a ridge regression using only an LLM-generated risk grade and organisation identity. A random forest alone was inferior to the RF+ET ensemble on the validation set and was adopted as the experimental method.
+Experimental features added to the RF+ET ensemble included seven \emph{gpt-3.5-turbo}-generated grades (financing quality, integratedness, implementer performance, contextual challenge, risk, complexity, and ease of targeted outcomes), three-dimensional UMAP embeddings of LLM-generated target text, sector and country distance features derived from those embeddings, and budget allocations clustered into 15 sectors.
+A nearest-neighbour weighted average of training ratings was also tested as a direct predictor but did not improve over the mode baseline.
+Hyperparameter tuning to restrict tree depth and leaf size improved generalisation, as did averaging the RF and ET models.
+A linear ridge regression correction fitted on start year was applied to the ensemble output, with improvements on the validation set but mixed results on the test set.
+On the held-out test set, combining the RF+ET forecast with the LLM forecast via simple averaging and via a calibrated ridge regression were both evaluated; neither improved reliably over the RF+ET alone.
+XGBoost was also assessed on the validation set and held-out set and underperformed RF+ET in both cases.
+
+\textbf{LLM forecast (overall rating and narrative quality).}
+The baseline was a minimal single-stage prompt with activity metadata and a generated summary. Surprisingly, this was the best performing method for overall ratings.
+Multi-stage prompting added two separate prior calls eliciting reasons the activity would go badly (S1) and reasons it would go well (S2), whose outputs were inserted into the final forecast context.
+KNN retrieval incorporated summarised mock forecasts of the three most semantically similar training activities, and RAG retrieval allowed the model to pull additional document excerpts it identified as relevant.
+Instructing the LLM to match the statistical model's predicted rating was the most effective single intervention for both narrative quality and rating accuracy.
+A fine-tuning attempt using Direct Preference Optimisation on \emph{gemini-2.5-flash} over 50 training pairs produced mixed results and did not approach the performance of the larger \emph{gemini-3-pro} model.
+Ensembling multiple LLM calls with the same prompt was ineffective due to high correlation between outputs.
+An LLM correction blend was also tested for outcome tag forecasting but consistently decreased performance and was discarded.
+
+\textbf{Cost-effectiveness.}
+The RF+ET statistical model was applied to cost-effectiveness Z-scores, but validation performance was not above chance.
+No further methods were therefore pursued on the held-out test set.
+
+\textbf{Outcome tags.}
+The RF+ET ensemble with a shared set of 45 features was the core method.
+Additional techniques validated on the training and validation sets and incorporated into the final tag models included a start-year linear trend correction, group averaging to stabilise predictions for low-data tags, and tag-dependent class-weight balancing.
+Per-tag feature selection and hyperparameter tuning improved validation performance but did not generalise to the held-out set.
+XGBoost and LightGBM were assessed and underperformed RF+ET on every tag.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of most promising experimental methods on validation set by outcome target.
+\textcolor{green!60!black}{$\checkmark$}~improved on validation and held-out test;
+\textcolor{red}{$\times$}~did not generalise to held-out test;
+{\color{gray}?}~ambiguous or no clear improvement.
+LLM forecast rows: validation set only.
+Statistical model forecasts of overall success ratings and 12 of 14 attempted outcome tag forecasts were better than chance at within-group pairwise ranking skill on the held-out set at 95\% confidence as determined by permutation testing.
+By contrast, cost-effectiveness forecasts on the held-out test set and non-statistical-model-driven LLM forecasting of overall ratings on the validation set were not significantly above chance.}
+\label{tab:methods_summary}
+\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{6.6cm}
+                               >{\raggedright\arraybackslash}X
+                               >{\centering\arraybackslash}p{2.2cm}@{}}
+\toprule
+\textbf{Outcome Target}\newline Are forecasts viable? (\textcolor{green!60!black}{$\checkmark$} / \textcolor{gray}{?} / \textcolor{red}{$\times$})   & \textbf{Variants of best method on validation set assessed} & \textbf{Should variant be adopted?} \\
+\midrule
+\multirow{6}{6.2cm}{\textbf{Statistical Model (Overall Rating)}\newline\textcolor{green!60!black}{$\checkmark$} (generalizes to held-out test set with 95\% confidence using a permutation test)}
+  & LLM-generated features                               & \textcolor{green!60!black}{$\checkmark$} \\
+  & Restricted tree complexity (RF+ET tuning)            & \textcolor{green!60!black}{$\checkmark$} \\
+  & Linear ridge regression adjustment to RF based on start year & \textcolor{gray}{?} \\
+  & Simple average with LLM forecast                    & \textcolor{gray}{?} \\
+  & LLM ridge adjustment of forecast                    & \textcolor{red}{$\times$} \\
+  & XGBoost                                             & \textcolor{red}{$\times$} \\
+\midrule
+\multirow{8}{6.2cm}{\textbf{LLM Forecast (Overall Rating)}\newline{\color{gray}?} (did not perform better than RF+ET model for validation set for rating, but performed well for narrative forecasts. Temporal leakage detected in held-out set, nulling those forecasts)}
+  & \multicolumn{2}{l}{\textbf{Narrative quality (validation set):}} \\
+  & \hspace{1em}\parbox[t]{\dimexpr\linewidth-1em\relax}{LLM instructed to forecast statistical model's rating} & \textcolor{green!60!black}{$\checkmark$} \\
+  & \hspace{1em}\parbox[t]{\dimexpr\linewidth-1em\relax}{S1 (reasons would go badly) \& S2 (reasons would go well)} & \textcolor{green!60!black}{$\checkmark$} \\
+  & \quad KNN similar activities retrieval                        & \textcolor{green!60!black}{$\checkmark$} \\
+  & \quad RAG additional context retrieval                        & \textcolor{green!60!black}{$\checkmark$} \\
+  & \multicolumn{2}{l}{\textbf{Rating accuracy (validation set):}} \\
+  & \hspace{1em}\parbox[t]{\dimexpr\linewidth-1em\relax}{LLM instructed to forecast statistical model's rating} & \textcolor{green!60!black}{$\checkmark$} \\
+  & \hspace{1em}\parbox[t]{\dimexpr\linewidth-1em\relax}{S1 (reasons would go badly) \& S2 (reasons would go well)} & \textcolor{red}{$\times$} \\
+  & \quad KNN similar activities retrieval                        & \textcolor{red}{$\times$} \\
+  & \quad RAG additional context retrieval                        & \textcolor{red}{$\times$} \\
+\midrule
+\textbf{Cost-Effectiveness}\newline\textcolor{red}{$\times$} (no methods perform better than chance in validation or held-out set using 95\% permutation test)
+  & No methods attempted for held-out test set: validation and held-out set performance not above chance & \\
+\midrule
+% \multirow{6}{6.2cm}{\textbf{Outcome Tags}\newline\textcolor{green!60!black}{$\checkmark$} (12/14 were better than chance under 95\% permutation test)}
+%   % & Start-year linear trend correction                   & \textcolor{green!60!black}{$\checkmark$} \\
+%   % & Tag group averaging (low-data tags)                  & \textcolor{green!60!black}{$\checkmark$} \\
+%   % & Tag-dependent class-weight balancing                 & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Per-tag feature selection \& hyperparameter tuning  & \textcolor{red}{$\times$} \\
+%   % & LLM correction blend for tag probabilities           & \textcolor{red}{$\times$} \\
+%   % & XGBoost / LightGBM                                  & \textcolor{red}{$\times$} \\
+% \bottomrule
+% \midrule
+\textbf{Outcome Tags}\newline\textcolor{green!60!black}{$\checkmark$} (\NumberTagsBetterThanChance/14 were better than chance under 95\% permutation test)
+  & Per-tag features \& regularization                  & \textcolor{red}{$\times$} \\
+\bottomrule
+
+
+\end{tabularx}
+\end{table}
+
+% --- Detailed methods comparison (all methods tried, 3-column format) ---
+%
+% \begin{table}[htbp]
+% \centering
+% \caption{Detailed summary of all experimental methods by outcome target.
+%   \textcolor{green!60!black}{$\checkmark$}~improved on validation and test;
+%   \textcolor{red}{$\times$}~did not generalise or failed;
+%   {\color{gray}---}~ambiguous or no clear improvement;
+%   $\sim$~marginal or mixed result.
+%   (B)~=~baseline (not an experimental method).
+%   LLM forecast rows: validation set only.}
+% \label{tab:methods_summary_detailed}
+% \footnotesize
+% \renewcommand{\arraystretch}{1.3}
+% \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.3cm}
+%                                >{\raggedright\arraybackslash}X
+%                                >{\centering\arraybackslash}p{1.1cm}@{}}
+% \toprule
+% Outcome Target & Method & Result \\
+% \midrule
+% \multirow{14}{3.1cm}{\textbf{Statistical Model (Overall Rating)}}
+%   & Mode-of-org score baseline (B)                      & \\
+%   & Ridge regression baseline (B)                       & \\
+%   & Nonlinear model (RF+ET vs.\ OLS)                    & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Per-org mode differencing                           & \textcolor{green!60!black}{$\checkmark$} \\
+%   & LLM-generated grades (\emph{gpt-3.5-turbo})        & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Target text embeddings (UMAP 3D)                    & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Embedding contextualization (sector/country dist.)  & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Budget sector clustering (15 clusters)              & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Nearest neighbour weighted avg.\ rating             & \textcolor{red}{$\times$} \\
+%   & Restricted tree complexity (RF+ET tuning)           & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Year trend correction                               & $\sim$ \\
+%   & LLM ridge adjustment of forecast                    & \textcolor{red}{$\times$} \\
+%   & XGBoost                                             & \textcolor{red}{$\times$} \\
+%   & Simple average with LLM forecast                    & {\color{gray}---} \\
+% \midrule
+% \multirow{18}{3.1cm}{\textbf{LLM Forecast (Overall Rating)}}
+%   & \multicolumn{2}{l}{\textit{Narrative quality (validation set):}} \\
+%   & \quad Baseline minimal prompt (B)                   & \\
+%   & \quad S1 (reasons would go badly) \& S2 (reasons would go well) extra prompts & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \quad KNN few-shot retrieval                        & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \quad RAG document retrieval                        & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \hspace{1em}\parbox[t]{\dimexpr\linewidth-1em\relax}{LLM instructed to forecast statistical model's rating} & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \quad Fine-tuning (DPO, \emph{gemini-2.5-flash})   & $\sim$ \\
+%   & \quad Larger model (\emph{gemini-3-pro})             & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \quad Ensembling LLM forecasts                      & \textcolor{red}{$\times$} \\
+%   & \multicolumn{2}{l}{\textit{Rating accuracy (validation set):}} \\
+%   & \quad Baseline minimal prompt (B)                   & \\
+%   & \quad S1 (reasons would go badly) \& S2 (reasons would go well) extra prompts & \textcolor{red}{$\times$} \\
+%   & \quad KNN few-shot retrieval                        & {\color{gray}---} \\
+%   & \quad RAG document retrieval                        & {\color{gray}---} \\
+%   & \hspace{1em}\parbox[t]{\dimexpr\linewidth-1em\relax}{LLM instructed to forecast statistical model's rating} & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \quad Fine-tuning (DPO, \emph{gemini-2.5-flash})   & \textcolor{red}{$\times$} \\
+%   & \quad Larger model (\emph{gemini-3-pro})             & \textcolor{green!60!black}{$\checkmark$} \\
+%   & \quad Ensembling LLM forecasts                      & \textcolor{red}{$\times$} \\
+% \midrule
+% \textbf{Cost-Effectiveness}
+%   & RF+ET statistical forecast                          & \textcolor{red}{$\times$} \\
+% \midrule
+% \multirow{7}{3.1cm}{\textbf{Outcome Tags}}
+%   & RF+ET with homogeneous 45 features (baseline)       & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Per-tag features \& regularization                  & \textcolor{red}{$\times$} \\
+%   & Start-year trend correction (val.)                  & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Tag group averaging (val.)                          & \textcolor{green!60!black}{$\checkmark$} \\
+%   & Tag-dependent class weight balancing (val.)         & \textcolor{green!60!black}{$\checkmark$} \\
+%   & LLM correction blend for tags                       & \textcolor{red}{$\times$} \\
+%   & XGBoost / LightGBM                                  & \textcolor{red}{$\times$} \\
+% \bottomrule
+% \end{tabularx}
+% \end{table}
+
+\FloatBarrier
+\subsection{Answers to Research Questions}
+Each research question from the introduction is addressed below.
+
+\textbf{Can the overall rating, common true/false activity outcomes or activity cost-effectiveness be forecasted from pre-activity information alone?}
+Compared to the baseline of \PairwiseHuman\,\% pairwise ranking for the risks extrapolation, the chosen statistical model with all input features reached \PairwiseModel\,\% [95\% CI: \PairwiseCILow\,\%, \PairwiseCIHigh\,\%] on the held-out set for within-group pairwise ranking correctness. Across \NumCuratedPredicted{} binary outcome tags spanning activity rescoping, finance and budget, and target achievement, the RF+ET ensemble achieves above-chance within-group pairwise ranking on the held-out test set, with a mean within-group pairwise ranking of \OutcomeTagPairwiseAvg\% (range: \OutcomeTagPairwiseMin\%--\OutcomeTagPairwiseMax\%), improving weighted accuracy over the majority-class baseline by \OutcomeTagAccImprovement\% percentage points. The strongest performing tags by both pairwise ranking and Brier skill were Closing Date Extended, Project Restructured, and Funds Cancelled or Unutilized. Activity cost-effectiveness could not be forecasted above-chance. There is a \CostEffect\% chance of a correct within-group pairwise ranking compared to 50\% which would be arrived at by random chance, but this is not statistically significant.
+
+\textbf{How do judgemental forecasting methods compare to statistical models in forecasting international aid overall success ratings and common true/false outcome probabilities?}
+LLM forecasts themselves (even when including a full RAG- and KNN-augmented multi-stage prompting pipeline) tend to underperform statistical models in this domain, while having the disadvantage of being costlier and more difficult to iterate with. While results were better performing on the test set, this is likely due to temporal leakage. However, LLMs provide meaningfully accurate narrative forecasts when combined with statistical models.
+
+
+\textbf{How do differing methods of combining judgemental and statistical forecasting compare in this domain?}
+Embeddings of language models inserted into statistical models significantly improve forecasting ability. Furthermore, using embeddings as a means of selecting nearest neighbors and as a component of RAG retrieval gathered information that reliably increased the similarity grades between LLM forecasts and the eventual outcome over all tested LLM forecast configurations. Embeddings were also effective as a method for clustering activity disbursements as measured by improved performance on the validation set.
+
+Language models themselves were helpful in extracting grades for various aspects of the forecast, which as a group improved the statistical model forecast. While direct averaging did not demonstrate improved performance, it was found that training a simple model to use the residual between the LLM and statistical model modestly improved forecasting skill across most metrics. There is some evidence that training a secondary model to incorporate the final LLM prediction with a RF prediction can also improve the overall forecast skill.
+
+\textbf{What methods improve the accuracy of narrative (qualitative) forecasts in this domain?}
+The experimental methods were successful in improving narrative forecast quality. These were: 1. to switch the model from the somewhat smaller \emph{deepseek-V3.2} or \emph{gemini-2.5-flash} models to the more expensive but more generally capable \emph{gemini-3-pro} model,  2. to incorporate additional retrieval of information via RAG and inserting outcomes from similar past activities using the KNN technique and 3. to directly prompt the model to come to the same conclusion as the RF model.
+
+Additional prompts to elicit reasons the outcome may go well or badly (stages 1 and 2 in the methods) sometimes deteriorated scores in certain model configurations, although the best performing models used these stages in their context window when forecasting. Similarly, fine-tuning sometimes helped, and sometimes deteriorated scores.
+
+\textbf{What aspects of the activity available in the dataset at the beginning of the activity lead to higher or lower overall ratings or true/false outcome probabilities?}
+As others in the literature have reported, decreased duration and especially increased planned expenditures tend to correlate with higher activity ratings \citep{vivaltHowMuchCan2020} \citep{ashtonPuzzleMissingPieces2023} \citep{eilersVolumeRiskComplexitya}. Rating organizations tend to differ systematically, and by-sector differences in ratings appear to be more significant in general than regional differences.
+
+The planned expenditure, reporting organization, geographic scope, and how unique the targets were compared to similar activities had the greatest influence on true/false outcome tag forecasts. 
+
+Overall, feature importances are prone to shifting with new data so no individual result should be given heavy weighting. One robust result is that most features contribute to accurate prediction with no single feature or set of features dominating, and that more informative features generally performed better than fewer.
+\clearpage
+
+
+

@@ -1,0 +1,145 @@
+\section{Results}
+\subsection{Summary}
+The sections below present results for four outcome measures: overall evaluation ratings, narrative forecast similarity grades, aggregate cost-effectiveness Z-scores, and structured outcome tags. Figure \ref{fig:scatterLLMcorrected} provides the central empirical comparison across LLM forecasting methods and constitutes the primary evidence for the findings discussed in Section \ref{sec:llm_results}.
+
+\textbf{Activity ratings results} Overall rating results are shown in Table \ref{tab:method_comparison_validation}. The overall activity success rating prediction on the held-out set confirmed the inability to explain variation in evaluation ratings in absolute terms which was evident from cross-validation tests on the validation set. As expected, within-group pairwise ranking ability on the held-out set was above chance and statistically significant. The use of LLM features improved all metrics, as did the hyperparameter tuning of the RF+ET model parameters. It was also revealed that nonlinear methods are essential for within-group pairwise ranking skill, with the OLS model both less accurate than the baseline and failing to rank within-group pairs. 
+
+However, not all experimental methods succeeded in improving the model. Inspection of the LLM forecasts on the test set revealed significant future leakage based on the reasoning the LLM gave for the ratings, so LLM-forecasting combinations with the test set should be understood to have an unfair forecasting advantage. Furthermore, the ridge regression method to calibrate LLM forecasts backfired on the test set, performing worse than a simple average of the LLM forecast with the RF+ET prediction. The temporal linear regression produced mixed results, decreasing overall accuracy, but improving within-group pairwise ranking and within-group spearman ranking ability.
+
+\textbf{LLM prediction of overall ratings} LLM predictions on the held-out set were better than the statistical model, but were discovered to be strongly affected by future leakage. The validation set results did not demonstrate clear future leakage, and were inferior to statistical model predictions. A fusion of statistical models and LLM forecasting methods was found to generate the highest quality narrative predictions. The highest rating accuracy for LLM forecasts simultaneously produced the least accurate narratives as shown in Figure~\ref{fig:scatterLLMcorrected}. 
+
+
+\textbf{Cost-effectiveness} Activity ratings show only weak correlation with activity aggregate cost-effectiveness (Pearson $r = \RatingCostCorr$, computed across the full dataset of 1,181 activities). Cost-effectiveness prediction was not shown to be statistically better than chance with the 95\% permutation sampling for any scoring metric. The cost-effectiveness aggregate Z-score is limited by inconsistency in its component indicators across activities, difficulty of interpretation, and low sample counts, indicating a need for a larger training set or a less noisy data collection method for international aid cost-effectiveness forecasting.
+
+\textbf{Outcome tags} Outcome tag results are shown in Table \ref{tab:tag_model_results}. Outcome tags had a similar within-group ranking skill as the overall rating model, with some notably stronger performing outcome tags. The regularization methods for outcome tags overall decreased forecasting skill compared to a minimal regularization. Results are reported for a minimal, uniform regularization rather than the hand-selected feature sets from the validation set. This is because of the two methods attempted on the held-out set, the less tuned feature selection performed better, although the performance difference was modest.
+
+Across 14 binary outcome tags, including activity rescoping, finance and budget, and target achievement, the RF+ET average with no per-tag feature selection  achieved an average within-group pairwise ranking of \OutcomeTagPairwiseAvg\% (range: \OutcomeTagPairwiseMin\% to \OutcomeTagPairwiseMax\%) for the \DifferingOutcomePairsFrac\% of pairs with differing outcomes, outperforming the alternative model which used feature selection. By comparison, the per-tag feature selection model achieved an average of \OutcomeTagPairwiseAvgFeatSel\% (range: \OutcomeTagPairwiseMinFeatSel\% to \OutcomeTagPairwiseMaxFeatSel\%).
+
+The results from each method are described in detail in the remaining sections.
+
+\subsection{Temporal Information Leakage}
+
+The test set had a high rate of apparent leakage - direct inspection revealed several clear cases. It is hypothesized this is due to the high influence of COVID and conflict, and general upheaval in 2019 which especially affected activities starting between 2016 and 2020. Therefore, while the test set results from language models perform well, this should be considered untrustworthy and understood to have a clear unfair advantage compared to a real forecast or the validation set. The validation set did not show significant leakage concern. A script searching for common keywords such as COVID or ``Ukraine war'' found that 4/298 validation activities have COVID leakage (all started 2015--2016, before Jan 2020), with no Ukraine war matches.
+
+
+\subsection{Forecasting Ratings with Statistical Models}
+Overall, the forecasting system developed is capable of forecasting evaluation ratings significantly above chance on out-of-time activities at 95\% confidence, with the RF+ET achieving a pairwise ranking skill of \PairwiseModel\,\% [95\% CI: \PairwiseCILow\,\%, \PairwiseCIHigh\,\%]. This can be contrasted with the $R^2$ on the test set of \Rsqheldoutratingsllmfeatures, although it is still well above the baseline $R^2$ of \Rsqheldoutridgebaseline from the ridge regression.
+
+Despite its low accuracy on the test set, the model performs similarly to published literature within the training and validation set. The full RF+ET model has an $R^2$ on the combined training and validation set of \RsqTraining{}. Existing literature as of 2021 reports at maximum 30\% of unexplained variance on the World Bank using linear OLS models \citep{ashtonPuzzleMissingPieces2023}. An OLS linear model trained on all features in the final 4 reporting organization dataset after applying the mode-demeaned fixed effect for the training and validation set shows an $R^2$ of \RsqTrainingOLS{} and an adjusted $R^2$ of \RsqAdjTrainingOLS{}. This is in the expected range given that no evaluation-time information, such as the final duration and expenditure of the program, was used. No comparable out-of-time, time-ordered split analysis was identified in the literature. As expected for forecasting under data distribution shift, results on the out-of-time validation set were significantly weaker. This is likely due to significant structural shift over time in evaluation rating practices and increased influence of external factors such as the COVID-19 pandemic in the test set period.
+
+Several factors were found to improve model performance. As the ET model performed similarly to the RF model with a slightly different algorithm, it was found that averaging the random forest model with the extra trees model also improved forecasting performance. Further successful techniques are listed below.
+
+\subsubsection{Overfitting Corrections}
+``Adjusted $R^2$'' has been used in similar work to evaluate model performance in the development aid literature and penalizes overfitting by reducing the reported $R^2$ as a function of the number of input parameters. Mirroring similar reported methods in the literature, adjusted $R^2$ was calculated on the training points, in order to compare the model with results from prior literature. Because nonlinear models were found to be significantly superior, other methods were required to prevent overfitting and aid out-of-time generalization. Adjustments to RF+ET parameters were found to be strongly influential for model performance.
+
+
+\subsubsection{Language Model Features Used for the Statistical Model}
+Adding the language model derived features including LLM grades (finance, integratedness, implementer\_performance, targets, context, risks, and complexity), embedding features (UMAP X, Y, and Z), and sector cluster allocations to the RF raises test $R^2$ from \Rsqnollmfrac\ to \Rsqheldoutratingsllmfeatures\ ($\Delta R^2 = \Rsqdelta$; see Table~\ref{tab:method_comparison_validation}, rows ``Random Forest, no LLM features'' vs.\ ``Random Forest only'').                                       
+                                                                             
+% =======================
+% PREAMBLE (add once)
+% =======================
+
+% % LaTeX has no \subsubsubsection by default
+% \newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
+
+
+% =======================
+% BODY (paste in thesis.tex)
+% =======================
+
+
+% requires: \usepackage{booktabs}
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.15}
+
+\caption{Held-out test set performance in forecasting ratings across forecasting methods. Rows are sorted by ascending $R^2$ (higher is better). RMSE and MAE are lower-is-better, others are better if higher. Bold indicates the best value in each metric column. It was noted that MAE was better when the metric was rounded, so rounding the best model was attempted, which was found to beat the baseline metric on MAE. This is because the activity success ratings are integers, but the statistical models produce continuous prediction. The ``LLM correction'' variants combine models using the 300 latest-starting activities in the validation set for calibration/combination using the ridge regression model. XGBoost was found to underperform the RF when used as the LLM Forecast base. The Pairwise metric is artificially suppressed for the ``Mode of rep.\ org.\ score baseline''. The ``no LLM features'' RF excludes the following features: finance, integratedness, implementer\_performance, targets, context, risks, complexity, umap3\_x, umap3\_y, umap3\_z, and the 15 sector allocation features. Note: rows shown in \textcolor{orange}{orange} include LLM Forecast predictions, which were found to benefit from future leakage and should be treated cautiously.}
+\label{tab:method_comparison_validation}
+\begin{tabular}{p{3cm}rrrrrr}
+\toprule
+Method & $R^2$ $\uparrow$ & RMSE $\downarrow$ & MAE $\downarrow$ & Acc. $\uparrow$ & WG Spear. $\uparrow$ & WG Pair. Rank. $\uparrow$ \\
+\midrule
+\textcolor{orange}{RF+ET + LLM Forecast (simple avg)} & \textcolor{orange}{\textbf{0.004}} & \textcolor{orange}{\textbf{0.924}} & \textcolor{orange}{0.683} & \textcolor{orange}{0.470} & \textcolor{orange}{0.206} & \textcolor{orange}{\textbf{0.599}} \\[3pt]
+RF+ET all features (no year corr) & \textbf{0.004} & \textbf{0.924} & 0.683 & 0.470 & 0.206 & \textbf{0.599} \\[3pt]
+\textcolor{orange}{RF+ET + LLM Forecast (ridge)} & \textcolor{orange}{-0.002} & \textcolor{orange}{0.927} & \textcolor{orange}{0.704} & \textcolor{orange}{\textbf{0.485}} & \textcolor{orange}{0.206} & \textcolor{orange}{\textbf{0.599}} \\[3pt]
+RF+ET all features + year corr & -0.002 & 0.927 & 0.704 & \textbf{0.485} & 0.206 & \textbf{0.599} \\[3pt]
+XGBoost all features & -0.008 & 0.929 & 0.688 & 0.460 & 0.174 & 0.580 \\[3pt]
+RF+ET, no LLM features & -0.026 & 0.938 & 0.680 & 0.475 & 0.070 & 0.541 \\[3pt]
+RF+ET (default params) & -0.036 & 0.942 & 0.706 & 0.465 & \textbf{0.206} & 0.597 \\[3pt]
+Ridge Baseline (risks + org only) & -0.048 & 0.948 & 0.696 & 0.465 & 0.008 & 0.508 \\[3pt]
+Mode of reporting-org score baseline & -0.079 & 0.962 & \textbf{0.658} & 0.460 &  &  \\[3pt]
+Plain OLS GLM & -0.136 & 0.987 & 0.767 & 0.410 & 0.054 & 0.529 \\[3pt]
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\FloatBarrier
+
+\subsubsection{Explaining Feature Importances}
+
+SHAP (SHapley Additive exPlanations) is used to interpret model predictions by attributing changes in the output to individual features using Shapley values. For each observation, SHAP decomposes the prediction into a baseline (the mean model output) plus additive feature contributions. Each feature’s SHAP value represents its average marginal contribution across all possible feature subsets.
+
+SHAP analysis reveals that increased planned expenditure and decreased duration strongly correlate with activity success. The reporting organization dummy variable---in this case identifying World Bank activities, which have below-average ratings in this dataset---was among the most important features. The urban/rural indicator from the embeddings tended to decrease ratings, weakly indicating that less well contextualized activities performed worse. Contextual challenge weakly shifted ratings downwards, while ease of targets shifted predictions upwards. Projects spanning many countries tended to perform slightly worse.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/shap_rf_ratings.png}
+  \caption{A SHAP analysis of ratings on the validation set from the RF. Red indicates an increase in the value of the feature, while blue indicates a below-average value. Points to the right of zero shift ratings up, points to the left of zero shift ratings down.}
+  \label{fig:shapratings}
+\end{figure}
+
+
+\begin{table}[t]
+\centering
+\caption{Random-forest drop-one feature importance, sorted by absolute change in the prediction from the feature being increased by 1 standard deviation ($\Delta$ \texttt{pred\_1sd}). Each row reports the decrease in validation $R^2$ and pairwise ranking when the feature is removed ($\Delta R^2$\tnote{*}), along with the share of training rows that were median-imputed for that feature (\texttt{Miss} \%). The largest impacts come from planned budget and planned duration.%; \texttt{rep\_org\_*} are one-hot reporting-organization indicators.
+}
+\begin{tabular}{p{6cm}rrrr}
+\toprule
+Feature & Miss \% & $\Delta R^2$ $\uparrow$ & $\Delta$Pairwise $\uparrow$ & $\Delta$pred\_1sd \\
+\midrule
+Target achievability (LLM: 100=easy, 0=impossible) & 2.0 & 0.0077 & 0.0245 & 0.0920 \\[2pt]
+Document embedding Z axis & 8.5 & 0.0076 & 0.0115 & -0.0672 \\[2pt]
+External context (LLM: 100=enabling, 0=hostile) & 1.5 & 0.0023 & 0.0038 & 0.0565 \\[2pt]
+Sector: capacity building & 47.0 & 0.0026 & 0.0017 & -0.0456 \\[2pt]
+Region: East Asia \& Pacific & 0.0 & 0.0132 & 0.0309 & 0.0381 \\[2pt]
+Implementer quality (LLM: 100=excellent, 0=poor) & 0.5 & 0.0092 & 0.0162 & 0.0308 \\[2pt]
+Annual expenditure (log) & 8.5 & -0.0009 & -0.0076 & 0.0254 \\[2pt]
+Document embedding Y axis & 8.5 & 0.0025 & 0.0029 & 0.0218 \\[2pt]
+Reporting org: World Bank & 0.0 & 0.0285 & -0.0059 & 0.0217 \\[2pt]
+Planned duration & 0.5 & -0.0001 & -0.0018 & -0.0216 \\[2pt]
+Expenditure x complexity & 7.0 & 0.0032 & 0.0070 & 0.0210 \\[2pt]
+Document embedding X axis & 8.5 & 0.0034 & 0.0083 & -0.0180 \\[2pt]
+Geographic scope & 0.0 & 0.0007 & -0.0127 & -0.0175 \\[2pt]
+Finance adequacy (LLM: 100=well-funded, 0=underfunded) & 4.5 & 0.0074 & 0.0131 & 0.0171 \\[2pt]
+Region: Middle East \& North Africa & 0.0 & 0.0013 & 0.0052 & -0.0160 \\[2pt]
+Country governance quality (CPIA) & 31.5 & -0.0001 & -0.0020 & 0.0131 \\[2pt]
+Region: Europe \& Central Asia & 0.0 & 0.0012 & -0.0014 & 0.0109 \\[2pt]
+Sector: contingencies & 47.0 & 0.0033 & 0.0027 & 0.0096 \\[2pt]
+Sector: project management & 47.0 & 0.0054 & 0.0066 & 0.0093 \\[2pt]
+Finance type: loan & 0.0 & 0.0028 & 0.0045 & -0.0083 \\[2pt]
+Log planned expenditure & 5.5 & 0.0008 & -0.0003 & 0.0002 \\[2pt]
+Risk outlook (LLM: 100=low risk, 0=high risk) & 1.5 & -0.0015 & -0.0034 & -0.0072 \\[2pt]
+Sector dissimilarity & 8.5 & 0.0043 & 0.0078 & 0.0056 \\[2pt]
+GDP per capita & 7.5 & 0.0033 & -0.0061 & 0.0063 \\[2pt]
+sector cluster increased managed forest land & 47.0 & 0.0048 & 0.0057 & -0.0061 \\[2pt]
+sector clusters missing & 0.0 & 0.0063 & 0.0116 & -0.0059 \\[2pt]
+Region: Latin America \& Caribbean & 0.0 & 0.0022 & -0.0032 & -0.0056 \\[2pt]
+Governance composite index & 7.5 & -0.0025 & -0.0052 & 0.0030 \\[2pt]
+Governance data missing & 0.0 & 0.0071 & 0.0102 & -0.0049 \\[2pt]
+Planned expenditure & 5.5 & -0.0006 & -0.0038 & 0.0047 \\[2pt]
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
+
+% Prose: Across 13 binary outcome tags (covering activity rescoping, finance and budget, and target achievement), the statistical model achieves an average same-reporting-organisation, same-year pairwise ordering probability of \OutcomeTagPairwiseAvg\,\% (range: \OutcomeTagPairwiseMin\,\%--\OutcomeTagPairwiseMax\,\%) and an average Brier skill score of \OutcomeTagBSS.
+
+
+
+

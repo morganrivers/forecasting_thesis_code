@@ -1,0 +1,757 @@
+{
+  "exclude_test_leakage_risk": true,
+  "DE-1-201620186": {
+    "activity_id": "DE-1-201620186",
+    "split": "val",
+    "leakage_sources": {
+      "deepseek_minimal_val_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_val_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-1-203473": {
+    "activity_id": "GB-1-203473",
+    "split": "val",
+    "leakage_sources": {
+      "deepseek_minimal_val_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_val_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P150327": {
+    "activity_id": "44000-P150327",
+    "split": "val",
+    "leakage_sources": {
+      "deepseek_minimal_val_forecast": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-1-203272": {
+    "activity_id": "GB-1-203272",
+    "split": "val",
+    "leakage_sources": {
+      "deepseek_minimal_val_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_val_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-1-204019": {
+    "activity_id": "GB-1-204019",
+    "split": "val",
+    "leakage_sources": {
+      "deepseek_minimal_val_forecast": [
+        "Financial collapse / economic crisis (post-2019)"
+      ],
+      "section_texts_val_grades": [
+        "COVID-19 / pandemic",
+        "Financial collapse / economic crisis (post-2019)"
+      ]
+    }
+  },
+  "GB-1-203429": {
+    "activity_id": "GB-1-203429",
+    "split": "val",
+    "leakage_sources": {
+      "deepseek_minimal_val_forecast": [
+        "Financial collapse / economic crisis (post-2019)"
+      ]
+    }
+  },
+  "44000-P161562": {
+    "activity_id": "44000-P161562",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P168130": {
+    "activity_id": "44000-P168130",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163383": {
+    "activity_id": "44000-P163383",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P159956": {
+    "activity_id": "44000-P159956",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P151030": {
+    "activity_id": "44000-P151030",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163452": {
+    "activity_id": "44000-P163452",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P165631": {
+    "activity_id": "44000-P165631",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P154389": {
+    "activity_id": "44000-P154389",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P165220": {
+    "activity_id": "44000-P165220",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-200866657": {
+    "activity_id": "DE-1-200866657",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-1-205135": {
+    "activity_id": "GB-1-205135",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "gpt35_minimal_test_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-GOV-1-300705": {
+    "activity_id": "GB-GOV-1-300705",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P164290": {
+    "activity_id": "44000-P164290",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P164353": {
+    "activity_id": "44000-P164353",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P155522": {
+    "activity_id": "44000-P155522",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201421627": {
+    "activity_id": "DE-1-201421627",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P154275": {
+    "activity_id": "44000-P154275",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163250": {
+    "activity_id": "44000-P163250",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P168630": {
+    "activity_id": "44000-P168630",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201621424": {
+    "activity_id": "DE-1-201621424",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P161539": {
+    "activity_id": "44000-P161539",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201640705": {
+    "activity_id": "DE-1-201640705",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P169822": {
+    "activity_id": "44000-P169822",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P149620": {
+    "activity_id": "44000-P149620",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201521160": {
+    "activity_id": "DE-1-201521160",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P160929": {
+    "activity_id": "44000-P160929",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163305": {
+    "activity_id": "44000-P163305",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P166564": {
+    "activity_id": "44000-P166564",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P159023": {
+    "activity_id": "44000-P159023",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P160801": {
+    "activity_id": "44000-P160801",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201620715": {
+    "activity_id": "DE-1-201620715",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163794": {
+    "activity_id": "44000-P163794",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P160658": {
+    "activity_id": "44000-P160658",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P171851": {
+    "activity_id": "44000-P171851",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P159297": {
+    "activity_id": "44000-P159297",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P162858": {
+    "activity_id": "44000-P162858",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163939": {
+    "activity_id": "44000-P163939",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "gpt35_minimal_test_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P155842": {
+    "activity_id": "44000-P155842",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P160033": {
+    "activity_id": "44000-P160033",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-GOV-1-300044": {
+    "activity_id": "GB-GOV-1-300044",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "gpt35_minimal_test_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P161015": {
+    "activity_id": "44000-P161015",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic",
+        "Financial collapse / economic crisis (post-2019)"
+      ]
+    }
+  },
+  "44000-P169907": {
+    "activity_id": "44000-P169907",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P166839": {
+    "activity_id": "44000-P166839",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201721109": {
+    "activity_id": "DE-1-201721109",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P158760": {
+    "activity_id": "44000-P158760",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P162245": {
+    "activity_id": "44000-P162245",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201621655": {
+    "activity_id": "DE-1-201621655",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P157055": {
+    "activity_id": "44000-P157055",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P160359": {
+    "activity_id": "44000-P160359",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P160700": {
+    "activity_id": "44000-P160700",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P168446": {
+    "activity_id": "44000-P168446",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P161490": {
+    "activity_id": "44000-P161490",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P159515": {
+    "activity_id": "44000-P159515",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P166360": {
+    "activity_id": "44000-P166360",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P156778": {
+    "activity_id": "44000-P156778",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic",
+        "Russia\u2013Ukraine war (2022)"
+      ]
+    }
+  },
+  "44000-P167748": {
+    "activity_id": "44000-P167748",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P156892": {
+    "activity_id": "44000-P156892",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P158798": {
+    "activity_id": "44000-P158798",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P161320": {
+    "activity_id": "44000-P161320",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P165313": {
+    "activity_id": "44000-P165313",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P162849": {
+    "activity_id": "44000-P162849",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201621564": {
+    "activity_id": "DE-1-201621564",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P163424": {
+    "activity_id": "44000-P163424",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P169867": {
+    "activity_id": "44000-P169867",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201522093": {
+    "activity_id": "DE-1-201522093",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P153370": {
+    "activity_id": "44000-P153370",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "DE-1-201621515": {
+    "activity_id": "DE-1-201621515",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-GOV-1-300083": {
+    "activity_id": "GB-GOV-1-300083",
+    "split": "test",
+    "leakage_sources": {
+      "glm_rating_forecast_test": [
+        "COVID-19 / pandemic"
+      ],
+      "gpt35_minimal_test_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-GOV-1-300196": {
+    "activity_id": "GB-GOV-1-300196",
+    "split": "test",
+    "leakage_sources": {
+      "gpt35_minimal_test_forecast": [
+        "COVID-19 / pandemic"
+      ],
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "GB-1-204888": {
+    "activity_id": "GB-1-204888",
+    "split": "val",
+    "leakage_sources": {
+      "section_texts_val_grades": [
+        "COVID-19 / pandemic",
+        "Financial collapse / economic crisis (post-2019)"
+      ]
+    }
+  },
+  "GB-GOV-1-300368": {
+    "activity_id": "GB-GOV-1-300368",
+    "split": "test",
+    "leakage_sources": {
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  },
+  "44000-P147342": {
+    "activity_id": "44000-P147342",
+    "split": "test",
+    "leakage_sources": {
+      "section_texts_test_grades": [
+        "COVID-19 / pandemic"
+      ]
+    }
+  }
+}

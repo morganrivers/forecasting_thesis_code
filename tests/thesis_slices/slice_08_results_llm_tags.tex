@@ -1,0 +1,107 @@
+\subsection{Forecasting Ratings and Narrative Forecasts with LLMs} \label{sec:llm_results}
+
+Figure~\ref{fig:scatterLLMcorrected} summarises performance across all LLM forecasting configurations. The best narrative similarity grade is \BestNarrativeGrade{} (a ``B+'', corresponding to forecasts that are on average between ``mostly accurate'' and ``highly accurate''), achieved by the RF-forced method with full context (RAG+KNN+S1+S2). The minimal-prompt baseline achieves the highest $R^2$ for rating prediction but the worst narrative similarity, while RF-forced methods dominate on both narrative grade and within-group pairwise ranking probability. 
+
+One research question of this thesis is how differing methods of LLM forecasting apply in the context of forecasting international aid success ratings. More generally capable models were found to be better forecasters. The LLM's ability to predict the rating was also found not to clearly correlate with the quality of its forecast narrative. In fact, the best rating accuracy from an LLM was associated with the least accurate stated reasons. The strategy of incorporating additional information relevant to the forecasting question as well as references to similar activities does not clearly improve forecasting skill.
+
+Inspection did not reveal significant information leakage on the validation set, but considerations of the impacts of COVID and other events were prevalent in the test set. Indeed, a test of \emph{gpt-3.5-turbo} and \emph{gpt-4} with the same prompt as \emph{deepseek-V3.2} revealed that the absolute error increased significantly on average after the model cutoff date relative to the RF+ET model. While \emph{gemini-3-pro} and \emph{deepseek-V3.2} with thinking enabled performed better than the RF+ET ensemble on within-group pairwise ranking, this is likely at least in part due to information leakage. Future work should test these more powerful models against larger ensembles of results after their cutoff dates. This would provide a fair test against statistical models which were rigorously vetted to not contain information leakage.
+
+Little evidence was found that fine-tuning can improve forecasting accuracy in this domain, although a thorough assessment of the potential for fine-tuning \emph{gemini-2.5-flash} was cost prohibitive. Language models on their own were also found to consistently underperform statistical models in forecasting skill, with the exception of within-group pairwise ranking ability from \emph{deepseek-V3.2} with reasoning enabled. However, GPT-3.5, GPT-4, and \emph{deepseek-V3.2} with reasoning turned off all performed worse than the RF model on the test set items. Even \emph{deepseek-V3.2} performed worse on absolute accuracy than the RF+ET model in the test set, indicating that the superior performance was likely due to chance. Currently, language models have a high forecasting variability between models and prompts. Using statistical model prediction as the target for the LLM to forecast (e.g. ``Conclude with a forecast of \emph{moderately satisfactory}'' as derived from a statistical model prediction) was found to significantly improve the quality of LLM narrative forecasts.
+
+In addition to extracting the LLM forecasted rating, LLM grades were also assessed. The assessed similarity between forecasts and summaries of post-activity evaluations was found to be usually correlated with improved ability to predict ratings, with the exception that very low context prompts are able to forecast accurately but for the wrong reasons (the ``Baseline'' method) (see Figure \ref{fig:scatterLLMcorrected}). Furthermore, it was found that when the predicted rating using the best statistical model is injected into the prompt, LLM forecasts of activities become much more similar to the summaries of their post-activity evaluations. This provides evidence that while language models can accurately forecast the reasons activities would succeed or fail if given the evaluation ratings, they generally lack the ability to correctly weigh the various factors to produce a calibrated forecast. We should be wary about using rating accuracy prediction as a sole benchmark for LLMs, given that the LLM prompt with the worst similarity to the actual rating also had the highest forecasting success. This is likely due to increased model ability when the context window is not as full. The model forecasts better when not overwhelmed with information, but lacking that key information worsens its ability to identify the best reasons for its forecasts. Another option could be that the model focuses on what it does know, such as knowledge of supply chain disruptions or conflict occurring during that timeframe in the host country.
+
+While ratings are not clearly correlated with better similarity grades, RAG, KNN retrieval, and extra reasoning of the models (stages 1 and 2) consistently improve narrative textual similarity to the post-activity summary, albeit by a small margin. Simply presenting the grading model with the \emph{gemini-2.5-flash} summary of risks of the project from the project documents lead to a forecasting score of \RisksOnlyGrade{} (between a ``C+'' and a ``B-'', corresponding to an ``Adequate'' forecast, with only ``Adequate'', rather than a good, focus on the drivers). However, the risks did not typically include any affirmative forecasts of post-activity outcomes, which may in part explain the low ratings. The best forecasting method in terms of similarity to the post-activity document summary was the forced ratings with a large amount of context (RAG+KNN) and included stage 1 and 2, achieving a grade of \BestNarrativeGrade{}. This corresponds to a ``B+'' grade given by \emph{gemini-2.5-flash-lite} (sitting midway between ``Good'' and ``Excellent'', meaning the forecasts were on average between ``mostly accurate'' and ``highly accurate'', with at least one major outcome forecasted, and at least one key driver of the outcome identified on average). Without any additional methods, \emph{deepseek-V3.2} can typically achieve a ``B'' grade on average, while use of the statistical model or of \emph{gemini-3-pro} can lift scores to the ``B+'' range. The improvement in ability to forecast overall ranking improves significantly as well.
+
+\textbf{Fine Tuning}
+The training loss for \emph{gemini-2.5-flash} was found to have steadily reduced over the course of the fine-tuning, reducing by 95\%. This was tested on an early subset of the validation data which excluded BMZ activities. The performance results were mixed. While the $R^2$ performance improved modestly, it remained worse than simply guessing the mean rating in the validation set, and remained far below the performance of the more powerful \emph{gemini-3-pro}. Furthermore, the DPO objective is specifically intended to improve within-group pairwise ranking performance. However, the within-group pairwise ranking was slightly worsened by fine-tuning. The cost for the fine-tuning of 20 epochs for 50 pairs was close to 140 euros. Therefore, scaling up larger training points for fine-tuning does not seem to be a promising strategy, either to reach the performance of \emph{gemini-3-pro}, or to reach the performance of the more powerful combined statistical models.
+
+\textbf{RAG and KNN}
+Small differences in forecasting skill were found for the addition of RAG and KNN on forecasting ratings. However, the narrative similarity scores consistently improve on the validation set when RAG and KNN context is included. This indicates that while the LLM is able to identify more important information when reasoning about the final forecast, it is insufficiently calibrated to use the additional information it has gathered to improve the forecast itself.
+
+\textbf{Forecasting LLM Model Selection}
+No consistent difference was found between \emph{gemini-2.5-flash} and \emph{deepseek-V3.2} in forecasting skill. However, \emph{gemini-3-pro} appears to be significantly better at forecasting than both, in both sets of activities achieving higher similarity grades, higher $R^2$, and higher within-group pairwise ranking than other models, in both the validation and the test set. Two exceptions apply. Models instructed to match the statistical model's forecast outperform \emph{gemini-3-pro} on similarity grades. Additionally, \emph{deepseek-V3.2} using only the minimal prompt achieves a modestly better $R^2$ and within-group pairwise ranking for ratings on the validation set, while scoring a much worse forecast similarity score. When compared directly on the test set using the same prompt \emph{gemini-3-pro} performs better than deepseek.
+
+
+\begin{figure}[!htbp]
+  \centering
+   % \includegraphics[width=0.9\textwidth]{assets/4pane_mean_grade_vs_r2_and_pairwise.png}
+   \hspace*{-0.08\textwidth}
+   \includegraphics[width=1.1\textwidth]{assets/2pane_mean_grade_vs_r2_and_pairwise.png}
+
+  \caption{A comparison of LLM forecasting methods for the validation set. The x-axis shows the mean narrative forecast grade on a scale from 55 to 97 (higher is better; graded by \emph{gemini-2.5-flash-lite} against the
+  post-activity document summary).
+  The y-axis in the top row shows $R^2$ between predicted and true ratings (higher is better; negative values indicate worse-than-mean predictions).
+  The y-axis in the bottom row shows within-group pairwise ranking (higher is better; 0.5 = chance). No confidence intervals are shown for individual LLM configurations. The main finding is that RF-forced methods (green) dominate on narrative grade and pairwise ranking, while the minimal-prompt baseline achieves the highest $R^2$ illustrating a
+  tension between rating accuracy and narrative quality. 288 of the 300 validation set activities with overall ratings had sufficiently detailed outcome evaluations to produce a summary. ``KNN'' refers to the retrieval of 3 similar examples into the prompt, ``RAG'' refers to the model additionally retrieving information it decided it was missing from the available documents and adding to the prompt, ``S1'' refers to additional reasoning injected into the context considering why the activity outcome may be overall unsatisfactory, ``S2'' refers to additional reasoning in the context considering why the activity outcome may be overall satisfactory.}
+  \label{fig:scatterLLMcorrected}
+\end{figure}
+\FloatBarrier
+
+
+\FloatBarrier
+\subsection{Forecasting Cost-Effectiveness}
+When dividing by each activity's actual total expenditure reported by IATI for those that are marked as dollar-per-unit, and looking at the aggregate cost-effectiveness outcomes, the correlation on Z-scores is not statistically significant above the baseline.
+
+Cost-effectiveness outcomes were found to require more work to extract sufficient data for reliable outcome prediction. Furthermore, obtaining cost-effectiveness metrics was found to be more challenging than obtaining ratings, in contrast to the claims from prior literature \citep{goldembergMindingGapAid2025}. 
+
+It was also found that failing to divide by the total disbursement as marked in IATI increases predictability. This is in part because there is some noise inherent in the total expenditure, and also because when not dividing by expenditure, the model learns to predict linearly higher cost-effectiveness outcomes correlating with the expenditure. 
+
+Overall, little can currently be decisively concluded from the cost-effectiveness outcome analysis. For more detailed work, expert coding is likely required for robust extraction of quantitative outcomes, and funding breakdowns for projects should be used to more accurately evaluate cost-effectiveness, rather than the coarse assumption that all funding for a project goes to all outcomes. New water or sanitation piping connections is a more clearly comparable outcome, although there may be systematic differences in the costs of sanitation connections and water supply that are not disambiguated by the model.
+
+\FloatBarrier
+
+\subsection{Forecasting Outcome Tags}
+\label{sec:outcome_tags_results}
+
+Outcome tags provide a richer window into project execution than a scalar rating alone. This section reports results from the statistical tag predictors trained on the same feature set as the rating forecasting models.
+
+\textbf{Consistent Correlation of Outcome Tags with Overall Ratings} A natural validation of the outcome tags as meaningful measures of project performance is that they should correlate with overall evaluator ratings in the expected direction. This is apparently consistent with the extracted binary ratings. Tags representing good project execution correlate positively with overall ratings. Targets Met or Exceeded shows the strongest positive Pearson correlation with ratings ($r = \TagCorrTargetsMet$), followed by High Beneficiary Satisfaction or Reach ($r = \TagCorrBeneficiarySatisfaction$), Private Sector Engagement ($r = \TagCorrPrivateSectorEngagement$), Policy and Regulatory Reforms ($r = \TagCorrPolicyReforms$), Capacity Building Delivered ($r = \TagCorrCapacityBuilding$), and Improved Financial Performance ($r = \TagCorrFinancialPerformance$). Tags representing project difficulties are negatively correlated: Activities Not Completed shows the strongest negative correlation ($r = \TagCorrActivitiesNotCompleted$) and Implementation Delays shows a meaningful negative correlation ($r = \TagCorrImplementationDelays$). Project Restructured ($r = \TagCorrProjectRestructured$) and Targets Revised ($r = \TagCorrTargetsRevised$) are not meaningfully correlated with the overall rating in either direction. 
+
+\textbf{Overall Ratings are Predictive of Tag Outcomes} When the overall evaluation rating is incorporated as an additional feature alongside the pre-activity predictors, all 14 predictable tags improve on all evaluation metrics in Table \ref{tab:tag_model_results}. This provides evidence that the evaluation rating carries information beyond what is captured by project documents alone, strongly contrasting with the finding of \citep{goldembergMindingGapAid2025} that ratings do not aid outcome prediction.
+
+
+\textbf{Test-Set Performance} To assess generalisation, all tag predictors were re-estimated on the combined training and validation data and evaluated on the held-out test activities. Approximately \DifferingOutcomePairsFrac\% of within-group pairs had differing tag outcomes and therefore contributed to pairwise ranking; the remaining were tied in the true label and were excluded. Across the \NumCuratedPredicted{} RF+ExtraTrees tag models evaluated on the test set, the mean within-group ranking skill is \OutcomeTagPairwiseAvg\,\% (range: \OutcomeTagPairwiseMin\,\%--\OutcomeTagPairwiseMax\,\%), indicating that in roughly \OutcomeTagPairwiseAvg{} out of 100 same-organisation, same-year pairs where one activity had a given outcome and the other did not, the model correctly assigned the higher probability to the activity that did.
+
+As a secondary accuracy metric, the weighted accuracy across all 23 tags on the test set improved from a majority-class baseline of \OutcomeTagAccBaseline\,\% to \OutcomeTagAccModel\,\%, an improvement of \OutcomeTagAccImprovement\,percentage points. Weights are proportional to the number of test-set activities per tag. Per-tag forecasting performance on the held-out set are shown in Table \ref{tab:tag_model_results}. 
+
+
+
+
+
+\begin{table}[htbp]
+\caption{Outcome tag prediction results on the test set. $p < 0.05$ determined via permutation sampling on the test set. Consistent features shown are those in the top 10 by |SHAP|, with the same sign, and at least 5\,\% of total importance, in every split of 3 equal random training splits (RF and ET averaged). Features are ordered by mean importance across splits; features absent from any split's top 10 or exhibiting a sign flip are omitted. $\overrightarrow{{\color[HTML]{006400}\text{Green}}}$ and $\overleftarrow{{\color[HTML]{8B0000}\text{Red}}}$ indicate positive and negative relationships respectively. Tmp.\ Corr.: temporal correction in units of 1/100\,\%/yr. Feature abbreviations: $U_x$/$U_y$/$U_z$ = UMAP semantic embedding coordinates; dist = similarity distance group (sector + country distance combined); dur = planned duration; exp = planned expenditure group (raw/log/log-per-year combined); scp = activity scope; WB = World Bank reporting-org fixed effect; loan = finance-is-loan indicator.
+Groups and tags sorted by accuracy vs.\ baseline descending. }
+\label{tab:tag_model_results}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.87cm} r r r r r r r r r >{\raggedright\arraybackslash}X@{}}
+\toprule
+Tag ($\ast$ shown if $p<0.05$)  & \makecell{WG\\Pair.\\Prob.} & \makecell{WG\\Spear.} & \makecell{Brier} & \makecell{Brier\\Base.} & Acc. & \makecell{Acc.\\Base.} & \makecell{Frac.\ True\\(train,\ test)} & $N_\mathrm{test}$ & \makecell{Tmp.\\Corr.} & \makecell{Consistent\\Features} \\
+\midrule
+\multicolumn{11}{@{}l}{\textbf{Activity Rescoping}} \\
+Closing Date Extended* & 0.77 & 0.44 & 0.186 & 0.259 & 0.75 & 0.53 & 0.53,\ 0.38 & 200 & -0.64 & $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$ \\
+Project Restructured* & 0.75 & 0.42 & 0.197 & 0.270 & 0.69 & 0.60 & 0.60,\ 0.45 & 200 & -0.22 & $\overrightarrow{{\color[HTML]{006400}\text{WB}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{loan}}}$, $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{dur}}}$ \\
+Targets Revised* & 0.61 & 0.18 & 0.219 & 0.264 & 0.65 & 0.58 & 0.58,\ 0.46 & 200 & +0.15 & $\overrightarrow{{\color[HTML]{006400}\text{WB}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$ \\
+\noalign{\vspace{0.5ex}}
+\multicolumn{11}{@{}l}{\textbf{Finance \& Budget}} \\
+Funds Cancelled or Unutilized* & 0.66 & 0.25 & 0.222 & 0.267 & 0.66 & 0.60 & 0.60,\ 0.47 & 200 & -0.33 & $\overrightarrow{{\color[HTML]{006400}\text{scp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$ \\
+Improved Financial Performance* & 0.53 & 0.05 & 0.247 & 0.251 & 0.59 & 0.51 & 0.51,\ 0.47 & 200 & +0.02 & \textemdash \\
+High Disbursement* & 0.59 & 0.15 & 0.239 & 0.244 & 0.60 & 0.57 & 0.43,\ 0.42 & 200 & None & $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+Funds Reallocated* & 0.65 & 0.24 & 0.215 & 0.219 & 0.65 & 0.60 & 0.40,\ 0.29 & 200 & +0.04 & $\overleftarrow{{\color[HTML]{8B0000}\text{WB}}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{loan}}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{scp}}}$ \\
+Over Budget & 0.62 & 0.18 & 0.232 & 0.231 & 0.61 & 0.56 & 0.44,\ 0.31 & 67 & -0.51 & $\overleftarrow{{\color[HTML]{8B0000}\text{dist}}}$, $\overleftarrow{{\color[HTML]{8B0000}U_z}}$, $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+\noalign{\vspace{0.5ex}}
+\multicolumn{11}{@{}l}{\textbf{Target Achievement}} \\
+Targets Met or Exceeded* & 0.58 & 0.14 & 0.243 & 0.254 & 0.57 & 0.58 & 0.42,\ 0.48 & 179 & +0.14 & $\overleftarrow{{\color[HTML]{8B0000}\text{exp}}}$ \\
+Capacity Building Delivered* & 0.62 & 0.16 & 0.125 & 0.127 & 0.85 & 0.84 & 0.84,\ 0.85 & 154 & +0.46 & \textemdash \\
+Gender-Equitable Outcomes & 0.51 & 0.01 & 0.192 & 0.191 & 0.75 & 0.80 & 0.80,\ 0.75 & 111 & +0.39 & \textemdash \\
+High Beneficiary Satisfaction or Reach & 0.52 & 0.03 & 0.150 & 0.150 & 0.82 & 0.79 & 0.79,\ 0.82 & 154 & +0.13 & \textemdash \\
+Policy and Regulatory Reforms & 0.58 & 0.09 & 0.174 & 0.175 & 0.78 & 0.72 & 0.72,\ 0.78 & 145 & +0.54 & \textemdash \\
+Private Sector Engagement & 0.50 & 0.01 & 0.233 & 0.232 & 0.65 & 0.59 & 0.59,\ 0.65 & 82 & +0.36 & $\overrightarrow{{\color[HTML]{006400}\text{exp}}}$, $\overrightarrow{{\color[HTML]{006400}\text{dist}}}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\FloatBarrier
+

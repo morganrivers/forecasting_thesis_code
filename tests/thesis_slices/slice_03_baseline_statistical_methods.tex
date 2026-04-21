@@ -1,0 +1,153 @@
+\subsection{Baseline Methods} \label{sub:baselines}
+
+\textbf{Always predict the most common rating for the reporting organization}
+
+This baseline technique provides a sanity check that more sophisticated methods are worthwhile. If this baseline outperforms more sophisticated models, it indicates that much of the methodology is overfitting on noise in the data.
+% \subsubsection{Random Forest Regression}
+% The random forest regression method is a widely applied method to predict unseen data in machine learning. It has the benefit of requiring relatively little compute, performing quite well for a wide range of dataset sizes, and it doesn't tend to overfit as much as neural-network based machine learning models \cite{randomforest}. As random forest cannot use natural language of the prompt, I intend to instead supply the algorithm with fields in the OECD Open Data with the proposed policy and demographic and trend data from the World Bank dataset. The random forest will then predict a value in tonnes CO$_2$.
+
+% However, random forest cannot use the semantics in the natural language prompt, which leads us to our next baseline.
+
+\textbf{Ridge regression with reporting organization and risk score}
+
+In order to assess how well calibrated overall risks are in activity documents, a ridge regression model was trained given both the LLM grade for the degree of risk assessed at the beginning of the project, as well as the dummy variable representing which organization was doing the rating. While by construction the full forecasting system also includes these features and thus with sufficient regularization must perform better than this baseline, it does provide some insight into how well we can infer the eventual rating from the risks alone in activity documents at approval. This score was only calculated for activities where the LLM was able to successfully extract the grade for how risky the project is from the pre-activity documents. This method suffers from potential inconsistency in LLMs extracting the overall risk from pre-activity documents.
+
+\textbf{\emph{gemini-2.5-flash} summary of risks}
+
+A separate baseline used only for assessing the forecast grades of models, is submitting a summary of the risks identified from activity documents to the \emph{gemini-2.5-flash-lite} grading LLM, and comparing these to proper LLM forecasts. This is a separate measure of the informativeness of risks identified in activity documents, and provides a sanity check that the LLM is not simply summarizing what the authors of activity of appraisal documents already highlight as risks. However, the lack of assertive claims about what will happen in a positive sense hinders this baseline metric relative to graded forecasts.
+
+\textbf{\emph{deepseek-V3.2} provided only the activity summary and statistics}
+
+Several LLM methods are introduced, closely informed by prior state-of-the-art methods in judgemental forecasting literature \citep{halawiApproachingHumanLevelForecasting2024} \citep{leeAdvancingEventForecasting2025}. In order to justify these methods, comparison is made to a simple baseline where all that is provided to the model is the activity ID, the activity title, an activity summary from \emph{gemini-2.5-flash} of the 10 most important pages from the activity documents for forecasting the outcome, and the statistical prevalence of each outcome rating. The model is then asked directly to forecast the evaluation rating.
+
+\textbf{Constant base-rate prediction for outcome tags}
+
+For binary outcome tags, the no-skill baseline predicts the training-set positive rate $\bar{p}_{\text{train}}$ for every activity, regardless of its features. This constant forecast is the natural reference for the Brier skill score: a model that achieves BSS $> 0$ beats this baseline, while BSS $= 0$ indicates the model adds no probabilistic skill over simply forecasting the base rate. The same constant baseline also sets the accuracy of a no-feature classifier: a classifier that ignores all inputs and always predicts the majority class achieves accuracy $\max(\bar{p}_{\text{train}},\, 1-\bar{p}_{\text{train}})$. The accuracy ratio reported for each tag (Table~\ref{tab:tag_model_results}) is therefore the model accuracy divided by this constant-baseline accuracy, with values above 1 indicating improvement.
+
+\textbf{Ridge regression trained with non-LLM categories}
+
+In order to justify the addition of non-LLM categories, the baseline statistical categories used in prior literature are used and a ridge regression model is trained on the outputs. All features included improve performance on the validation set for the final forecasting system, reducing performance when removed. Sources are cited which have found meaningful predictive effects or correlations between activity success or activity outcomes and the features listed.
+
+The non-LLM features used were:
+\begin{itemize}[noitemsep,topsep=0pt]
+ \item planned activity duration \citep{goldembergMindingGapAid2025} % a few more
+ \item planned total disbursement (consultation with BMZ officers), \citep{bulmanGoodCountriesGood2017} \citep{goldembergMindingGapAid2025} \citep{ashtonPuzzleMissingPieces2021} \citep{eilersVolumeRiskComplexitya}
+ \item derived features: log(planned total disbursement), planned total disbursement per year 
+ \item whether the activity is primarily loan or grant-based \citep{bulmanGoodCountriesGood2017}
+ \item the one-hot encoded reporting organization \citep{goldembergMindingGapAid2025} % of the top 4 most common organizations in the database (The World Bank (957 activities), BMZ/KFW/GIZ (240 activities), UNDP (257 activities), and the Asian Development Bank (156 activities))
+ \item the Country Policy and Institutional Assessment (CPIA) score from the World Bank for that country \citep{bulmanGoodCountriesGood2017} 
+ \item the mean of 5 World Governance Indicator scores \citep{kaufmannWorldwideGovernanceIndicators2024}. The mean was taken of control of corruption, government effectiveness, political stability, regulatory quality, and rule of law \citep{goldembergMindingGapAid2025} \citep{ndikumanaImpactForeignAid2017}
+ \item the scope of the activity on a scale from 1-7, ranging from local to global \citep{vivaltHowMuchCan2020}
+ \item the $log(\text{GDP} / \text{capita})$ of the countries where the activity takes place weighted by the percentage of the activity performed in each country. \citep{goldembergMindingGapAid2025} \citep{bulmanGoodCountriesGood2017}
+\item A dummy variable for each region as defined by the World Bank (AFE, Eastern and Southern Africa; AFW, Western and Central Africa; EAP, East Asia and Pacific; ECA, Europe and Central Asia; LAC, Latin America and the Caribbean; MENA, Middle East and North Africa; SAS, South Asia) \citep{goldembergMindingGapAid2025} \citep{vivaltHowMuchCan2020}
+\item  missingness counts for important features with missingness
+\end{itemize}
+
+The activity start date was not used as a feature, as there was no linear pattern with regards to overall activity success over time in the training data, and adding it tended to increase overfitting and reduce out-of-time generalization. As opposed to some results in prior literature \citep{vivaltHowMuchCan2020} \citep{ashtonPuzzleMissingPieces2021}, whether the implementer was a government, NGO, or another category was also not found to have any improvement in model performance and was excluded.
+
+%\textbf{Prediction baseline: Zero-shot LLM}
+%In order to ensure the series of improvements on the LLM system in fact genuinely improve accuracy above simply querying the model with some basic activity information and requesting a prediction, we insert the summarized information about the category along all of the evaluation axes where the model could find relevant information. This show that the methods used to improve accuracy are indeed increasing accuracy above simply a single generated prediction by ChatGPT-3.5.
+
+\subsection{Experimental Methods}
+
+This thesis introduces several novel techniques which have not been assessed by the literature. These are deemed ``Experimental Techniques'', and are rigorously assessed as to whether they legitimately improve forecasting system skill.
+
+\subsubsection{Statistical Forecasting Methods}
+
+\textbf{Nearest Neighbor (Vector Similarity)} \label{ssub:nearest_neighbor_vector_similarity}
+
+A similarity test was first constructed using features including countries of the activity, GDP per capita as described previously, the scope of the activity, and the implementing and funding organization ID.
+This similarity test was found, however, to significantly underperform compared to the semantic similarity of the \emph{gemini-2.5-flash}-generated summary of the activity documents, so this similarity method was used instead.
+Similarity was weighted proportional to its embedding semantic similarity score, and a cutoff was tested for averaging 1, 3, 7, 10, 15, and 20 nearest neighbors using the Gemini embeddings model \emph{gemini-embedding-001}, embedded on the activity title and LLM-generated summary (in this case not on the ``targets'' text). 15 nearest neighbors was found to be the highest-performing number. The weighted average of the nearest neighbor ratings was however not found to be predictive of the overall activity score and was not incorporated as a feature or prediction method.
+
+Although the nearest neighbor method was used to collect examples for the LLM prompt, it was found that simply taking the weighted mean of 15 similar ratings performed worse than the ``most common rating'' method and thus was not used as an experimental method to directly forecast ratings.
+
+\textbf{Per-Organization Mode Differencing}
+
+All statistical models (ridge regression, Random Forest, Extra Trees, and XGBoost) are trained not on the raw ratings $y_i$ but on per-organization residuals $\tilde{y}_i = y_i - m_o$, where $m_o$ is the mode of the training ratings for reporting organization $o$. The per-organization mode $m_o$ is computed from the training set only and is used as a fixed offset for all activities from that organization. Predictions from each model are therefore organization-relative residuals; the final predicted rating is recovered by adding back $m_o$:
+\[
+\hat{y}_i = \hat{\tilde{y}}_i + m_o .
+\]
+This decomposition removes the dominant between-organization rating shift before model training, allowing models to focus on within-organization variation rather than fitting the coarser organization-level mean. The per-organization mode also serves as the mode baseline described in Section~\ref{sub:baselines}.
+
+\textbf{Random Forest}
+
+The Random Forest (RF) method is a statistical algorithm which constructs an ensemble of decision trees which would produce the correct output on the training data, and averages those decision trees. The averaging nature of the RF algorithm reduces overfitting on the training data. The algorithm is inherently ``regularized'', penalizing an overly complex decision tree. The decision trees split based on value ranges of the features. By reducing the depth of the trees (the number of decision points where the decision tree splits), we can reduce the memorization of the training data from the trees, and improve generalization of the model. Each decision also only considers a random fraction of the features, allowing each tree to be more independent of each other and improving generalization further. The bootstrap method is also used to train trees, encouraging tree independence.
+
+Optimal parameters for the overall rating RF+ET were discovered via a combination of sweeps over parameter space and LLM-generated suggestions iterating on the identified best parameters. The default \texttt{RandomForestRegressor} uses \texttt{n\_estimators}=100, \texttt{max\_depth}=\texttt{None}, \texttt{min\_samples\_split}=2, \texttt{min\_samples\_leaf}=1, \texttt{max\_features}=1.0, \texttt{bootstrap}=\texttt{True}, and \texttt{ccp\_alpha}=0.0. The best-identified specification, with \texttt{n\_estimators}=638, deliberately constrains model capacity in ways that typically reduce overfitting. Trees are explicitly depth-limited (\texttt{max\_depth}=14 rather than unbounded) and splits are only permitted when nodes contain substantially more data (\texttt{min\_samples\_split}=20 and \texttt{min\_samples\_leaf}=20), which smooths forecasts by limiting fine-grained partitioning of the feature space. In addition, using a smaller feature subset at each split (\texttt{max\_features}=0.488) increases tree diversity and reduces variance relative to the default that considers all features. The model also uses row subsampling (\texttt{max\_samples}=0.86), further reducing variance by injecting additional randomness into each tree's training set. Compared to defaults, these choices accept slightly less precise fits on the training data in exchange for predictions that are more stable across unseen examples.
+
+\textbf{Extra Trees}
+The Extra Trees (ET) method, short for Extremely Randomized Trees, is a variant of the Random Forest algorithm that constructs an ensemble of decision trees with an additional layer of randomization. While Random Forest selects the optimal split point for each randomly chosen feature subset, Extra Trees goes further by also randomizing the split thresholds, drawing cut points uniformly at random from each feature's value range and selecting the best among those random candidates. This additional randomization further decorrelates the individual trees in the ensemble, reducing overfitting at the cost of a slightly less precise fit to the data. Unlike Random Forest, Extra Trees trains each tree on the full training dataset rather than a bootstrap sample. This is beneficial when ensembling with Random Forest, as the two models then derive their diversity from different sources: one from varying the data each tree sees (bootstrap), and the other from randomizing split logic (ET). This makes their errors more complementary and the ensemble average more effective. As with Random Forest, predictions are made by averaging the outputs of all trees in the ensemble.
+
+\textbf{XGBoost}
+
+The XGBoost (Extreme Gradient Boosting) method is a statistical algorithm which constructs an ensemble of decision trees sequentially, where each subsequent tree attempts to correct the errors made by the previous trees. Unlike the RF which trains trees independently and averages their predictions, XGBoost builds trees iteratively, with each new tree focusing on the residual errors of the ensemble. 
+
+The algorithm incorporates both L1 and L2 regularization terms to penalize model complexity and prevent overfitting on the training data. The decision trees split based on value ranges of the features, using a splitting criterion that accounts for the gradient and hessian of the loss function.
+
+\textbf{LLM-generated scores}
+
+Seven additional features were extracted using \emph{gpt-3.5-turbo}-generated evaluation on a score from 0 to 100 in order to enrich the activity with information from the project document PDFs from the start of the activity. GPT-3.5-turbo was used in order to reduce leakage of information after the September 2021 model cutoff date. Inspection of grades did not reveal significant usage of knowledge that would not be available at the beginning of the activity. The majority of activities in the test set ended after the model cutoff date. These seven features were based on important aspects revealed by the literature review and consultation. One feature not introduced by others was added (the ease of targeted outcomes). Unlike technical complexity, which captures only one dimension of difficulty, or overall risk, which aggregates financial, legal, and regulatory threat sources, ease of targeted outcomes is distinct: it specifically reflects whether the activity's intended outputs are inherently measurable and achievable given typical implementation constraints, a factor theorized to independently contribute to evaluation success.
+
+The features added for this method included the seven features and one interaction term
+
+\begin{itemize}
+ \item \emph{gpt-3.5-turbo}-generated evaluation on a score from 0 to 100 of:
+ \begin{itemize}[noitemsep,topsep=0pt]
+ \item  how well financed the activity is (consultation with BMZ officers), \citep{bulmanGoodCountriesGood2017} \citep{goldembergMindingGapAid2025} \citep{eilersVolumeRiskComplexitya}
+ \item  the activity integratedness within the broader activity ecosystem (consultation with BMZ officers), \citep{vivaltHowMuchCan2020}
+ \item  the expected implementer performance including ownership (consultation with BMZ officers), \citep{bulmanGoodCountriesGood2017} \citep{goldembergMindingGapAid2025} \citep{ashtonPuzzleMissingPieces2021}
+ \item  the degree of contextual challenge (consultation with BMZ officers)
+ \item  the overall risk level (consultation with BMZ officers), \citep{eilersVolumeRiskComplexitya}
+ \item  the activity's overall technical complexity \citep{eilersVolumeRiskComplexitya}
+ \item  the ease of targeted outcomes
+\end{itemize}
+\item Additional interaction term added
+\begin{itemize}
+\item expenditure times complexity
+\end{itemize}
+\end{itemize}
+
+\textbf{Language Model Embeddings}
+
+The underlying information contained in text can be mapped onto a high-dimensional vector of numbers. This process is called ``embedding'' and is performed with language models. In this case the textual input to the embedding is the LLM-generated ``targets'' field, which summarizes the objectives of what the activity aims to accomplish. This follows \citep{goldembergMindingGapAid2025} in extracting the World Bank Project Development Objectives (PDO), as they are found to be very similar to the LLM-generated outputs. This was verified by manual inspection of approximately 50 random samples, comparing outcome tags generated by the model with the text from the PDO document; both tend to cover a similar content and format. PDO extraction was also attempted using regex methods, but the results were found to be noisy on matching, especially on projects not from the World Bank, and did not improve prediction performance as much as embeddings on the LLM-generated targets. The LLM-extracted targets text was first normalized into a stable canonical form (removing formatting artifacts, unescaping, splitting on separators, dropping “NO RESPONSE” tails, and deduplicating near-identical chunks). The cleaned targets text for each activity was then embedded with the \emph{gemini-embedding-001} model, yielding a single high-dimensional vector per activity that semantically encodes activity objectives.
+
+Following \citep{goldembergMindingGapAid2025}, target embeddings are compressed using a two-stage dimensionality reduction pipeline. This works via Principal Component Analysis (PCA) and Uniform Manifold Approximation and Projection (UMAP) \citep{healyUniformManifoldApproximation2024}. PCA projects embeddings into a few directions that preserve most of their variation by finding orthogonal directions along which the data varies most, then projecting the data onto those directions. UMAP builds a graph of nearest neighbors in high-dimensional space, then optimizes a low-dimensional embedding to preserve those relationships. PCA was first used to reduce the embedding vectors to 50 dimensions and then UMAP was fitted on the PCA outputs to produce 2D and 3D coordinate maps. The 3D embeddings (umap\_x, umap\_y, umap\_z) were found to perform better on prediction on the validation set for forecasting activity ratings than 2D or 4D, and thus 3 dimensions were chosen. This preserves enough local topology that activities with similar targets remain near each other in the compressed space. Because the evaluation uses an out-of-time split, PCA and UMAP are fitted only on activities starting before the relevant evaluation cutoff: training-period activities only when evaluating on the validation set, and train+validation activities when evaluating on the test set. Held-out activities are never included in the manifold fit. Instead, their PCA-compressed embeddings are projected into the pre-existing UMAP space via the learned \texttt{transform()} function. This prevents any future-activity information from influencing the coordinate system, at the cost of somewhat noisier projections for activities lying outside the training distribution. The same cutoff logic applies to the sector and country centroids used for the distance features described below. Visual inspection also revealed that sectors with similar 2D vectors cluster around the activity environmental category, replicating the finding in \citep{goldembergMindingGapAid2025}.
+Following \citep{goldembergMindingGapAid2025}, target embeddings are compressed using a two-stage dimensionality reduction pipeline. This works via Principal Component Analysis (PCA) and Uniform Manifold Approximation and Projection (UMAP) \citep{healyUniformManifoldApproximation2024}. PCA projects embeddings into a few directions that preserve most of their variation by finding orthogonal directions along which the data varies most, then projecting the data onto those directions. UMAP builds a graph of nearest neighbors in high-dimensional space, then optimizes a low-dimensional embedding to preserve those relationships. PCA was first used to reduce the embedding vectors to 50 dimensions and then UMAP was fitted on the PCA outputs to produce 2D and 3D coordinate maps. Applying PCA before UMAP in this way is a standard practice recommended in \citep{healyUniformManifoldApproximation2024}: it removes dimensions that are dominated by random noise while retaining the principal axes of variation, so that UMAP's nearest-neighbour graph is built on a cleaner signal and produces more stable projections. The 3D embeddings (umap\_x, umap\_y, umap\_z) were found to perform better on prediction on the validation set for forecasting activity ratings than 2D or 4D, and thus 3 dimensions were chosen. This preserves enough local topology that activities with similar targets remain near each other in the compressed space. Because the evaluation uses an out-of-time split, PCA and UMAP are fitted only on activities starting before the relevant evaluation cutoff: training-period activities only when evaluating on the validation set, and train+validation activities when evaluating on the test set. Held-out activities are never included in the manifold fit; instead their PCA-compressed embeddings are projected into the pre-existing UMAP space via the learned \texttt{transform()} function. This prevents any future-activity information from influencing the coordinate system, at the cost of somewhat noisier projections for activities lying outside the training distribution. The same cutoff logic applies to the sector and country centroids used for the distance features described below. Visual inspection also revealed that sectors with similar 2D vectors cluster around the activity environmental category, replicating the finding in \citep{goldembergMindingGapAid2025}.
+
+By counting the word occurrences between features higher or lower on the UMAP x,y, and z axes, it is possible to investigate what aspects are reported by the embeddings, and the common sectors which they were categorized in. Broadly, low x values correspond to forestry, agriculture, water, and management related terms while high x correspond to energy sector and financing related terms. Low y correspond to similar terms as high x, both mostly in the energy sector. High y terms related to biodiversity, wastewater, and conservation. The z axis seems to relate more to urban vs rural: Low z corresponds to wildlife and undp related terms as well as ``rural'', while high z corresponds to sanitation and wastewater, as well as ``urban'' and ``city''. The z axis may also correlate slightly with contextualization, where the more ``cookie cutter'' objectives with regards to the sector in question are typically correlated with low z values. Lastly, the z axis also has a weak negative correlations with the number of countries: low z values tend to occur in fewer countries.
+
+This method adds 4 additional features to the model:
+\begin{itemize}
+  \item umap3\_x: First UMAP coordinate capturing a spectrum from forestry, agriculture, and water management objectives (low values) to energy-sector and financing-oriented objectives (high values).
+  \item umap3\_y: Second UMAP coordinate separating energy-focused activities (low values) from biodiversity, wastewater, and conservation-oriented activities (high values).
+  \item umap3\_z: Third UMAP coordinate primarily reflecting an urban–rural axis, with lower values associated with rural and wildlife objectives and the UNDP, and higher values associated with urban sanitation and wastewater.
+  \item a binary indicator for whether the umap embedding is missing (missing features are always imputed using the median values in the training dataset)
+\end{itemize}
+
+\textbf{Language Model Embedding Contextualization}
+
+Beyond the compressed UMAP coordinates, two scalar distance features are derived from the full-dimensional target embeddings. All embeddings and centroids are L2-normalized, so the Euclidean distance computed is equivalent to cosine distance. For each activity, \emph{sector distance} is the distance between the activity's L2-normalized target embedding and the L2-normalized centroid of all target embeddings belonging to the same DAC5 sector and decade group. \emph{Country distance} is the distance between the activity's embedding and the L2-normalized weighted sum of the recipient countries' embedding centroids, where the weights are the fraction of the activity carried out in each country, again stratified by decade. If no country data are available, the decade-level centroid is used as a fallback. Both centroids are fitted on activities up to the relevant evaluation cutoff, falling back to all activities for groups with fewer than a threshold number of training examples. These two features therefore capture how semantically typical an activity's stated objectives are relative to its sector peers, and relative to the portfolio of activities in its recipient countries, respectively. Both were found to be informative on the validation set and are included in the full feature set.
+
+This approach adapts and extends the methodology of \citep{goldembergMindingGapAid2025}, who use Sentence-BERT embeddings of Project Development Objectives and project titles to construct sector- and country-level distance measures for World Bank projects, and show these embeddings correlate with quantitative country-level sector outcomes. The key differences here are that the present work uses \emph{gemini-embedding-001} rather than Sentence-BERT, trains on LLM-generated ``targets'' text rather than raw PDO strings (enabling coverage beyond World Bank activities), and computes distances at the activity level for individual success prediction rather than in aggregate for country-level outcome analysis. For fuller methodological details see \citep{goldembergMindingGapAid2025}.
+
+This method adds 2 additional features to the model:
+\begin{itemize}
+  \item sector\_distance: Euclidean distance (equivalent to cosine distance, as all vectors are L2-normalized) between the activity's target embedding and the centroid of target embeddings for activities in the same DAC5 sector and decade. Low values indicate the activity's objectives are typical for its sector; high values indicate an unusual focus.
+  \item country\_distance: Euclidean distance between the activity's target embedding and the L2-normalized weighted sum of per-country centroids for the recipient countries, weighted by the fraction of the activity carried out in each country (decade-stratified). Low values indicate the activity's objectives closely resemble the typical portfolio of its recipient countries; high values indicate objectives that are atypical for those country contexts.
+\end{itemize}
+
+\textbf{Budget allocation for sector clustering}
+
+A key component of the efficacy of projects is how they allocate their funding. To do so, \emph{gemini-2.5-flash} was queried to identify the breakdown of outcome-related funding, where available in the pre-activity documents. Funding breakdowns were found to be important in prior literature \citep{goldembergMindingGapAid2025}. However, unlike in \citep{goldembergMindingGapAid2025}, the measure of how much the funding allocations are split between different domains (the Herfindahl–Hirschman index (HHI)) was found not to improve performance on the validation set and was not added as a feature. Possible reasons for this include that the environmental activity subset may exhibit less variance in funding concentration than the full IATI portfolio, that sector clustering already partially captures the dispersion signal HHI summarises, and that HHI may be less discriminating within a domain where activities are already thematically concentrated. The allocations of funding are required to approximately sum to the total expenditure of the project, with approximately 68\% of projects having their budgets identified. If no high-scoring finance or budget pages were identified in the categorization step, the first 10 pages of the highest-ranked pre-activity document were used as a fallback.
+
+In order to make the resulting dataset of budgets usable by the statistical model, the embeddings model was used to cluster the descriptions of the subsectors into 15 sector clusters. Having tried 10, 15, and 20 clusters, 15 was found to provide the optimal performance on the validation set. The allocations within each cluster are summed and reported as a fraction of the total as a feature for the statistical model.
+
+This adds the following 16 features to the statistical model:
+\begin{itemize}
+  \item 15 features, one for each sector cluster expenditure percentage \citep{goldembergMindingGapAid2025}
+  \item a binary missing indicator if there is no sector cluster information in the pdf. As for other features, the result is median imputed, meaning all features are set to 0 as that is the median for all sectors in the training data.
+\end{itemize}
+
+
+

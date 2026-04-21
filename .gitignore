@@ -1,0 +1,8 @@
+data/**/*.pkl
+data/*.pkl
+**/*.pkl
+__pycache__/
+**/*.pyc
+**/*.pyo
+coverage_html
+remove_uncovered.py

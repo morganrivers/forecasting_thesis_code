@@ -1,0 +1,164 @@
+
+ACTIVITY DESCRIPTION: \{ChatGPT\_description\}\newline
+ACTIVITY TARGETS: \{targets\_summary\}\newline
+ACTIVITY CONTEXT: \{activity\_context\}\newline
+ACTIVITY COMPLEXITY: \{complexity\_details\}\newline
+ACTIVITY INTEGRATEDNESS: \{how\_integrated\_description\}\newline
+FINANCING DETAILS: \{finance\_summary\}\newline
+IMPLEMENTER PERFORMANCE CONTEXT: \{implementer\_performance\_text\}\newline
+ACTIVITY RISKS:\newline
+\{risks\_summary\}\newline
+ACTIVITY POSSIBILITIES: \{possibilities\_summary\}\newline
+
+
+% -------------------------
+% Final-stage (s3) instruction scaffold (this is the prompt whose structure you show)
+% -------------------------
+\{training-set rating distribution text\}\newline
+Here are a few reasons that you said the answer might be ``Moderately Satisfactory'' or worse:\newline
+\{insert\_stage\_s1\_answer\_here\}\newline
+Here are a few reasons that you said the answer might be ``Satisfactory'' or better:\newline
+\{insert\_stage\_s2\_answer\_here\}\newline
+
+YOUR TASK:\newline
+Aggregate your considerations above. Think like a superforecaster (e.g.\ Nate Silver).
+On the very last line of your response, write `FORECAST: ' followed by exactly one option from this rating scale with no extra words:\newline
+\{options\_text\}\newline
+
+Respond only in English.
+  
+\end{boxedprompt}
+\label{fig:forecast-prompt-multistage}
+\vspace{1em}
+
+\subsubsubsection{Inference-time Enhancements (Ensembling)}
+Ensembling averages many individual forecasts of the same model, prompted in slightly different ways. Ensembling was found to be a weak method when running on 100 sample activities within the training set, because the same model+prompt pair had highly correlated forecasts. Creating a new prompt variant for each ensemble run was also not attempted due to the complexity of such an approach, its high API cost, and weak expected performance improvements. 
+%All methods which demonstrated above-chance skill in forecasting were averaged using the mean value of the forecast. This was found to robustly outperform any individual forecasting method, although with only a modest overall improvement due to high autocorrelation between individual forecasts. Ensembles of LLM-generated forecasts using differing random seeds and differently selected K-Nearest-Neighbors. %(with a different weight on most recent vs most semantically similar). A summary of the 10 pages was also included (method \#3).
+% More details will come, once I am sure exactly how I plan to implement the methods. %TODO
+
+% \textbf{Fine-tuning}
+% The Llama 70B model was fine-tuned using past paper results and pairings collected before the model cutoff date. In past work, even though data were in the training data, fine-tuning significantly improved prediction performance \citep{wenPredictingEmpiricalAI2025}. \\
+
+
+% \textbf{}
+\subsubsubsection{Model Adaptation (Fine-tuning / DPO)}
+In past work in a similar domain, fine-tuning significantly improved forecasting performance \citep{wenPredictingEmpiricalAI2025}. An attempt was made to fine-tune \emph{gemini-2.5-flash} using Vertex AI. To do so, Direct Preference Optimization (DPO) was used, which requires one example of a good prompt, and one example of a bad prompt. Out of a random sample of 100 activity IDs in the training data, the final forecast stage was forecasted 5 separate times using \emph{deepseek-V3.2}. 50 pairs were used where the model forecasted one rating increment closer than another rating to the true label.
+
+It was often the case that there were multiple options for the best or worse forecast due to the limited 6-point scale. In order to choose among forecasts that were equally good or equally bad, the embeddings of the forecasts were also taken and cosine similarity was computed to the embeddings of the mock forecast, and to embeddings of the post-activity document, and these similarity scores were averaged. The most similar among equally good ratings were chosen as the good example for the DPO training pair, and the least similar among equally bad ratings as the bad example.  
+
+Once the 50 pairs were identified, fine-tuning was conducted using default settings over 20 epochs from Vertex AI (Learning rate multiplier of 1, Adapter size of 4, Beta of 0.1).
+
+
+\subsubsection{LLM Adjustment Ridge Regression}
+\label{subsubsub:LLM_adjustment}
+
+The goal of the LLM Adjustment was to incorporate usable information from the direct LLM forecasts, since simply averaging the LLM forecasts with the statistical model in the validation set decreased performance. To do so, a small ridge regression model was layered on top of the forecasts, calibrated using LLM predictions on the training set.
+
+Let $\hat{y}^{\text{RF}}_i$ be the RF+ET prediction for activity $i$, and let $\hat{y}^{\text{LF}}_i$ denote the LLM Forecast. Note that the RF prediction was also averaged with the ET model, but it is still referred to as ``RF'' in the equations. The RF+ET residual on the i'th activity is defined as:
+\[
+r_i := y_i - \hat{y}^{\text{RF}}_i .
+\]
+A ridge regression model was then fitted to predict residuals from a small feature vector consisting of the RF+ET prediction and (optionally) the LLM Forecast:
+\[
+\hat{r}_i := \beta_0 + \beta_1 \hat{y}^{\text{RF}}_i + \beta_2 \hat{y}^{\text{LF}}_i ,
+\]
+with an $\ell_2$ penalty on $(\beta_1,\beta_2)$ controlled by $\alpha = 5$, the ridge strength. The corrected prediction is:
+\[
+\hat{y}^{\text{corr}}_i := \operatorname{clip}_{[0,5]}\!\left(\hat{y}^{\text{RF}}_i + \lambda \hat{r}_i\right),
+\]
+where $\lambda$ is a scaling factor (set to 1.0 in the experiments) and clipping enforces the valid rating range between 1 and 6.
+
+The ridge model takes both the RF+ET prediction and the LLM Forecast as inputs for activities where $\hat{y}^{\text{LF}}_i$ is available (the training activities for which LLM forecasts were generated, spanning the full validation set). This allows the correction to learn a mapping from $(\hat{y}^{\text{RF}}_i, \hat{y}^{\text{LF}}_i)$ to the residual $r_i$. The ridge model under this setting effectively learns how much LLM forecasts should shift the prediction from the mean, how much the RF+ET model should shift the prediction from the mean, as well as a fixed learned offset. The only learned parameters are $\beta_0$, $\beta_1$ and $\beta_2$.
+
+\subsection{Scoring Metrics} \label{sub:scoringmetrics}
+
+\textbf{Accuracy}
+The percent of the time the correct rating is forecasted. Non-integers are rounded to integers for overall ratings. While accuracy has the advantage of intuitive simplicity, it is not strictly proper \citep{gneitingStrictlyProperScoring2007}, meaning that maximizing the model accuracy may not maximize a model's reported true belief about the probability of an outcome. This can be problematic when being used to select between models.
+
+\textbf{RMSE (Root Mean Square Error)}
+Take the square of the difference between every prediction and the true value, take the mean of all such squared values, then take the square root. Measure of “average” distance. Lower is better. As ratings range from 1 to 6, the difference is on a scale from 0 to 5, where the worst possible value is 5, best possible value is zero. This method heavily penalizes predictions that are significantly incorrect. RMSE is only used in this work for overall ratings.
+
+\textbf{MAE (Mean Absolute Error)}
+Measure of “average” distance, by taking the mean of the absolute value of the residuals. Lower is better. As ratings range from 1 to 6, a scale from 0 to 5 is best, therefore worst possible value is 5, best possible value is zero. In the case of overall success ratings, this metric tends to reward integer rounded rating scores as they are often exactly correct, rather than the output of the statistical models which are not exact integers. This method does not heavily penalize predictions that are significantly incorrect. MAE is only used in this work for overall success ratings.
+
+\textbf{Coefficient of Determination ($R^2$)}
+$R^2$: Coefficient of determination. Theoretically equals zero, if we always choose the mean (however using the training set mean results in a lower score on the test set in the baseline measure below). If more than 1 regressors are included, $R^2$ is the square of the coefficient of multiple correlation and can be negative. Measures proportion of the variation in the dependent variable that is predictable from the independent variable. Higher is better. This method generally does not penalize outliers significantly. $R^2$ is only used in this work for overall ratings and cost-effectiveness.
+
+\textbf{Adjusted $R^2$}
+Adjusted $R^2$ is a version of $R^2$ that accounts for the number of regressors in the model, and is well-defined for OLS (Ordinary Least Squares) linear regression. Unlike plain $R^2$, adjusted $R^2$ penalizes adding predictors that do not meaningfully improve fit. It can decrease when irrelevant regressors are included. A higher adjusted $R^2$ is better. While it penalizes extra parameters that may lead to overfitting, adjusted $R^2$ within a training set does not reflect model skill as accurately as out-of-time $R^2$. Adjusted $R^2$ is reported in this work on the training+validation set only for comparability with prior literature, while test set $R^2$ and within-group pairwise ranking are the primary results. Adjusted $R^2$ is only used in this work for overall ratings.
+
+\textbf{Within-Group Pairwise Ranking}
+Within-group pairwise ranking is evaluated as the mean across groups of the proportion of within-group pairs of predictions that were correctly ordered. Only pairs of activities sharing the same reporting organisation and start year are compared; between-group pairs are excluded entirely. For each such pair $(i, j)$ where the true outcomes differ ($y_i \neq y_j$), the prediction is counted as correct if $\hat{p}_i > \hat{p}_j$ whenever $y_i > y_j$, and incorrect otherwise; pairs where $\hat{p}_i = \hat{p}_j$ are excluded from both numerator and denominator. Each group's score is computed independently and the final metric is the weighted mean across groups proportional to the number of activities in each group, so a large group does not dominate a small one. Restricting comparison to activities from the same organisation and group year removes systematic between-group variation in base rates that a model cannot be expected to predict, making the metric a cleaner measure of within-context discriminative skill. This method is insensitive to global shifts in ratings or probabilities, which may occur due to events like the COVID-19 pandemic or differences in organisational reporting culture, and insensitive to calibration of the spread of predicted probabilities. A score of 0.5 corresponds to random chance; 1.0 is perfect ordering.
+
+\textbf{Within-Group Spearman Ranking}
+Within-group Spearman rank correlation measures the monotonic association between predicted probabilities and true outcomes sharing the same reporting organisation and start year. For each group with at least two observations, Spearman's $\rho$ is computed by assigning midranks to both the true outcomes and the predicted probabilities (so that tied values receive the average of the ranks they would have occupied), then computing Pearson's $r$ on the two rank vectors. The use of midranks rather than the shortcut formula $1 - 6\sum d^2 / n(n^2-1)$ is necessary because the shortcut assumes all ranks are distinct integers; with ties the identity it rests on breaks down and values outside $[-1, +1]$ become possible. The reported score is the weighted average of per-group $\rho$ values, with weights proportional to group size. Like within-group pairwise ranking, this metric controls for between-group differences in base rates, but additionally captures the degree of monotonic ordering rather than merely whether the direction of each pair is correct.
+
+\textbf{Brier Score}
+The Brier score, used here in its binary form, is the mean squared error between the predicted probability $\hat{p}_i$ and the binary outcome $y_i \in \{0,1\}$:
+\[
+  \mathrm{BS} = \frac{1}{N}\sum_{i=1}^{N}(\hat{p}_i - y_i)^2.
+\]
+Lower values are better, with 0 indicating perfect probabilistic forecasts and 1 being worst possible. The Brier score is a strictly proper scoring rule \citep{gneitingStrictlyProperScoring2007}, meaning that a forecaster maximises their expected score only by reporting their true beliefs. Only the binary Brier score is used in this work for outcome tags.
+
+\textbf{Brier Skill Score}
+The Brier skill score (BSS) measures improvement over a reference forecast:
+\[
+  \mathrm{BSS} = 1 - \frac{\mathrm{BS}}{\mathrm{BS}_{\mathrm{ref}}},
+\]
+where $\mathrm{BS}_{\mathrm{ref}}$ is the Brier score of the constant (no-skill) baseline that always predicts the training-set base rate. A BSS of 0 indicates no improvement over this baseline; positive values indicate skill. Brier skill score is only used for outcome tags.
+
+
+\subsubsection{Choosing Methods and Metrics for the Held-out Test Set}
+\textbf{Rating and Cost Effectiveness Evaluation} After consideration of several metrics, the within-group pairwise ranking and $R^2$ were determined to be the most appropriate for assessing model skill in the domain of ratings and activity quantitative outcomes, while other metrics still provide useful insight. $R^2$ is sensitive to bias and outliers, which are important for assessing absolute predictive accuracy. However, a common use-case in aid funding decision making is comparing a pair of activities, or even a suite of many activities. In such a use-case, the within-group pairwise ranking is more representative of what is needed. Furthermore, a weakness in $R^2$ is that global shifts in the ratings and outcomes due to external factors can be unpredictable, and a model may by-chance capture these shifts without any real improvement in forecasting skill. Both are clearly interpretable: always forecasting the mean value of the held-out set is equivalent to an $R^2$ of 0, also meaning that 0\% of variance explained for $R^2$, while 50\% is equivalent to the within-group pairwise ranking forecast of random chance.
+
+\textbf{Methods chosen for the Held-out Test Set} Even after rigorously evaluating the methods which worked well on the validation set, I wanted to evaluate whether some methods offered performance improvements on the test set. The selected methods to evaluate were as follows:
+
+\begin{itemize}
+  \item \textbf{ Statistical Models for Overall Ratings:} As baseline methods I chose to assess the performance of always predicting the most common rating within the reporting org (\emph{Mode of reporting-org score baseline}), a simple ridge regression model with only the overall risk LLM grade and the reporting org (\emph{Ridge Baseline (risks + org only)}) as a means of approximating what human evaluators may have assigned the likely overall rating, and a simple linear model with all features (\emph{Plain OLS GLM}) to assess the importance of nonlinearity for the statistical model performance on the test set. My primary method was (\emph{RF+ET all features}) which was the average of the RF and ET model after adjusting year correlation, and I assessed the following alterations to see if they improved performance: the RF+ET ensemble averaged with the LLM forecast (\emph{RF+ET + LLM Forecast (simple avg)}), the more sophisticated calibrated ridge regression to combine the statistical model with the LLM forecast \emph{RF+ET + LLM Forecast (ridge)}, removing the linear year correlation adjustment (\emph{RF+ET all features - year corr}), removing LLM input features from the model (\emph{RF+ET, no LLM features}), resetting the RF+ET tuned parameters to their default values (\emph{RF+ET (default params)}), and replacing the RF+ET with the XGBoost nonlinear model (\emph{XGBoost all features}).
+
+  \item \textbf{Outcome Tags} I assessed only two methods on the test set for outcome tags: including the per-tag features and parameters (all subsets of the 45 ``non-noisy'' features, where each per-tag parameter set was a less complex model), and compared this with using only the same 45 ``non-noisy'' features which did well on the validation set.
+
+\end{itemize}
+
+\subsubsection{Grading Free Form Forecasts}
+In addition to extracting the LLM forecasted rating, \emph{gemini-2.5-flash-lite} is also used to grade narrative textual format forecasts. In order to do so, \emph{gemini-2.5-flash} was first used to summarize pages categorized as highly relevant to post-activity evaluations, obtaining 10 pages with a score of at least 3/10 marked as ``deviation\_from\_plans'', ``delays\_or\_early\_completion'', or ``over\_or\_under\_spending'', or failing that, that were graded as highly relevant to activity evaluation. If no such pages were categorized, the first 10 pages of the highest ranked activity post-activity evaluation were used. Next, for all ensembles of LLM forecasts, a grade was given for how similar the forecast was to the activity outcome using \emph{gemini-2.5-flash-lite}. Grading was performed based on two key criteria: accurate identification of likely drivers of activity success or failure, and identification of likely outcomes being forecasted,  hich together inform the single combined letter grade.
+
+In accordance with the typical US grading scheme definitions, an ``F'' grade is defined as 55 or lower and an A+ grade as approximately 97, with other grades defined in approximately even intervals, alternating between 3-point gaps within sub-grades and 4-point gaps between main letter grades. For example, D-=62, D=65, D+=68 while C-=72. \emph{gemini-2.5-flash-lite} was provided the following rubric:
+
+
+
+\textbf{Grading scale}
+\begin{itemize}[noitemsep,topsep=0pt]
+\item A+/A/A-: Excellent forecast, highly accurate, attention on key drivers, multiple major events forecasted accurately.
+\item B+/B/B-: Good forecast, mostly accurate. A mix of correct and incorrect, but at least one major outcome was forecasted. At least one key driver identified.
+\item C+/C/C-: Adequate forecast, partially accurate or reasonable. Focus was adequate. Major outcomes incorrect, but some smaller aspects were correct.
+\item D+/D/D-: Poor forecast, although perhaps one or two small correct things. Mostly inaccurate. Wrong focus on drivers.
+\item F: Failed forecast, completely wrong or unsupported.
+\end{itemize}
+
+\subsection{Summary} \label{sub:methodssummary}
+
+This thesis implements four forecasting strategies, all trained and evaluated on a dataset of 1,181 completed international aid activities from the IATI database:
+
+\begin{itemize}
+\item A statistical model to forecast overall activity success ratings using LLM-generated features
+\item A statistical model to forecast activity cost-effectiveness using LLM-generated features
+\item A statistical model to forecast 14 binary outcomes using LLM-generated features
+\item An LLM prompting scheme used to forecast overall activity success ratings, assessed on accuracy, within-group ranking skill, and qualitative similarity to the evaluation summaries, optionally incorporating statistical overall rating forecasts as a target.
+\item A ridge regression model combining RF+ET statistical predictions with LLM forecast predictions (\emph{LLM Adjustment Ridge Regression}), assessed on accuracy, $R^2$, and within-group pairwise ranking on the held-out test set.
+\item A fine-tuned \emph{gemini-2.5-flash} model using Direct Preference Optimization (DPO) trained on 50 activity preference pairs, assessed on $R^2$ and within-group pairwise ranking ability and found not to improve over the base model.
+\item An ensembling approach averaging multiple LLM forecast runs for the same activity, assessed on a training subset and found not to improve forecasting skill due to high inter-run correlation.
+\item An LLM-based correction of outcome tag probabilities using \emph{deepseek-V3.2} blended with statistical model predictions, assessed on Brier skill score, accuracy ratio, and within-group pairwise ranking, and found not to improve skill.
+\item A nearest-neighbor rating predictor using a weighted mean of semantically similar training-activity ratings, assessed on the validation set and found to underperform the mode-of-reporting-organisation baseline.
+\end{itemize}
+
+The system is built to forecast what the evaluation results will be for thousands of IATI records containing both a pre-intervention description of the activity, and an ex-post evaluation of the results in order to ensure temporal leakage does not occur. To do so, thousands of PDFs were downloaded, ranked from most to least relevant for forecasting future outcomes or evaluating the end result of the activities, had their pages graded for relevance to the task, and had quantitative and qualitative descriptions and results extracted from the pdfs. Three time-ordered splits were used: train, validation, and test sets. Statistical models and fine-tuning experiments were done on the training set, with several methods assessed using the validation set. This informed model selection and parameter tuning, so that the generalization ability of these methods were finally assessed against the held-out test set. See Figure~\ref{fig:finaldiagram} for a representation of the entire process.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{assets/finaldiagramthesis.drawio.cropped.png}
+    \caption{Features are produced using IATI activity data and external by-country datasources (GDP per capita, CPIA scores, and World Bank governance indicators). More features come from ex-ante activity PDFs processed by \emph{gemini-2.5-flash} into structured data. Features were added by \emph{ChatGPT-3.5} grading pre-activity PDFs, and \emph{gemini-embedding-001} via semantic embeddings. \emph{deepseek-V3.2} produced a preliminary forecast for overall ratings and outcome tags. A statistical model also trains on and forecasts overall ratings, 14 outcome tags, and cost-effectiveness, optionally using the \emph{deepseek-V3.2} forecasts as input features. \emph{gemini-2.5-flash} processes evaluation PDFs to extract overall outcome ratings and 14 tags, which are training targets for the statistical models. Lastly, \emph{deepseek-V3.2} uses the outputs of both the statistical model and the ex-post extraction to write a narrative forecast of activity outcomes, later graded by \emph{gemini-2.5-flash-lite}.}
+    \label{fig:finaldiagram}
+\end{figure}
+\clearpage
+\FloatBarrier

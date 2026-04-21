@@ -1,0 +1,190 @@
+\section{Methods}
+The methods section introduces several methods to improve forecasting performance. Methods were split into simple ``baseline'' methods, and compared to more sophisticated ``experimental'' methods to ensure that the experimental methods adopted improve forecasting performance above their respective baseline methods on the held-out test set. A summary of the methods can be found at the end of this chapter in section \ref{sub:methodssummary}.
+
+\subsection{Temporal Splits and Information Leakage} \label{sub:temporalleakage}
+Train activities started on or before February 6, 2013; Validation activities started between February 7, 2013 and June 6, 2016; Test activities started after June 6, 2016 and before January 1, 2020. These date boundaries are chosen to yield approximately 700 training activities, 300 validation activities, and 200 test activities for overall ratings. See Figure \ref{fig:splits} for the number of activities per year in each and Figure \ref{fig:splitdurations} for the average duration of activities within each split.
+
+A forecasting system designed to predict the future must not gain any information that could not be known at the start of the international aid activity. The methodology was designed such that no information from the test set was used for model selection and validation, in order to provide a realistic assessment of the forecasting skill of the model for activities starting on or after 2026. Cases where information that could not be known is used for the prediction is deemed ``leakage''. Preventing leakage was an important factor in the methodology. Leakage has been a significant concern in other published works where forecasting with language models has been implemented, and in multiple cases has caused invalidation of forecasting results \citep{palekaPitfallsEvaluatingLanguage2025}. While ex-post evaluations may provide sufficient information to describe the activity, relying on language models to completely remove information about the eventual outcome could introduce information leakage from past the start date. This was a motivation behind using IATI, which explicitly separates documents into pre- and post-activity, as opposed to OpenAlex and 3ie ex-post activity documents.
+
+\textbf{Data Extraction LLM Model Selection}
+Several different language models are used for the data extraction pipeline, selected according to the following criteria:
+\begin{itemize}
+  \item \emph{gpt-3.5-turbo} is used when the task benefits from an earlier model training cutoff date, eliminating the possibility of temporal information leakage for events occurring after September 2021, in this case used for grading information documents. However, this legacy model is more expensive, despite the model having a weaker reasoning ability.
+  \item \emph{gemini-2.5-flash} was primarily used for its low cost, high speed, and ability to process pdf documents accurately
+  \item \emph{gemini-2.5-flash-lite} was used for high volume requests which are otherwise unaffordable, where the task complexity is also low
+  \item \emph{gemini-2.5-pro} is a more expensive model, used when many pages of PDF context and reasoning is required, with relatively few API calls
+\end{itemize}
+
+\subsection{Data Sources} \label{sec:methods_for_LLM_forecasting}
+
+The methods of this thesis required a suitable data source which had all of the following: a sufficient volume of completed environmental and sustainability activities; paired pre- and post-activity documents to enable forecasting without future information leakage (see Section~\ref{sub:temporalleakage}); machine-readable text extractable from database records; reliable temporal metadata; and the prospect of ongoing additions to allow future replication.
+
+Several sources were evaluated against these criteria but ultimately not used:
+\begin{itemize}
+\item \textbf{The OpenAlex publication repository of peer-reviewed evaluation documents and abstracts} \citep{priemOpenAlexFullyopenIndex2022}
+\begin{itemize}
+\item Although many millions of evaluations are available on OpenAlex, it proved difficult to reliably identify and de-duplicate published evaluations of environmental interventions. Furthermore, OpenAlex provides only ex-post documents with no paired pre-activity description, making leakage prevention substantially harder.
+\end{itemize}
+\item \textbf{The AidData database of international aid activities} \citep{tierneyMoreDollarsSense2011}
+\begin{itemize}
+\item The AidData database has double-coded data entry. While double-coded data entry introduces less error than the LLM and regex data extraction techniques, the delay in hand-coding the ratings and results leads to relatively few recent environmental activities, and the lack of document links in AidData meant each activity record had far less extractable information. The overlap between AidData and the filtered IATI training set was less than 30\% of IATI training set records. As AidData contained insufficient data for reliable forecasting on its own, and there was low overlap, merging IATI with AidData or enriching IATI with AidData was not attempted.
+\end{itemize}
+\item \textbf{The 3ie development database of ex-post evaluations} \citep{3ieDevelopmentEvidence}
+\begin{itemize}
+\item 3ie had fewer than 300 records for environmental topics, far lower than IATI, and provides only ex-post documents with no paired pre-activity description.
+\end{itemize}
+\item \textbf{The IDEAL database of ex-post evaluations} \citep{kfwdevelopmentbankIDEaL}
+\begin{itemize}
+\item The IDEAL database had fewer than 300 records for environmental topics, far lower than IATI.
+\end{itemize}
+\end{itemize}
+
+All activities for the thesis therefore come from the IATI database \citep{IATIDashboardIATI}. IATI met all selection criteria: it contains a large number of activities with substantial textual information extractable from database records, and new records are continuously added, making future replication straightforward. Crucially, IATI explicitly separates pre- and post-activity documents by design, which makes preventing temporal information leakage tractable (see Section~\ref{sub:temporalleakage}). Records contain reliable ``actual start'' and ``actual end'' dates, and commonly also report planned start and end dates. Most records contain an overall evaluation rating on a six-point scale within the linked evaluation PDFs. Activity records also reliably mark the reporting organization. The records used for this thesis have several activity information documents uploaded near the beginning of the activity. Several years later, at least one ex-post evaluation is uploaded, or results of key quantitative outcomes are sometimes directly recorded in the IATI database. The status of the activity is also always reported in the database, including if it is in the planning or completion/finalization stages, which is helpful information for forecasting.
+
+A disadvantage of the IATI database is that it is sometimes inconsistent between reporting organizations as to how the data are filled in. Additionally, the format of documents was not always PDF, requiring conversion scripts from other formats. Many download links were also not functioning. Others required custom web-scraping scripts to extract project documents in PDF format from the original hosting websites. Planned start or end dates were often missing, leading to frequent exclusion of otherwise informative projects. Furthermore, approximately 30\% of IATI activities do not have an activity category code, leading to a further exclusion of environmental or sustainability related activities that otherwise could have been included.
+
+Country-level covariates were added from three standard sources: the World Bank governance indicators \citep{kaufmannWorldwideGovernanceIndicators2024}, the World Bank country policy and institutional assessment scores \citep{worldbankCPIACriteria2024}, and GDP per capita \citep{worldbankGDPPerCapita}. These were included as supplementary features for the statistical forecasting models and were sometimes injected in the LLM forecasting prompts.
+
+
+
+% Figure: workflow 
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=1\textwidth]{assets/pie_plot_env_categories.png}
+  \caption{The split of topics analyzed from the dataset.}
+  \label{fig:topicsplit}
+\end{figure}
+
+
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/splits_by_start_year.png}
+  \caption{The activities included for forecasting ratings, with the splits by count year. Incomplete activities, shown in red, were not used for prediction. Activity ids used for outcome prediction were given the same temporal boundaries.}
+  \label{fig:splits}
+
+\end{figure}
+
+
+
+% % Figure: predicted vs observed absolute error (scatter)
+% \begin{figure}[!htbp]
+%   \centering
+%   \includegraphics[width=0.9\textwidth]{assets/disbursement_by_year.png}
+%   \caption{Total disbursements for IATI activities used for ratings, by year. There is no clear trend over time for activity size in the database. }
+%   \label{fig:disbursementsbyyear}
+% \end{figure}
+
+% % \end{figure}
+% % Figure: predicted vs observed absolute error (scatter)
+
+% \begin{figure}[!htbp]
+%   \centering
+%   \includegraphics[width=0.9\textwidth]{assets/reporting_org_splits.png}
+%   \caption{The breakdown of reporting orgs in the dataset which were used for training, validation and testing. The validation and test set are in this way significantly out-of-distribution.}`'
+%   \label{fig:shapratings}
+% \end{figure}
+
+
+
+
+
+% \textbf{Document-related Filtering}
+
+% The IATI database contains a collection of thousands of links to PDFs, word documents, html documents, and other document formats. These were first automatically converted to PDF format via a custom Python script, and subsequently needed to pass several criteria before being used as documents for forecasting.
+
+% I first wrote a script that directly downloaded these and converted them to PDF format. %Specifically for UNDP, I made a custom-query to convert their interactive HTML results pages into a PDF format, all others had the links for the documents downloaded directly with no additional processing. #well, didn't end up using any UNDP
+% Next, I looked at the PDF metadata date, and determined the creation date of the PDF files. I find this is more often closer to the date of the specific activity description document or activity evaluation document (as determined by reading the document) than metadata at the url indicating upload date, or the date entered in IATI for the document.  UNDP results had the URL specifically included in the JSON payload populating their website, so the latest year indicated in that evaluation payload was used instead for the UNDP results.
+
+% All documents are tagged in IATI with one or more of the following tags per document:
+% ``Pre- and post-project impact appraisal'', ``Objectives / Purpose of activity'', ``Intended ultimate beneficiaries'', ``Conditions'', ``Budget'', ``Summary information about contract'', ``Review of project performance and evaluation'', ``Results, outcomes and outputs'', ``Memorandum of understanding (If agreed by all parties)'', ``Tender'', or ``Contract''. 
+
+% I mark documents with ``Objectives / Purpose of activity'' or ``Summary information about contract'', tags as preliminary ``baseline'' documents - those representing information about the activity before it begins. Documents with ``Review of project performance and evaluation'' or ``Pre- and post-project impact appraisal'' tags are marked as preliminary evaluation documents. In order to provide sufficient information to forecast with and sufficient information to evaluate that forecast, I require at least one ``baseline'' document and at least one ``outcome'' document per activity, with the baseline document at least one year prior to the evaluation document (based on the uploaded document metadata date). I also require that the activity status code is not ``Pipeline/identification''. Instead, activities are allowed to be in implementation, finalization, closed, cancelled, or suspended, such that either a final or preliminary evaluation document is possible.
+
+% I filtered further to ensure that all activity document labels which were ``Conditions'', ``Budget'', ``Tender'', ``Contract'' with no other tags were excluded, as these were typically purely legal context, often containing very little evaluation or useful additional activity information.
+
+% The date for the documents were determined using (in descending preference where available) the PDF's ``created on'' or ``last modified'' in its metadata, or the date indicated in the IATI record for the document. This ordering preference was determined as the PDF metadata dates were found to more reliably match the stated date of authorship of the documents better than the ``IATI date'' recorded within the activity record. These dates were usually available in the metadata of the original PDF, ODT, DOC, or DOCX file. Experimenting with different date options revealed that out of 400 randomly selected PDFs, the closest available date to the true date of authoring the document was the ``created by'' date, then the ``last modified'' date, then the ``IATI date''. The median difference for the date when selecting this ordering was 22 days different than the date indicated in the document itself as determined by feeding the first 3 pages of each of those 400 PDF documents to \emph{gemini-2.5-flash}.
+
+% To ensure PDF metadata dates were appropriate, an analysis was conducted to ensure the procedure for selecting the date of activity documents was valid. If the date of the activity is too early, it could lead to documents authored well after the project start leaking future information. To test this, 400 random PDF documents downloaded were uploaded to gemini and the PDF metadata dates were inspected. PDF metadata dates were discovered to have a median difference of 22 days from the date indicated on the document as extracted by gemini. It was discovered that while approximately 10\% of the dates were more than a year after the actual date indicated on the document (such that an activity was actually authored earlier than the start date of the activity), a concerning 0.5\% of documents had a creation PDF metadata date later than the date extracted directly from the document. 
+
+% In order to ensure the forecasts were all based on project information available only roughly at the beginning of the activity, a search was conducted through the information available to the model when forecasting to ensure the forecasting was based only on what could have been known at the beginning of the activity. Approximately 10 activities with PDF metadata dates more than a year earlier than the true authoring of activity documents would be expected, based on the 0.5\% rate of ``>1 year too early'' errors from the date analysis.
+
+% To prevent any information leakage, which could be due to incorrect dates as well as incorrect marking of the start date of the activity in IATI, or significant progress being made within the first quarter of the activity where documents are allowed, approximately 40 random ChatGPT-generated activity summaries (see the next section) were inspected, with none indicating advanced progress, indicating less than 2.5\% of activities should be of concern. A selective search for phrases revealed some activities had made clear progress on targeted outcomes. Consequently, a Python script with 6,800 separate search terms was used to further search for inappropriate documents. Exact string search terms were made, with variants of phrases including, ``on track'', ``ongoing project has been performing'', ``ongoing project is performing'', ``already made considerable progress'', ``key milestones already achieved'', ``significant progress had been made'', ``the programme has already made considerable progress'', etc. This led to the review of approximately 150 additional activities, and the discovery of 21 activities with clear progress on key project milestones. Progress such as the formation of planning committees or initial disbursements of funds to the implementing organization were not considered grounds for exclusion, given that these milestones are unlikely to be substantially informative. However, extension activities or Phase II / Phase III activities were not excluded, unless significant progress had already been made on the extension or phase being evaluated.
+
+\subsection{Data Filtering}
+
+The IATI dataset was progressively filtered from approximately 800,000 activities to 3,225 completed environment- and sustainability-related projects with both baseline and evaluation documents suitable for forecasting outcomes without future information leakage. Activities were first selected by sector codes (see Figure \ref{fig:topicsplit}) and manual topic review. These were then constrained to those with downloadable documents, valid temporal ordering (baseline pdf uploaded at latest the end of the first quarter of the implementation period, evaluation at earliest the last quarter), and sufficient metadata reliability. Additional restrictions ensured comparable rating scales and adequate sample sizes across four reporting organizations (World Bank, BMZ/KfW/GIZ, ADB, and UK FCDO, see Figure \ref{fig:reporgs}). Documents were converted to PDF and dated primarily using PDF metadata, which was validated against document content, yielding a median 22-day discrepancy. To prevent leakage from early progress reporting or misdated files, documents were screened by manual inspection, LLM-assisted checks, and automated keyword searches. Activities showing substantive outcome progress were excluded. Further filtering removed purely legal or contractual documents from baseline and evaluation documents. Activities not marked as completed in IATI were also removed, as were activities with no overall success evaluation ratings identified in the evaluation documents. This ultimately produced a set of 1,181 activities used for the remaining analysis.
+
+
+% \subsection{Data Filtering}
+
+% \textbf{IATI records for prediction}
+
+% Out of the approximately 800,000 international aid activities recorded in IATI, I first reduced the set of activities of interest to 7,575 records which aimed at improving the environment, sustainability, or climate adaptation in a developing country or countries, had an appraisal/intervention description document, and an outcome evaluation or progress report document, both of which could be converted to PDF format. Links to these documents were then downloaded where possible (see the next section for details).
+
+% Once documents were downloaded and converted to PDF format, activities were further filtered so that they had at least one document describing the activity, and had a metadata date before 1/4 of the activity implementation period, as well as at least one ex-ante activity at least 3/4 through the activity period. The latest activity document also had to have a metadata date at least one year before the earliest evaluation document. An exception was project appraisal documents from the World Bank, or Project Information Documents, which were found to reliably not leak future information, and this was judged to be more trustworthy than extracting the creation date embedded in the activity document. Activities not meeting these requirements were also excluded, leaving 3,225 activities.
+
+% After passing all these filters, I finally attempted to extract the activity rating from the evaluation document using two separate methods. Because rating tendencies are systematically different for different reporting orgs, I needed sufficient data for training, validation, and testing for all organizations. I also restricted activities to those that were marked as ``completed'' in order to ensure comparability between rating scales, as the only activities not marked as ``completed'' were relatively recent and would dominate the held-out test set. I determined there were sufficient data for four reporting organizations: The World Bank (957 activities), BMZ/KFW/GIZ (240 activities), the Asian Development Bank (ADB) (156 activities) and the UK Foreign Commonwealth and Development Office (FCDO) (127 activities).
+
+% The activity filtering for the topic was done by-hand to filter only those activities relating to improving the environment or sustainability. The water-related codes (14015, 14020, 14021, 14022, 14032, 14050) cover conservation, supply, sanitation, and waste management. Energy sector codes form the largest category, encompassing policy and administration (23110, 23111, 23112), conservation (23183), and energy generation technologies including renewables such as hydro (23220), solar (23230, 23231, 23232), wind (23240), marine (23250), geothermal (23260), and biofuels (23270), as well as fossil fuels with carbon capture (23350), nuclear (23510), waste-fired plants (23360), hybrid systems (23410), and supporting infrastructure for transmission, distribution, and electric mobility (23630, 23631, 23642, 23610). Agriculture and forestry are represented through land resources (31130), forestry policy, development, education, research, and services (31210, 31220, 31281, 31282, 31291), and clean cooking appliances (32174). Finally, environmental management codes (41010, 41020, 41030, 41081, 41082) pertain to policy, biosphere protection, biodiversity, and environmental education and research.
+
+% % The activity filtering for the topic was done by-hand to filter only those activities relating to improving the environment or sustainability. These were:
+% % \begin{itemize}[noitemsep, topsep=0pt]
+% % \item 14015: Water resources conservation (including data collection)
+% % \item 14020: Water supply and sanitation - large systems
+% % \item 14021: Water supply - large systems
+% % \item 14022: Sanitation - large systems
+% % \item 14032: Basic sanitation
+% % \item 14050: Waste management/disposal
+% % \item 23110: Energy policy and administrative management
+% % \item 23111: Energy sector policy, planning and administration
+% % \item 23112: Energy regulation
+% % \item 23183: Energy conservation and demand-side efficiency
+% % \item 23210: Energy generation, renewable sources - multiple technologies
+% % \item 23220: Hydro-electric power plants
+% % \item 23230: Solar energy for centralised grids
+% % \item 23231: Solar energy for isolated grids and standalone systems
+% % \item 23232: Solar energy - thermal applications
+% % \item 23240: Wind energy
+% % \item 23250: Marine energy
+% % \item 23260: Geothermal energy
+% % \item 23270: Biofuel-fired power plants
+% % \item 23350: Fossil fuel electric power plants with carbon capture and storage (CCS)
+% % \item 23360: Non-renewable waste-fired electric power plants
+% % \item 23410: Hybrid energy electric power plants
+% % \item 23510: Nuclear energy electric power plants and nuclear safety
+% % \item 23610: Heat plants
+% % \item 23630: Electric power transmission and distribution (centralised grids)
+% % \item 23631: Electric power transmission and distribution (isolated mini-grids)
+% % \item 23642: Electric mobility infrastructures
+% % \item 31130: Agricultural land resources
+% % \item 31210: Forestry policy and administrative management
+% % \item 31220: Forestry development
+% % \item 31281: Forestry education/training
+% % \item 31282: Forestry research
+% % \item 31291: Forestry services
+% % \item 32174: Clean cooking appliances manufacturing
+% % \item 41010: Environmental policy and administrative management
+% % \item 41020: Biosphere protection
+% % \item 41030: Biodiversity
+% % \item 41081: Environmental education/training
+% % \item 41082: Environmental research
+% % \end{itemize}
+
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/reporting_org_splits.png}
+  \caption{The breakdown of reporting orgs in the dataset which were used for training, validation and testing. The validation and test set contain differing ratios of reporting organizations between activities, making held-out set prediction more challenging.}
+  \label{fig:reporgs}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{assets/duration_by_split.png}
+  \caption{The durations of activities per split. More recently starting activities tend to be shorter, as they have not yet had time to complete and be evaluated. The out-of-distribution nature of validation and test sets increase the challenge of the model performing well on the held-out set.}
+  \label{fig:splitdurations}
+\end{figure}
+
+
+

@@ -1,0 +1,366 @@
+[
+  {
+    "tag": "tag_closing_date_extended",
+    "leaf": 5,
+    "top5": [
+      [
+        "rep_org_2",
+        0.05991054521685309
+      ],
+      [
+        "activity_scope",
+        0.0430036977906008
+      ],
+      [
+        "planned_duration",
+        0.03965066429575607
+      ],
+      [
+        "umap3_y",
+        0.030498161589524963
+      ],
+      [
+        "finance_is_loan",
+        0.012808514941737662
+      ]
+    ]
+  },
+  {
+    "tag": "tag_funds_cancelled_or_unutilized",
+    "leaf": 5,
+    "top5": [
+      [
+        "rep_org_2",
+        0.05101076813210248
+      ],
+      [
+        "activity_scope",
+        0.04999047730475066
+      ],
+      [
+        "planned_duration",
+        0.03400228827200841
+      ],
+      [
+        "finance_is_loan",
+        0.020256589929580328
+      ],
+      [
+        "log_planned_expenditure",
+        0.015100301551435071
+      ]
+    ]
+  },
+  {
+    "tag": "tag_funds_reallocated",
+    "leaf": 5,
+    "top5": [
+      [
+        "rep_org_2",
+        0.045239926413969296
+      ],
+      [
+        "activity_scope",
+        0.03460112997849035
+      ],
+      [
+        "planned_duration",
+        0.025666484340491458
+      ],
+      [
+        "umap3_y",
+        0.012926275195860112
+      ],
+      [
+        "sector_cluster_Improved_transport_infrastructure",
+        0.010811676785330723
+      ]
+    ]
+  },
+  {
+    "tag": "tag_high_disbursement",
+    "leaf": 5,
+    "top5": [
+      [
+        "sector_distance",
+        0.014868184719104277
+      ],
+      [
+        "umap3_y",
+        0.013879472878466467
+      ],
+      [
+        "gdp_percap",
+        0.012507720699958416
+      ],
+      [
+        "umap3_z",
+        0.012434296004983584
+      ],
+      [
+        "context",
+        0.011075984075656985
+      ]
+    ]
+  },
+  {
+    "tag": "tag_improved_financial_performance",
+    "leaf": 5,
+    "top5": [
+      [
+        "umap3_z",
+        0.022436349915538063
+      ],
+      [
+        "umap3_y",
+        0.021806470093031476
+      ],
+      [
+        "region_ECA",
+        0.015513923478609543
+      ],
+      [
+        "sector_distance",
+        0.014782424663426306
+      ],
+      [
+        "activity_scope",
+        0.014261088718933631
+      ]
+    ]
+  },
+  {
+    "tag": "tag_project_restructured",
+    "leaf": 5,
+    "top5": [
+      [
+        "rep_org_2",
+        0.09591363600161709
+      ],
+      [
+        "planned_duration",
+        0.045186550740263745
+      ],
+      [
+        "activity_scope",
+        0.03748263531475309
+      ],
+      [
+        "umap3_y",
+        0.023513264218959187
+      ],
+      [
+        "finance_is_loan",
+        0.016671264508526705
+      ]
+    ]
+  },
+  {
+    "tag": "tag_targets_revised",
+    "leaf": 5,
+    "top5": [
+      [
+        "rep_org_2",
+        0.10331633103569467
+      ],
+      [
+        "activity_scope",
+        0.03218719823958988
+      ],
+      [
+        "planned_duration",
+        0.026577802500790493
+      ],
+      [
+        "log_planned_expenditure",
+        0.01683910570923485
+      ],
+      [
+        "umap3_y",
+        0.015686088206847634
+      ]
+    ]
+  },
+  {
+    "tag": "tag_capacity_building_delivered_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "umap3_x",
+        0.016562955600586415
+      ],
+      [
+        "region_MENA",
+        0.010064604338200108
+      ],
+      [
+        "rep_org_2",
+        0.007958185704012105
+      ],
+      [
+        "country_distance",
+        0.007950819878107977
+      ],
+      [
+        "sector_distance",
+        0.007362794190244023
+      ]
+    ]
+  },
+  {
+    "tag": "tag_gender_equitable_outcomes_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "risks",
+        0.013540996947416877
+      ],
+      [
+        "planned_duration",
+        0.011353187512713227
+      ],
+      [
+        "umap3_y",
+        0.01023214766497946
+      ],
+      [
+        "implementer_performance",
+        0.008982977463927982
+      ],
+      [
+        "gdp_percap",
+        0.007854550484408382
+      ]
+    ]
+  },
+  {
+    "tag": "tag_high_beneficiary_satisfaction_or_reach_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "umap3_z",
+        0.012290582717328816
+      ],
+      [
+        "umap3_x",
+        0.0118419826320916
+      ],
+      [
+        "region_EAP",
+        0.011475201679364718
+      ],
+      [
+        "planned_duration",
+        0.008535072360367577
+      ],
+      [
+        "expenditure_per_year_log",
+        0.008534076765999227
+      ]
+    ]
+  },
+  {
+    "tag": "tag_over_budget_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "umap3_x",
+        0.02087907833252442
+      ],
+      [
+        "rep_org_2",
+        0.015676570993541434
+      ],
+      [
+        "activity_scope",
+        0.01305394357931923
+      ],
+      [
+        "planned_duration",
+        0.012981794776914957
+      ],
+      [
+        "umap3_z",
+        0.010650475719705964
+      ]
+    ]
+  },
+  {
+    "tag": "tag_policy_regulatory_reforms_success_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "sector_distance",
+        0.01424560668544316
+      ],
+      [
+        "targets",
+        0.013295467942877065
+      ],
+      [
+        "sector_cluster_reduced_CO2_emissions",
+        0.011421035536781778
+      ],
+      [
+        "context",
+        0.009597312301468283
+      ],
+      [
+        "umap3_y",
+        0.00828358581994581
+      ]
+    ]
+  },
+  {
+    "tag": "tag_private_sector_engagement_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "targets",
+        0.01767838242719853
+      ],
+      [
+        "implementer_performance",
+        0.016315971534545937
+      ],
+      [
+        "gdp_percap",
+        0.015504755471100033
+      ],
+      [
+        "umap3_y",
+        0.014403977911871629
+      ],
+      [
+        "region_AFE",
+        0.013642345171289266
+      ]
+    ]
+  },
+  {
+    "tag": "tag_targets_met_or_exceeded_success",
+    "leaf": 5,
+    "top5": [
+      [
+        "region_EAP",
+        0.02524744609880868
+      ],
+      [
+        "targets",
+        0.015137671441406828
+      ],
+      [
+        "planned_duration",
+        0.014910737309912474
+      ],
+      [
+        "context",
+        0.014599754945187842
+      ],
+      [
+        "umap3_x",
+        0.013817533625391565
+      ]
+    ]
+  }
+]
