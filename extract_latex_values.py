@@ -76,8 +76,12 @@ featsel_sec = get_section(
 nolimits_sec = get_section(
     r"SCRIPT: src/pipeline/H_outcome_tag_evaluate\.py --test --nolimits \(test run\)"
 )
-print_tag_sec = get_section(r"SCRIPT: src/pipeline/J_outcome_tag_results_table\.py --nolimits")
-print_tag_featsel_sec = get_section(r"SCRIPT: src/pipeline/J_outcome_tag_results_table\.py --featsel")
+print_tag_sec = get_section(
+    r"SCRIPT: src/pipeline/J_outcome_tag_results_table\.py --nolimits"
+)
+print_tag_featsel_sec = get_section(
+    r"SCRIPT: src/pipeline/J_outcome_tag_results_table\.py --featsel"
+)
 learning_curve_sec = get_section(
     r"SCRIPT: src/pipeline/E_overall_rating_extrapolate_scaling\.py"
 )
@@ -244,24 +248,34 @@ else:
 
 print()
 
+
 # ---------------------------------------------------------------------------
 # \OutcomeTagPairwiseAvg/Min/Max -- averaged across nolimits and feat-sel J runs
 # Sections: J_outcome_tag_results_table.py --nolimits  and  --featsel
 # ---------------------------------------------------------------------------
 def _avg_j_metric(base_cmd, desc_avg, desc_nl):
     m_nl = re.search(rf"\\newcommand{{\\{base_cmd}Nolimits}}{{(\d+)}}", print_tag_sec)
-    m_fs = re.search(rf"\\newcommand{{\\{base_cmd}FeatSelJ}}{{(\d+)}}", print_tag_featsel_sec)
+    m_fs = re.search(
+        rf"\\newcommand{{\\{base_cmd}FeatSelJ}}{{(\d+)}}", print_tag_featsel_sec
+    )
     if not m_nl:
-        print(f"ERROR: \\{base_cmd}Nolimits not found in J --nolimits section", file=sys.stderr)
+        print(
+            f"ERROR: \\{base_cmd}Nolimits not found in J --nolimits section",
+            file=sys.stderr,
+        )
         sys.exit(1)
     if not m_fs:
-        print(f"ERROR: \\{base_cmd}FeatSelJ not found in J --featsel section", file=sys.stderr)
+        print(
+            f"ERROR: \\{base_cmd}FeatSelJ not found in J --featsel section",
+            file=sys.stderr,
+        )
         sys.exit(1)
     nl_val = int(m_nl.group(1))
     fs_val = int(m_fs.group(1))
     val = int(round((nl_val + fs_val) / 2))
     emit(base_cmd, val, desc_avg)
     emit(f"{base_cmd}Nolimits", nl_val, desc_nl)
+
 
 _avg_j_metric(
     "OutcomeTagPairwiseAvg",
@@ -386,8 +400,7 @@ _all_tags_baseline_m = re.search(
     re.DOTALL,
 )
 _all_tags_model_m = re.search(
-    r"WEIGHTED ACCURACY -- ALL \d+ real-model tags.*?"
-    r"Chosen model\s*:\s*([0-9.]+)%",
+    r"WEIGHTED ACCURACY -- ALL \d+ real-model tags.*?" r"Chosen model\s*:\s*([0-9.]+)%",
     nolimits_sec,
     re.DOTALL,
 )
@@ -398,8 +411,7 @@ _curated_baseline_m = re.search(
     re.DOTALL,
 )
 _curated_model_m = re.search(
-    r"WEIGHTED ACCURACY -- curated \d+ tags.*?"
-    r"Chosen model\s*:\s*([0-9.]+)%",
+    r"WEIGHTED ACCURACY -- curated \d+ tags.*?" r"Chosen model\s*:\s*([0-9.]+)%",
     nolimits_sec,
     re.DOTALL,
 )
