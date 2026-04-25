@@ -16,15 +16,13 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 import matplotlib
 
 matplotlib.use("Agg")
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 from sklearn.linear_model import Ridge
 from sklearn.metrics import r2_score
 
@@ -32,66 +30,60 @@ UTILS_DIR = Path(__file__).resolve().parent.parent / "utils"
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
-from ml_models import (
-    run_ridge_glm_median_impute_noclip,
-    run_random_forest_median_impute_noclip,
-    run_xgboost_native_missing,
-    one_sd_shift_importance,
-    bootstrap_ci,
-    apply_start_year_trend_correction,
+from data_loan_disbursement import load_loan_or_disbursement
+from feature_engineering import (
+    add_dates_to_dataframe,
+    add_enhanced_uncertainty_features,
+    add_similarity_features,
+    data_sector_clusters,
+    load_activity_scope,
+    load_gdp_percap,
+    load_grades,
+    load_implementing_org_type,
+    load_is_completed,
+    load_ratings,
+    load_targets_context_maps_features,
+    load_world_bank_indicators,
+    restrict_to_reporting_orgs_exact,
 )
+from leakage_risk import (
+    EXCLUDE_TEST_LEAKAGE_RISK,
+    GRADE_LEAKAGE_IDS,
+    TEST_ANY_LEAKAGE_IDS,
+)
+from llm_load_predictions import (
+    VARIANT_PATHS,
+    get_llm_prediction_configs,
+    load_predictions_from_jsonl,
+)
+from ml_models import (
+    apply_start_year_trend_correction,
+    bootstrap_ci,
+    one_sd_shift_importance,
+    run_random_forest_median_impute_noclip,
+    run_ridge_glm_median_impute_noclip,
+    run_xgboost_native_missing,
+)
+from overall_rating_feature_labels import get_display_name
+from overall_rating_rf_conformal import get_error_bars_split_conformal
 from scoring_metrics import (
     adjusted_r2,
-    rmse,
     mae,
-    r2 as r2_metric,
-    true_hit_accuracy,
+    org_year_pairwise_ordering_prob,
+    rmse,
     side_accuracy,
     spearman_correlation,
+    true_hit_accuracy,
     within_group_pairwise_ordering_prob,
     within_group_pairwise_ordering_prob_on_reference_pairs,
     within_group_spearman_correlation,
-    org_year_pairwise_ordering_prob,
 )
 from split_constants import (
     LATEST_TRAIN_POINT,
     LATEST_VALIDATION_POINT,
     TOO_LATE_CUTOFF,
-    split_latest_by_date_with_cutoff,
     assert_split_matches_canonical,
 )
-from leakage_risk import (
-    EXCLUDE_TEST_LEAKAGE_RISK,
-    TEST_ANY_LEAKAGE_IDS,
-    GRADE_LEAKAGE_IDS,
-)
-from overall_rating_rf_conformal import get_error_bars_split_conformal
-from feature_engineering import (
-    load_grades,
-    load_is_completed,
-    load_ratings,
-    load_activity_scope,
-    load_gdp_percap,
-    load_implementing_org_type,
-    load_world_bank_indicators,
-    add_similarity_features,
-    pick_start_date,
-    add_dates_to_dataframe,
-    restrict_to_reporting_orgs_exact,
-    load_targets_context_maps_features,
-    add_enhanced_uncertainty_features,
-    data_sector_clusters,
-)
-from data_loan_disbursement import load_loan_or_disbursement
-from data_currency_conversion import return_misc_disbursement_or_planned_disbursement
-from overall_rating_feature_labels import get_display_name
-
-from llm_load_predictions import (
-    load_predictions_from_jsonl,
-    get_llm_prediction_configs,
-    VARIANT_PATHS,
-)
-from data_similar_activities import find_similar_activities_semantic
 
 # ---------------------------------------------------------------------------
 # CONSTANTS
@@ -125,7 +117,6 @@ TOP_10_FEATURES_ONLY = False  # set True to restrict model to top 10 features by
 USE_TOP_FEATURES_FOR_GENERALIZATION = (
     False  # set True to use ~19-feature set selected by val delta_r2/pairwise
 )
-USE_KNN_BLEND = False  # set True to blend in 20% KNN (15 nearest neighbours) before temporal correction -- slow
 MAGIC_OFFSET = False  # set True to apply per-column optimal offset (mean(y_true)-mean(y_pred)) on test set, maximising R^2
 
 KEEP_REPORTING_ORGS = [
@@ -262,66 +253,11 @@ def add_rf_llm_residual_corrector(
     print(f"Fitted RF residual corrector on n={len(fit_idx)} rows")
     print("  feats:", feats)
     print("  intercept:", float(model.intercept_))
-    for f, c in zip(feats, coef):
+    for f, c in zip(feats, coef, strict=False):
         print(f"  coef[{f}]: {float(c):+.6f}")
 
     return model, fit_idx
 
-
-def compute_knn_blend(
-    data, y, train_idx, eval_idx, base_col, info_csv, knn_weight=0.2, top_n=15
-):
-    """
-    Compute similarity-weighted average of training ratings for each activity in
-    eval_idx, then blend: (1 - knn_weight) * base_col + knn_weight * knn_pred.
-
-    Returns the blend Series (indexed like data), or None if too few predictions.
-    """
-    allowed_ids = set(str(aid) for aid in train_idx)
-    y_train = y.loc[train_idx].dropna()
-
-    knn_preds = {}
-    n_total = len(eval_idx)
-    print(f"\nComputing KNN predictions for {n_total} activities (k={top_n})...")
-    for i, aid in enumerate(eval_idx, 1):
-        if i % 50 == 0:
-            print(f"  {i}/{n_total}")
-        try:
-            df_sim, _ = find_similar_activities_semantic(
-                str(aid),
-                csv_path=str(info_csv),
-                top_n=top_n,
-                allowed_ids=allowed_ids,
-            )
-        except (ValueError, KeyError):
-            continue
-        if df_sim.empty:
-            continue
-        top = df_sim.head(top_n)
-        neighbor_ids = [
-            nid for nid in top["activity_id"].values if nid in y_train.index
-        ]
-        if not neighbor_ids:
-            continue
-        top_filt = top[top["activity_id"].isin(neighbor_ids)]
-        sims = top_filt["similarity"].to_numpy(dtype=float)
-        ratings = y_train.loc[top_filt["activity_id"].values].to_numpy(dtype=float)
-        weights = (
-            sims / sims.sum() if sims.sum() > 0 else np.ones(len(sims)) / len(sims)
-        )
-        knn_preds[aid] = float(np.average(ratings, weights=weights))
-
-    n_pred = len(knn_preds)
-    print(f"  KNN predictions computed for {n_pred}/{n_total} activities.")
-    if n_pred < 10:
-        print("  Too few KNN predictions -- skipping blend.")
-        return None
-
-    blend = data[base_col].copy()
-    for aid, knn_val in knn_preds.items():
-        if aid in blend.index and pd.notna(blend.loc[aid]):
-            blend.loc[aid] = (1.0 - knn_weight) * blend.loc[aid] + knn_weight * knn_val
-    return blend
 
 
 def print_wg_pairwise_on_llm_pairs(
@@ -973,7 +909,7 @@ def main():
     y = data["rating"].astype(float)
 
     complete_mask = data["is_completed"].fillna(0).astype(int) == 1
-    data_incomp = data.loc[~complete_mask]
+    data.loc[~complete_mask]
     X = X.loc[complete_mask]
     y = y.loc[complete_mask]
     data = data.loc[complete_mask]
@@ -1123,11 +1059,10 @@ def main():
     if USE_VAL_IN_TRAIN:
         X_train = pd.concat([X_train, X_val], axis=0)
         y_train = pd.concat([y_train, y_val], axis=0)
-        X_test, y_test = X.loc[held_idx], y.loc[held_idx]
+        X_test, _y_test = X.loc[held_idx], y.loc[held_idx]
     else:
         print("running on validation set")
         X_test = X_val
-        y_test = y_val
     train_idx, test_idx = X_train.index, X_test.index
 
     if EXCLUDE_TEST_LEAKAGE_RISK and LEAKAGE_HANDLING_METHOD == "drop":
@@ -1295,7 +1230,7 @@ def main():
         _delta_r2_contribs[_col] = _total_r2_ols - _r2_drop
 
     print(
-        f"\nPlain OLS GLM -- semi-partial R^2 (drop-one, training set, target=rating_delta):"
+        "\nPlain OLS GLM -- semi-partial R^2 (drop-one, training set, target=rating_delta):"
     )
     print(f"  Total train R^2 = {_total_r2_ols:.4f}")
     print(f"  {'Feature':<45s}  {'DeltaR^2':>8s}  {'% of R^2':>8s}")
@@ -1404,14 +1339,14 @@ def main():
             .drop(columns=["_feat_idx"])
             .reset_index(drop=True)
         )
-        print(f"\nTop 25 features by importance_abs_1sd:")
+        print("\nTop 25 features by importance_abs_1sd:")
         print(
             "\n"
             + imp_rf[["feature", "importance_abs_1sd", "delta_pred_1sd", "sd_train"]]
             .head(25)
             .to_string(index=False)
         )
-        print(f"\n\nBottom 10 features (least important):")
+        print("\n\nBottom 10 features (least important):")
         print(
             imp_rf[["feature", "importance_abs_1sd", "delta_pred_1sd", "sd_train"]]
             .tail(10)
@@ -1711,22 +1646,6 @@ def main():
         clip_lo=LLM_CORRECTOR_CLIP[0],
         clip_hi=LLM_CORRECTOR_CLIP[1],
     )
-
-    # ---- Optional KNN blend (20% neighbours, 80% model) -- before temporal correction ----
-    if USE_KNN_BLEND:
-        for _knn_col in ["pred_rf_llm_modded", "ridge_plus_rf_llm_modded"]:
-            _blend = compute_knn_blend(
-                data,
-                y,
-                train_idx,
-                test_idx,
-                base_col=_knn_col,
-                info_csv=INFO_FOR_ACTIVITY_FORECASTING,
-                knn_weight=0.2,
-                top_n=15,
-            )
-            if _blend is not None:
-                data[_knn_col] = _blend
 
     # ---- Start-year trend correction (fitted on train only, applied in-place) ----
     data["pred_rf_no_yr_corr"] = data["pred_rf"].copy()

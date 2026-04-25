@@ -48,7 +48,7 @@ def main():
         print(f"MODEL: {model}  ({n} features)")
         if note:
             print(f"  NOTE: {note}")
-        print(f"  Features:")
+        print("  Features:")
         for i, feat in enumerate(features, 1):
             print(f"    {i:3d}. {feat}")
 

@@ -23,18 +23,18 @@ Usage (from repo root):
     python src/pipeline/D_overall_rating_generate_oos_predictions.py
 """
 
-import sys
 import json
+import sys
 from pathlib import Path
 
+import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
-from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
+from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 
 # -- paths --------------------------------------------------------------------
 REPO = Path(__file__).resolve().parent.parent.parent
@@ -47,8 +47,10 @@ if str(UTILS) not in sys.path:
 
 from ml_models import DISABLE_ET
 from scoring_metrics import (
-    within_group_pairwise_ordering_prob,
     mae as mae_metric,
+)
+from scoring_metrics import (
+    within_group_pairwise_ordering_prob,
 )
 
 OUT_PLOT = Path(__file__).parent / "rf_val_insample_vs_oos.png"
@@ -205,7 +207,7 @@ orgs_val = orgs.reindex(common_val).to_numpy()
 years_val = years.reindex(common_val).astype(str).to_numpy()
 
 # within-group label = org + "_" + year
-groups_val = np.array([f"{o}_{yr}" for o, yr in zip(orgs_val, years_val)])
+groups_val = np.array([f"{o}_{yr}" for o, yr in zip(orgs_val, years_val, strict=False)])
 
 # -- metrics -------------------------------------------------------------------
 
@@ -237,7 +239,7 @@ y_val_full = y.loc[val_mask].dropna()
 pred_out_full = pred_oos.reindex(y_val_full.index)
 orgs_full = orgs.reindex(y_val_full.index).to_numpy()
 years_full = years.reindex(y_val_full.index).astype(str).to_numpy()
-groups_full = np.array([f"{o}_{yr}" for o, yr in zip(orgs_full, years_full)])
+groups_full = np.array([f"{o}_{yr}" for o, yr in zip(orgs_full, years_full, strict=False)])
 valid_full = ~np.isnan(pred_out_full.to_numpy())
 m_out_full = compute_metrics(
     y_val_full.to_numpy()[valid_full],
@@ -313,7 +315,7 @@ for ax_idx, (key, title, ylim) in enumerate(metric_pairs[1:], start=0):
     ax = axes[1, ax_idx]
     vals = [m_in[key], m_out[key], m_out_full[key]]
     bars = ax.bar(bar_labels, vals, color=bar_colors, edgecolor="black", width=0.5)
-    for bar, v in zip(bars, vals):
+    for bar, v in zip(bars, vals, strict=False):
         ax.text(
             bar.get_x() + bar.get_width() / 2,
             bar.get_height() + 0.002,
@@ -336,7 +338,7 @@ ax.clear()
 key, title = "wg_pairwise", "Within-group pairwise ranking"
 vals = [m_in[key], m_out[key], m_out_full[key]]
 bars = ax.bar(bar_labels, vals, color=bar_colors, edgecolor="black", width=0.5)
-for bar, v in zip(bars, vals):
+for bar, v in zip(bars, vals, strict=False):
     ax.text(
         bar.get_x() + bar.get_width() / 2,
         bar.get_height() + 0.002,
@@ -359,7 +361,7 @@ ax.clear()
 key, title = "mae", "MAE"
 vals = [m_in[key], m_out[key], m_out_full[key]]
 bars = ax.bar(bar_labels, vals, color=bar_colors, edgecolor="black", width=0.5)
-for bar, v in zip(bars, vals):
+for bar, v in zip(bars, vals, strict=False):
     ax.text(
         bar.get_x() + bar.get_width() / 2,
         bar.get_height() + 0.005,

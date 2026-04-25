@@ -142,7 +142,7 @@ sector_cluster_Capacity_Building_and_Technical_Assistance            0.044801   
                         sector_cluster_Project_Management            0.007400        0.007400 5.925564e-02
                                                region_LAC            0.006753       -0.006753 3.467854e-01
                                   sector_clusters_missing            0.006171       -0.006171 4.622625e-01
-             sector_cluster_increased_managed_forest_land            0.005275       -0.005275 2.067061e-01/home/dmrivers/Code/forecasting_thesis_code/src/utils/feature_engineering.py:1467: FutureWarning: Possible set difference at position 15
+             sector_cluster_increased_managed_forest_land            0.005275       -0.005275 2.067061e-01/home/dmrivers/Code/forecasting_thesis_code/src/utils/feature_engineering.py:1456: FutureWarning: Possible set difference at position 15
   m = re.search(r"forecast\s*[:\----]?\s*(.+)$", line, flags=re.IGNORECASE)
 
 
@@ -153,12 +153,12 @@ Bottom 10 features (least important):
                               rep_org_0            0.000153    1.528644e-04  0.235976
 sector_cluster_Green_growth_initiatives            0.000122   -1.215129e-04  0.123297
                         wgi_any_missing            0.000024   -2.358195e-05  0.267475
-      sector_cluster_Climate_adaptation            0.000000   -4.336809e-19  0.101651
-             llm_features_missing_count            0.000000    2.602085e-18  0.617173
-             llm_features_present_ratio            0.000000   -2.602085e-18  0.088168
-             feature_completeness_ratio            0.000000   -3.903128e-18  0.088168
-            planned_expenditure_missing            0.000000    8.673617e-19  0.166601
-               planned_duration_missing            0.000000    1.734723e-18  0.045129
+      sector_cluster_Climate_adaptation            0.000000   -2.168404e-18  0.101651
+             llm_features_missing_count            0.000000    5.204170e-18  0.617173
+             llm_features_present_ratio            0.000000   -8.673617e-19  0.088168
+             feature_completeness_ratio            0.000000    3.469447e-18  0.088168
+            planned_expenditure_missing            0.000000   -1.301043e-18  0.166601
+               planned_duration_missing            0.000000    8.673617e-19  0.045129
 
 Running leave-one-out ablation for top 30 features...
   [1/30] Dropping targets...
@@ -282,25 +282,25 @@ Fitted RF residual corrector on n=299 rows
   Term                               Weight   Interpretation
   ------------------------------------------------------------------------------------------
   Intercept                         -0.4910   Constant additive shift applied to every prediction
-  RF+ET prediction  (eff. wt.)      +1.2334   How much of the RF prediction survives; <1 = shrinkage toward the mean/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  RF+ET prediction  (eff. wt.)      +1.2334   How much of the RF prediction survives; <1 = shrinkage toward the mean/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:134: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:131: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   rho = spearmanr(yt, yp).statistic
 
   Mean LLM forecast (eff. wt.)      -0.0403   How much LLM signal is blended in; positive = LLM improves on RF
@@ -312,7 +312,7 @@ Fitted RF residual corrector on n=299 rows
 
 Fitted RF residual corrector on n=299 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.3489273505200788
+  intercept: -0.34892735052007884
   coef[ridge_plus_rf]: +0.155983
   coef[mean_all_llm_preds]: -0.005026
 
@@ -912,7 +912,7 @@ Max abs difference: 0.3821
 SCRIPT: src/pipeline/E_overall_rating_extrapolate_scaling.py
 LOOK FOR: 'pop_proj_5x' from analysis_17_learning_curve -- gives \PairwiseModelExtrapolated (log-linear extrapolation to 5x training data).
 ================================================================================
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/feature_engineering.py:1467: FutureWarning: Possible set difference at position 15
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/feature_engineering.py:1456: FutureWarning: Possible set difference at position 15
   m = re.search(r"forecast\s*[:\----]?\s*(.+)$", line, flags=re.IGNORECASE)
 
 Building full model data (mirrors A_overall_rating_fit_and_evaluate pipeline)...
@@ -943,7 +943,7 @@ Fitted RF residual corrector on n=299 rows
   coef[mean_all_llm_preds]: -0.028756
 Fitted RF residual corrector on n=299 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.34883341527096945
+  intercept: -0.34883341527096934
   coef[ridge_plus_rf]: +0.141345
   coef[mean_all_llm_preds]: +0.008644
 
@@ -994,7 +994,7 @@ Fitted RF residual corrector on n=299 rows
   coef[mean_all_llm_preds]: -0.028756
 Fitted RF residual corrector on n=299 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.34883341527096934
+  intercept: -0.3488334152709694
   coef[ridge_plus_rf]: +0.141345
   coef[mean_all_llm_preds]: +0.008644
 
@@ -1006,12 +1006,12 @@ Start-year trend correction fitted on n=981 train rows (Ridge alpha=50.0).
     sample 4/5: BEST R^2=-0.0652  RMSE=0.9555
 Fitted RF residual corrector on n=299 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.5659933707631245
+  intercept: -0.5659933707631246
   coef[pred_rf]: +0.242665
   coef[mean_all_llm_preds]: -0.028756
 Fitted RF residual corrector on n=299 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.3488334152709694
+  intercept: -0.34883341527096945
   coef[ridge_plus_rf]: +0.141345
   coef[mean_all_llm_preds]: +0.008644
 
@@ -1026,7 +1026,7 @@ Start-year trend correction fitted on n=981 train rows (Ridge alpha=50.0).
   Drop 10%  ->  train n=883  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=263 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.6832597974448863
+  intercept: -0.6832597974448862
   coef[pred_rf]: +0.231583
   coef[mean_all_llm_preds]: +0.013270
 Fitted RF residual corrector on n=263 rows
@@ -1060,12 +1060,12 @@ Start-year trend correction fitted on n=883 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.0710  RMSE=0.9581
 Fitted RF residual corrector on n=272 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.46010731744765226
+  intercept: -0.460107317447652
   coef[pred_rf]: +0.237032
   coef[mean_all_llm_preds]: -0.053013
 Fitted RF residual corrector on n=272 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.267602836575117
+  intercept: -0.26760283657511696
   coef[ridge_plus_rf]: +0.149558
   coef[mean_all_llm_preds]: -0.021784
 
@@ -1077,7 +1077,7 @@ Start-year trend correction fitted on n=883 train rows (Ridge alpha=50.0).
     sample 3/5: BEST R^2=-0.0709  RMSE=0.9581
 Fitted RF residual corrector on n=271 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.2905181859966454
+  intercept: -0.29051818599664536
   coef[pred_rf]: +0.219814
   coef[mean_all_llm_preds]: -0.089555
 Fitted RF residual corrector on n=271 rows
@@ -1094,12 +1094,12 @@ Start-year trend correction fitted on n=883 train rows (Ridge alpha=50.0).
     sample 4/5: BEST R^2=-0.0667  RMSE=0.9562
 Fitted RF residual corrector on n=271 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.35976718912439265
+  intercept: -0.35976718912439254
   coef[pred_rf]: +0.175550
   coef[mean_all_llm_preds]: -0.024745
 Fitted RF residual corrector on n=271 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.15791590621224316
+  intercept: -0.15791590621224305
   coef[ridge_plus_rf]: +0.086354
   coef[mean_all_llm_preds]: +0.005343
 
@@ -1119,7 +1119,7 @@ Fitted RF residual corrector on n=245 rows
   coef[mean_all_llm_preds]: -0.002634
 Fitted RF residual corrector on n=245 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.3618741037800255
+  intercept: -0.3618741037800256
   coef[ridge_plus_rf]: +0.131310
   coef[mean_all_llm_preds]: +0.019360
 
@@ -1136,7 +1136,7 @@ Fitted RF residual corrector on n=238 rows
   coef[mean_all_llm_preds]: -0.104455
 Fitted RF residual corrector on n=238 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.5618960220940976
+  intercept: -0.5618960220940973
   coef[ridge_plus_rf]: +0.302531
   coef[mean_all_llm_preds]: -0.088239
 
@@ -1148,7 +1148,7 @@ Start-year trend correction fitted on n=785 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.0948  RMSE=0.9685
 Fitted RF residual corrector on n=230 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.28761668661194195
+  intercept: -0.2876166866119422
   coef[pred_rf]: +0.229689
   coef[mean_all_llm_preds]: -0.093493
 Fitted RF residual corrector on n=230 rows
@@ -1165,7 +1165,7 @@ Start-year trend correction fitted on n=785 train rows (Ridge alpha=50.0).
     sample 3/5: BEST R^2=-0.0910  RMSE=0.9669
 Fitted RF residual corrector on n=239 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.4556082336315548
+  intercept: -0.45560823363155445
   coef[pred_rf]: +0.208080
   coef[mean_all_llm_preds]: -0.027398
 Fitted RF residual corrector on n=239 rows
@@ -1182,7 +1182,7 @@ Start-year trend correction fitted on n=785 train rows (Ridge alpha=50.0).
     sample 4/5: BEST R^2=-0.0911  RMSE=0.9670
 Fitted RF residual corrector on n=227 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.6910290970809194
+  intercept: -0.6910290970809195
   coef[pred_rf]: +0.245931
   coef[mean_all_llm_preds]: +0.010402
 Fitted RF residual corrector on n=227 rows
@@ -1202,7 +1202,7 @@ Start-year trend correction fitted on n=785 train rows (Ridge alpha=50.0).
   Drop 30%  ->  train n=687  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=206 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.5954795715979604
+  intercept: -0.5954795715979603
   coef[pred_rf]: +0.264264
   coef[mean_all_llm_preds]: -0.036583
 Fitted RF residual corrector on n=206 rows
@@ -1219,7 +1219,7 @@ Start-year trend correction fitted on n=687 train rows (Ridge alpha=50.0).
     sample 1/5: BEST R^2=-0.0525  RMSE=0.9498
 Fitted RF residual corrector on n=214 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.49193547647839686
+  intercept: -0.49193547647839664
   coef[pred_rf]: +0.116613
   coef[mean_all_llm_preds]: +0.088070
 Fitted RF residual corrector on n=214 rows
@@ -1258,7 +1258,7 @@ Fitted RF residual corrector on n=201 rows
   coef[mean_all_llm_preds]: +0.025606
 Fitted RF residual corrector on n=201 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.6152753901683524
+  intercept: -0.6152753901683523
   coef[ridge_plus_rf]: +0.179443
   coef[mean_all_llm_preds]: +0.046505
 
@@ -1270,7 +1270,7 @@ Start-year trend correction fitted on n=687 train rows (Ridge alpha=50.0).
     sample 4/5: BEST R^2=-0.0765  RMSE=0.9606
 Fitted RF residual corrector on n=210 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.10525773295254176
+  intercept: 0.10525773295254187
   coef[pred_rf]: +0.142669
   coef[mean_all_llm_preds]: -0.124685
 Fitted RF residual corrector on n=210 rows
@@ -1290,12 +1290,12 @@ Start-year trend correction fitted on n=687 train rows (Ridge alpha=50.0).
   Drop 40%  ->  train n=589  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=190 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.27723727526255104
+  intercept: -0.27723727526255115
   coef[pred_rf]: +0.090182
   coef[mean_all_llm_preds]: +0.029888
 Fitted RF residual corrector on n=190 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.1876347386073168
+  intercept: -0.18763473860731686
   coef[ridge_plus_rf]: +0.068524
   coef[mean_all_llm_preds]: +0.024670
 
@@ -1307,7 +1307,7 @@ Start-year trend correction fitted on n=589 train rows (Ridge alpha=50.0).
     sample 1/5: BEST R^2=-0.0264  RMSE=0.9380
 Fitted RF residual corrector on n=172 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.35056030786839876
+  intercept: -0.35056030786839887
   coef[pred_rf]: +0.216770
   coef[mean_all_llm_preds]: -0.062553
 Fitted RF residual corrector on n=172 rows
@@ -1324,12 +1324,12 @@ Start-year trend correction fitted on n=589 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.0405  RMSE=0.9444
 Fitted RF residual corrector on n=179 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.01762239949156319
+  intercept: -0.0176223994915633
   coef[pred_rf]: +0.070343
   coef[mean_all_llm_preds]: -0.026303
 Fitted RF residual corrector on n=179 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 0.1165403900476487
+  intercept: 0.11654039004764863
   coef[ridge_plus_rf]: +0.026763
   coef[mean_all_llm_preds]: -0.021471
 
@@ -1341,7 +1341,7 @@ Start-year trend correction fitted on n=589 train rows (Ridge alpha=50.0).
     sample 3/5: BEST R^2=-0.0430  RMSE=0.9455
 Fitted RF residual corrector on n=173 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.5761529216345764
+  intercept: -0.5761529216345767
   coef[pred_rf]: +0.183728
   coef[mean_all_llm_preds]: +0.029349
 Fitted RF residual corrector on n=173 rows
@@ -1395,12 +1395,12 @@ Start-year trend correction fitted on n=490 train rows (Ridge alpha=50.0).
     sample 1/5: BEST R^2=-0.0204  RMSE=0.9352
 Fitted RF residual corrector on n=149 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.7378665110619693
+  intercept: -0.7378665110619695
   coef[pred_rf]: +0.285065
   coef[mean_all_llm_preds]: -0.027723
 Fitted RF residual corrector on n=149 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.6590671089481095
+  intercept: -0.6590671089481096
   coef[ridge_plus_rf]: +0.301815
   coef[mean_all_llm_preds]: -0.067115
 
@@ -1412,7 +1412,7 @@ Start-year trend correction fitted on n=490 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.0629  RMSE=0.9543
 Fitted RF residual corrector on n=154 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.582941038678735
+  intercept: -0.5829410386787353
   coef[pred_rf]: +0.172328
   coef[mean_all_llm_preds]: +0.063400
 Fitted RF residual corrector on n=154 rows
@@ -1429,7 +1429,7 @@ Start-year trend correction fitted on n=490 train rows (Ridge alpha=50.0).
     sample 3/5: BEST R^2=-0.0797  RMSE=0.9618
 Fitted RF residual corrector on n=143 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.045421257206221394
+  intercept: 0.04542125720622148
   coef[pred_rf]: +0.064904
   coef[mean_all_llm_preds]: -0.027320
 Fitted RF residual corrector on n=143 rows
@@ -1446,12 +1446,12 @@ Start-year trend correction fitted on n=490 train rows (Ridge alpha=50.0).
     sample 4/5: BEST R^2=-0.0783  RMSE=0.9613
 Fitted RF residual corrector on n=147 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.2816646369467277
+  intercept: 0.28166463694672794
   coef[pred_rf]: +0.088687
   coef[mean_all_llm_preds]: -0.109700
 Fitted RF residual corrector on n=147 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 0.6307523777805542
+  intercept: 0.6307523777805544
   coef[ridge_plus_rf]: -0.028043
   coef[mean_all_llm_preds]: -0.095802
 
@@ -1466,7 +1466,7 @@ Start-year trend correction fitted on n=490 train rows (Ridge alpha=50.0).
   Drop 60%  ->  train n=392  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=107 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.050581858140392594
+  intercept: -0.05058185814039254
   coef[pred_rf]: +0.079281
   coef[mean_all_llm_preds]: +0.007682
 Fitted RF residual corrector on n=107 rows
@@ -1500,7 +1500,7 @@ Start-year trend correction fitted on n=392 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.0964  RMSE=0.9694
 Fitted RF residual corrector on n=106 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.10638300632674635
+  intercept: -0.10638300632674647
   coef[pred_rf]: +0.182774
   coef[mean_all_llm_preds]: -0.073063
 Fitted RF residual corrector on n=106 rows
@@ -1554,12 +1554,12 @@ Start-year trend correction fitted on n=392 train rows (Ridge alpha=50.0).
   Drop 70%  ->  train n=294  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=93 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.054361075506858814
+  intercept: 0.05436107550685884
   coef[pred_rf]: -0.042324
   coef[mean_all_llm_preds]: +0.078100
 Fitted RF residual corrector on n=93 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 0.10965677492775205
+  intercept: 0.10965677492775197
   coef[ridge_plus_rf]: -0.062777
   coef[mean_all_llm_preds]: +0.079162
 
@@ -1576,7 +1576,7 @@ Fitted RF residual corrector on n=103 rows
   coef[mean_all_llm_preds]: +0.273261
 Fitted RF residual corrector on n=103 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.42515827741949774
+  intercept: -0.4251582774194975
   coef[ridge_plus_rf]: -0.087564
   coef[mean_all_llm_preds]: +0.275787
 
@@ -1588,7 +1588,7 @@ Start-year trend correction fitted on n=294 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.0114  RMSE=0.9310
 Fitted RF residual corrector on n=94 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.4241700427456367
+  intercept: -0.4241700427456369
   coef[pred_rf]: +0.025603
   coef[mean_all_llm_preds]: +0.169290
 Fitted RF residual corrector on n=94 rows
@@ -1605,12 +1605,12 @@ Start-year trend correction fitted on n=294 train rows (Ridge alpha=50.0).
     sample 3/5: BEST R^2=-0.0483  RMSE=0.9476
 Fitted RF residual corrector on n=92 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.29023119552414245
+  intercept: -0.2902311955241422
   coef[pred_rf]: +0.206017
   coef[mean_all_llm_preds]: -0.059596
 Fitted RF residual corrector on n=92 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.20694514204101166
+  intercept: -0.20694514204101197
   coef[ridge_plus_rf]: +0.187201
   coef[mean_all_llm_preds]: -0.066020
 
@@ -1622,12 +1622,12 @@ Start-year trend correction fitted on n=294 train rows (Ridge alpha=50.0).
     sample 4/5: BEST R^2=-0.0610  RMSE=0.9533
 Fitted RF residual corrector on n=84 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.28841775698720445
+  intercept: -0.2884177569872049
   coef[pred_rf]: +0.168892
   coef[mean_all_llm_preds]: -0.004812
 Fitted RF residual corrector on n=84 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.27172576081000843
+  intercept: -0.27172576081000854
   coef[ridge_plus_rf]: +0.165494
   coef[mean_all_llm_preds]: -0.013983
 
@@ -1642,12 +1642,12 @@ Start-year trend correction fitted on n=294 train rows (Ridge alpha=50.0).
   Drop 80%  ->  train n=196  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=50 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.5520606106283703
+  intercept: -0.5520606106283704
   coef[pred_rf]: +0.370406
   coef[mean_all_llm_preds]: -0.137796
 Fitted RF residual corrector on n=50 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.6461680782034409
+  intercept: -0.6461680782034411
   coef[ridge_plus_rf]: +0.454115
   coef[mean_all_llm_preds]: -0.203482
 
@@ -1664,7 +1664,7 @@ Fitted RF residual corrector on n=57 rows
   coef[mean_all_llm_preds]: -0.315908
 Fitted RF residual corrector on n=57 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 1.162471843198881
+  intercept: 1.1624718431988807
   coef[ridge_plus_rf]: +0.052248
   coef[mean_all_llm_preds]: -0.327602
 
@@ -1676,12 +1676,12 @@ Start-year trend correction fitted on n=196 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.3104  RMSE=1.0597
 Fitted RF residual corrector on n=48 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.1963571421660628
+  intercept: 0.19635714216606273
   coef[pred_rf]: -0.072560
   coef[mean_all_llm_preds]: +0.070686
 Fitted RF residual corrector on n=48 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 0.22833258238390747
+  intercept: 0.22833258238390738
   coef[ridge_plus_rf]: -0.086638
   coef[mean_all_llm_preds]: +0.070495
 
@@ -1698,7 +1698,7 @@ Fitted RF residual corrector on n=51 rows
   coef[mean_all_llm_preds]: +0.184191
 Fitted RF residual corrector on n=51 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.10232116552317982
+  intercept: -0.10232116552317988
   coef[ridge_plus_rf]: -0.081670
   coef[mean_all_llm_preds]: +0.145565
 
@@ -1709,15 +1709,15 @@ Start-year trend correction fitted on n=196 train rows (Ridge alpha=50.0).
   residual ~ start_year:  slope=+0.0298/yr  intercept=-59.9098
     sample 4/5: BEST R^2=-0.1718  RMSE=1.0004
 Fitted RF residual corrector on n=57 rows
-  feats:/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:90: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  feats:/home/dmrivers/Code/forecasting_thesis_code/src/utils/scoring_metrics.py:87: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
   corr, _ = spearmanr(y_true, y_pred)
  ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.7107570996752102
+  intercept: -0.7107570996752106
   coef[pred_rf]: +0.199211
   coef[mean_all_llm_preds]: +0.084133
 Fitted RF residual corrector on n=57 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.6551350067775603
+  intercept: -0.6551350067775605
   coef[ridge_plus_rf]: +0.157976
   coef[mean_all_llm_preds]: +0.106167
 
@@ -1732,12 +1732,12 @@ Start-year trend correction fitted on n=196 train rows (Ridge alpha=50.0).
   Drop 90%  ->  train n=98  (of 981)  averaging 5 random samples...
 Fitted RF residual corrector on n=35 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.7364195973200568
+  intercept: 0.7364195973200569
   coef[pred_rf]: +0.063051
   coef[mean_all_llm_preds]: -0.223633
 Fitted RF residual corrector on n=35 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 0.5124801360963958
+  intercept: 0.5124801360963959
   coef[ridge_plus_rf]: +0.180759
   coef[mean_all_llm_preds]: -0.284387
 
@@ -1749,12 +1749,12 @@ Start-year trend correction fitted on n=98 train rows (Ridge alpha=50.0).
     sample 1/5: BEST R^2=-0.1325  RMSE=0.9853
 Fitted RF residual corrector on n=34 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: 0.5782515720943481
+  intercept: 0.5782515720943483
   coef[pred_rf]: -0.068600
   coef[mean_all_llm_preds]: -0.038315
 Fitted RF residual corrector on n=34 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: 0.3121038406328803
+  intercept: 0.31210384063288055
   coef[ridge_plus_rf]: +0.011137
   coef[mean_all_llm_preds]: -0.045825
 
@@ -1766,7 +1766,7 @@ Start-year trend correction fitted on n=98 train rows (Ridge alpha=50.0).
     sample 2/5: BEST R^2=-0.1157  RMSE=0.9779
 Fitted RF residual corrector on n=35 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.5937894848047293
+  intercept: -0.5937894848047296
   coef[pred_rf]: -0.167411
   coef[mean_all_llm_preds]: +0.394368
 Fitted RF residual corrector on n=35 rows
@@ -1783,12 +1783,12 @@ Start-year trend correction fitted on n=98 train rows (Ridge alpha=50.0).
     sample 3/5: BEST R^2=-0.0944  RMSE=0.9684
 Fitted RF residual corrector on n=26 rows
   feats: ['pred_rf', 'mean_all_llm_preds']
-  intercept: -0.8041787809525112
+  intercept: -0.8041787809525115
   coef[pred_rf]: +0.171913
   coef[mean_all_llm_preds]: +0.094969
 Fitted RF residual corrector on n=26 rows
   feats: ['ridge_plus_rf', 'mean_all_llm_preds']
-  intercept: -0.9475722751870361
+  intercept: -0.9475722751870364
   coef[ridge_plus_rf]: +0.221034
   coef[mean_all_llm_preds]: +0.083270
 
@@ -1847,7 +1847,7 @@ Plot 2 saved -> /home/dmrivers/Code/forecasting_thesis_code/src/pipeline/learnin
 SCRIPT: src/pipeline/F_llm_score_forecast_narratives.py
 LOOK FOR: 'Mean Grade: <value>' per forecast config. Best RF-forced full-context config -> \BestNarrativeGrade; risks-only config -> \RisksOnlyGrade.
 ================================================================================
-/home/dmrivers/Code/forecasting_thesis_code/src/utils/feature_engineering.py:1467: FutureWarning: Possible set difference at position 15
+/home/dmrivers/Code/forecasting_thesis_code/src/utils/feature_engineering.py:1456: FutureWarning: Possible set difference at position 15
   m = re.search(r"forecast\s*[:\----]?\s*(.+)$", line, flags=re.IGNORECASE)
 
 Comparing LLM Forecast Outputs
@@ -2219,7 +2219,7 @@ METRICS SUMMARY - set_a
 Method                                  N      R^2   PairOrd     RMSE      MAE  SideAcc@3.5  MeanGrade  MedianGrade
 --------------------------------------------------------------------------------------------------------------
 gemini-3-pro (KNN+RAG+S1+S2)          283  -0.0038    0.7311   0.9403   0.6281       0.6466      87.58        88.00
-deepseek-R1 (KNN+RAG+S1+S2)           283  -0.1748    0.6809   1.0172   0.7518       0.5230      86.55        88.00/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/F_llm_score_forecast_narratives.py:856: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+deepseek-R1 (KNN+RAG+S1+S2)           283  -0.1748    0.6809   1.0172   0.7518       0.5230      86.55        88.00/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/F_llm_score_forecast_narratives.py:850: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
   plt.show()
 
 deepseek-R1 RF forced (KNN+RAG+S1+S2)   283   0.1662    0.8789   0.8570   0.5645       0.7067      88.19        88.00
@@ -2227,14 +2227,6 @@ deepseek-R1 RF forced (no KNN, no RAG, no S1, no S2)   283   0.1662    0.8792   
 deepseek-R1, (KNN and RAG added, no S1, no S2)   283  -0.2761    0.6812   1.0602   0.8012       0.5230      86.24        88.00
 deepseek-R1 (no KNN, no RAG, no S1, no S2)   283  -0.0529    0.7066   0.9630   0.6670       0.6148      86.26        88.00
 deepseek-R1 (minimal prompt)          283   0.0779    0.7719   0.9012   0.5786       0.6926      85.19        88.00
-
-================================================================================
-PAIRED BOOTSTRAP COMPARISONS
-================================================================================
-
-PAIRED: Baseline vs Deepseek (KNN+RAG+S1+S2): missing one method, skipping
-
-PAIRED: Gemini (KNN+RAG+S1+S2) vs Deepseek (KNN+RAG+S1+S2): missing one method, skipping
 
 ================================================================================
 LATEX TABLE
@@ -2312,7 +2304,7 @@ TEST SET WG PAIRWISE (files covering >= 50% of 200 test activities)
 ================================================================================
 All comparisons complete!
 Output directory: ../../data/forecast_grades
-Completed in 4.04s
+Completed in 4.81s
 
 Figure 2 (2-pane plot) saved to: /home/dmrivers/Code/forecasting_thesis_code/data/forecast_grades/plots/2pane_mean_grade_vs_r2_and_pairwise.png
 
@@ -4516,7 +4508,7 @@ XM-DAC-46004-34341-013-LN2269    4
 44000-P153604                    3
 44000-P166802                    3
 [outcomes] DPU wide: (549, 11) cols: 11
-[outcomes] DPU excluded yield + {'benefit_cost_ratios', 'financial_rate_of_return', 'economic_rate_of_return'}
+[outcomes] DPU excluded yield + {'financial_rate_of_return', 'benefit_cost_ratios', 'economic_rate_of_return'}
 
 [UNIVERSE] outcome non-null counts (n_rows with value):
 out_raw_economic_rate_of_return__percent                 453
@@ -4641,17 +4633,17 @@ sector_cluster_Capacity_Building_and_Technical_Assistance            0.022845   
 
 
 Bottom 10 features (least important):
-                                 feature  importance_abs_1sd  delta_pred_1sd  sd_train
-                              region_AFE                 0.0             0.0  0.247681
-                              region_AFW                 0.0             0.0  0.307023
-              llm_features_present_ratio                 0.0             0.0  0.060869
-              llm_features_missing_count                 0.0             0.0  0.426083
-              feature_completeness_ratio                 0.0             0.0  0.060869
-       sector_cluster_Climate_adaptation                 0.0             0.0  0.022368
-                         wgi_any_missing                 0.0             0.0  0.202296
-          grp_benefit_cost_ratios__ratio                 0.0             0.0  0.250340
-grp_co2_emission_reductions__tonnes_co2e                 0.0             0.0  0.233783
-    grp_economic_rate_of_return__percent                 0.0             0.0  0.497525
+                                          feature  importance_abs_1sd  delta_pred_1sd  sd_train
+                                   activity_scope                 0.0             0.0  1.251533
+                                       region_AFW                 0.0             0.0  0.307023
+                                       region_LAC                 0.0             0.0  0.373870
+                                       region_EAP                 0.0             0.0  0.422245
+                                        rep_org_2                 0.0             0.0  0.167832
+                sector_cluster_Climate_adaptation                 0.0             0.0  0.022368
+                               gdp_percap_missing                 0.0             0.0  0.205712
+                          sector_clusters_missing                 0.0             0.0  0.428849
+grp_co2_emission_reductions__tonnes_co2e_per_year                 0.0             0.0  0.167832
+               grp_water_connections__connections                 0.0             0.0  0.310910
 
 Start-year trend correction fitted on n=348 train rows (Ridge alpha=50.0).
   residual ~ start_year:  slope=+0.0037/yr  intercept=-7.4595
@@ -4663,7 +4655,7 @@ RMSE (z units): 1.035900439778502
 MAE  (z units): 0.7219013831837688
 
 === ROW-LEVEL EXTRA ===
-row-level corr: 0.06933951768440703
+row-level corr: 0.06933951768440706
 
 === ZAGG EXACT INPUTS (activity means) ===
 n activities in act_true: 58
@@ -4740,10 +4732,10 @@ Difference (Full - Simple):
 ================================================================================
 
 ================================================================================
-SAVING ZAGG MODEL OUTPUTS FOR COMPARISON ANALYSIS
-================================================================================/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1042: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+SAVING ZAGG MODEL OUTPUTS FOR COMPARISON ANALYSIS/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1022: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
   s = y_true.stack(dropna=True)  # MultiIndex: (activity_id, outcome_col) -> value
 
+================================================================================
 Saved zagg feature importances to /home/dmrivers/Code/forecasting_thesis_code/data/outcomes_model_outputs/feature_importances.csv
   66 features
 Saved zagg predictions to /home/dmrivers/Code/forecasting_thesis_code/data/outcomes_model_outputs/predictions.csv
@@ -5019,37 +5011,37 @@ sector_cluster_Capacity_Building_and_Technical_Assistance           0.0228445   
              sector_cluster_increased_managed_forest_land         0.000793116    -0.000793116     0.151691
                sector_cluster_reduced_PM2.5_air_pollution         0.000203536     0.000203536    0.0968066
                  sector_cluster_increased_food_production         0.000170125    -0.000170125     0.201583
-                                           integratedness         1.38778e-17    -1.38778e-17      3.11706
-        grp_co2_emission_reductions__tonnes_co2e_per_year         1.38778e-17    -1.38778e-17     0.167832
-                                             umap_missing         1.38778e-17     1.38778e-17     0.312824
-                       grp_water_connections__connections         1.38778e-17    -1.38778e-17      0.31091
-                                  sector_clusters_missing         1.38778e-17    -1.38778e-17     0.428849
-                                       gdp_percap_missing         1.38778e-17     1.38778e-17     0.205712
-                              planned_expenditure_missing         1.38778e-17    -1.38778e-17    0.0675219
-                                               region_EAP         1.38778e-17     1.38778e-17     0.422245
-                                                rep_org_0         1.38778e-17     1.38778e-17    0.0390434
+                                               region_SAS         1.38778e-17    -1.38778e-17     0.307023
+                                                rep_org_0         1.38778e-17    -1.38778e-17    0.0390434
                                                 rep_org_1         1.38778e-17     1.38778e-17     0.163484
-                                               region_ECA         1.38778e-17    -1.38778e-17     0.345917
-                                             cpia_missing         6.93889e-18     6.93889e-18      0.49945
-                                               region_SAS         6.93889e-18    -6.93889e-18     0.307023
+                                             umap_missing         1.38778e-17    -1.38778e-17     0.312824
+                                               region_AFE         1.38778e-17     1.38778e-17     0.247681
+                              grp_generation_capacity__mw         6.93889e-18    -6.93889e-18      0.25034
+                                               region_ECA         6.93889e-18    -6.93889e-18     0.345917
+                                          wgi_any_missing         6.93889e-18     6.93889e-18     0.202296
+                           grp_benefit_cost_ratios__ratio         6.93889e-18    -6.93889e-18      0.25034
+                 grp_co2_emission_reductions__tonnes_co2e         6.93889e-18     6.93889e-18     0.233783
+                              planned_expenditure_missing         6.93889e-18    -6.93889e-18    0.0675219
+                               feature_completeness_ratio         6.93889e-18    -6.93889e-18     0.060869
+                               llm_features_present_ratio         6.93889e-18     6.93889e-18     0.060869
                                               region_MENA         6.93889e-18     6.93889e-18     0.247681
-                                          finance_is_loan         6.93889e-18    -6.93889e-18     0.423211
-                              grp_generation_capacity__mw         6.93889e-18     6.93889e-18      0.25034
-                                 planned_duration_missing         6.93889e-18    -6.93889e-18    0.0390434
-                    grp_financial_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.417297
-                                               region_LAC                   0               0      0.37387
+                                             cpia_missing         6.93889e-18    -6.93889e-18      0.49945
+                               llm_features_missing_count         6.93889e-18    -6.93889e-18     0.426083
+                    grp_financial_rate_of_return__percent         6.93889e-18     6.93889e-18     0.417297
+                     grp_economic_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.497525
+                                 planned_duration_missing         6.93889e-18     6.93889e-18    0.0390434
+                                           integratedness                   0               0      3.11706
+                                          finance_is_loan                   0               0     0.423211
                                            activity_scope                   0               0      1.25153
-                                                rep_org_2                   0               0     0.167832
-                                               region_AFE                   0               0     0.247681
                                                region_AFW                   0               0     0.307023
-                               llm_features_present_ratio                   0               0     0.060869
-                               llm_features_missing_count                   0               0     0.426083
-                               feature_completeness_ratio                   0               0     0.060869
+                                               region_LAC                   0               0      0.37387
+                                               region_EAP                   0               0     0.422245
+                                                rep_org_2                   0               0     0.167832
                         sector_cluster_Climate_adaptation                   0               0    0.0223676
-                                          wgi_any_missing                   0               0     0.202296
-                           grp_benefit_cost_ratios__ratio                   0               0      0.25034
-                 grp_co2_emission_reductions__tonnes_co2e                   0               0     0.233783
-                     grp_economic_rate_of_return__percent                   0               0     0.497525
+                                       gdp_percap_missing                   0               0     0.205712
+                                  sector_clusters_missing                   0               0     0.428849
+        grp_co2_emission_reductions__tonnes_co2e_per_year                   0               0     0.167832
+                       grp_water_connections__connections                   0               0      0.31091
 
 ====================================================================================================
 raw  out_raw_benefit_cost_ratios__ratio
@@ -5061,54 +5053,54 @@ raw  out_raw_benefit_cost_ratios__ratio
                                  expenditure_per_year_log         0.000317639     0.000317639      1.06746
                                                   targets         0.000273342    -0.000273342       13.421
                                   log_planned_expenditure         0.000118451     0.000118451      1.01671
+                                          finance_is_loan         8.32667e-17     8.32667e-17     0.477134
+                                               region_LAC         5.55112e-17     5.55112e-17     0.319058
+                                               region_SAS         5.55112e-17     5.55112e-17     0.355139
                                                 rep_org_1         5.55112e-17     5.55112e-17        0.127
-                                               cpia_score         5.55112e-17     5.55112e-17     0.266264
-           sector_cluster_Institutional_capacity_building         5.55112e-17    -5.55112e-17    0.0621096
+                                               region_ECA         5.55112e-17     5.55112e-17     0.319058
+                         sector_cluster_Financing_charges         5.55112e-17     5.55112e-17    0.0146561
+                                  sector_clusters_missing         5.55112e-17     5.55112e-17     0.449749
+                                             cpia_missing         5.55112e-17     5.55112e-17     0.497482
+                        sector_cluster_Climate_adaptation         5.55112e-17     5.55112e-17    0.0323273
+               sector_cluster_reduced_PM2.5_air_pollution         5.55112e-17    -5.55112e-17     0.119557
          sector_cluster_Improved_transport_infrastructure         5.55112e-17    -5.55112e-17     0.222004
-                                               gdp_percap         5.55112e-17    -5.55112e-17     0.944356
-                                          wgi_any_missing         5.55112e-17     5.55112e-17     0.216335
-                                       gdp_percap_missing         5.55112e-17     5.55112e-17     0.216335
-                                             cpia_missing         5.55112e-17    -5.55112e-17     0.497482
-                    sector_cluster_Urban_flood_protection         5.55112e-17     5.55112e-17     0.245658
-                         sector_cluster_Financing_charges         5.55112e-17    -5.55112e-17    0.0146561
-                                                  context         5.55112e-17     5.55112e-17      15.8806
-                                          finance_is_loan         5.55112e-17    -5.55112e-17     0.477134
-                                           activity_scope         5.55112e-17     5.55112e-17      1.44244
-                                                  finance                   0               0      8.66445
-                                               complexity                   0               0       18.231
-                                  implementer_performance                   0               0      5.96626
-                                               region_SAS                   0               0     0.355139
-                                              region_MENA                   0               0     0.216335
-                                               region_LAC                   0               0     0.319058
-                                               region_ECA                   0               0     0.319058
-                                               region_EAP                   0               0     0.441142
-                                               region_AFW                   0               0     0.337972
+                                                  umap3_x         5.55112e-17     5.55112e-17       1.9472
+                                               region_EAP         5.55112e-17     5.55112e-17     0.441142
+                                               complexity         5.55112e-17     5.55112e-17       18.231
+                                                  context         5.55112e-17    -5.55112e-17      15.8806
+                                  implementer_performance         5.55112e-17     5.55112e-17      5.96626
+                                          wgi_any_missing         5.55112e-17    -5.55112e-17     0.216335
+                                             umap_missing         5.55112e-17    -5.55112e-17     0.398304
+                                          sector_distance         5.55112e-17    -5.55112e-17    0.0415329
+         sector_cluster_Land_acquisition_and_resettlement         5.55112e-17    -5.55112e-17     0.159048
+                     sector_cluster_reduced_CO2_emissions         5.55112e-17    -5.55112e-17     0.235274
+                                         country_distance         5.55112e-17    -5.55112e-17    0.0336744
                                                region_AFE                   0               0     0.216335
                                                 rep_org_2                   0               0     0.178127
-                                                rep_org_0                   0               0        0.127
                                            integratedness                   0               0      4.33585
+                                                  finance                   0               0      8.66445
                                                     risks                   0               0      19.7492
-                                                  umap3_z                   0               0        1.095
-                 sector_cluster_increased_food_production                   0               0     0.213898
+                                               region_AFW                   0               0     0.337972
+                                               cpia_score                   0               0     0.266264
+                                               gdp_percap                   0               0     0.944356
+                                           activity_scope                   0               0      1.44244
+                                                rep_org_0                   0               0        0.127
+                                              region_MENA                   0               0     0.216335
+  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
+           sector_cluster_Institutional_capacity_building                   0               0    0.0621096
+                        sector_cluster_Project_Management                   0               0    0.0455351
+             sector_cluster_increased_managed_forest_land                   0               0     0.152487
                   sector_cluster_Green_growth_initiatives                   0               0   0.00873085
                   sector_cluster_Road_safety_improvements                   0               0     0.201265
-                                                  umap3_x                   0               0       1.9472
-  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
-                        sector_cluster_Project_Management                   0               0    0.0455351
-                     sector_cluster_reduced_CO2_emissions                   0               0     0.235274
-                        sector_cluster_Climate_adaptation                   0               0    0.0323273
-             sector_cluster_increased_managed_forest_land                   0               0     0.152487
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0     0.119557
-sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                              sector_cluster_Contingencies                   0               0    0.0270975
                                                   umap3_y                   0               0      1.07142
-                                  sector_clusters_missing                   0               0     0.449749
-         sector_cluster_Land_acquisition_and_resettlement                   0               0     0.159048
-                                 governance_missing_count                   0               0      1.30502
+                                                  umap3_z                   0               0        1.095
+                 sector_cluster_increased_food_production                   0               0     0.213898
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                               planned_expenditure_missing                   0               0        0.127
-                                         country_distance                   0               0    0.0336744
-                                             umap_missing                   0               0     0.398304
-                                          sector_distance                   0               0    0.0415329
+                                       gdp_percap_missing                   0               0     0.216335
+                    sector_cluster_Urban_flood_protection                   0               0     0.245658
+                                 governance_missing_count                   0               0      1.30502
 
 
 WARNING: DROP_INCOMPLETE=True. Training/val/held will EXCLUDE incomplete activities.
@@ -5366,7 +5358,7 @@ WARNING: USE_VAL_IN_TRAIN=True -- evaluating on held-out TEST set.
   warnings.warn(
 /home/dmrivers/micromamba/envs/py311/lib/python3.11/site-packages/sklearn/utils/validation.py:2732: UserWarning: X has feature names, but StandardScaler was fitted without feature names
   warnings.warn(
-/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1042: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1022: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
   s = y_true.stack(dropna=True)  # MultiIndex: (activity_id, outcome_col) -> value
 
 min_train: 30
@@ -5726,37 +5718,37 @@ sector_cluster_Capacity_Building_and_Technical_Assistance           0.0228445   
              sector_cluster_increased_managed_forest_land         0.000793116    -0.000793116     0.151691
                sector_cluster_reduced_PM2.5_air_pollution         0.000203536     0.000203536    0.0968066
                  sector_cluster_increased_food_production         0.000170125    -0.000170125     0.201583
-                                           integratedness         1.38778e-17    -1.38778e-17      3.11706
-        grp_co2_emission_reductions__tonnes_co2e_per_year         1.38778e-17    -1.38778e-17     0.167832
-                                             umap_missing         1.38778e-17     1.38778e-17     0.312824
-                       grp_water_connections__connections         1.38778e-17    -1.38778e-17      0.31091
-                                  sector_clusters_missing         1.38778e-17    -1.38778e-17     0.428849
-                                       gdp_percap_missing         1.38778e-17     1.38778e-17     0.205712
-                              planned_expenditure_missing         1.38778e-17    -1.38778e-17    0.0675219
-                                               region_EAP         1.38778e-17     1.38778e-17     0.422245
-                                                rep_org_0         1.38778e-17     1.38778e-17    0.0390434
+                                               region_SAS         1.38778e-17    -1.38778e-17     0.307023
+                                                rep_org_0         1.38778e-17    -1.38778e-17    0.0390434
                                                 rep_org_1         1.38778e-17     1.38778e-17     0.163484
-                                               region_ECA         1.38778e-17    -1.38778e-17     0.345917
-                                             cpia_missing         6.93889e-18     6.93889e-18      0.49945
-                                               region_SAS         6.93889e-18    -6.93889e-18     0.307023
+                                             umap_missing         1.38778e-17    -1.38778e-17     0.312824
+                                               region_AFE         1.38778e-17     1.38778e-17     0.247681
+                              grp_generation_capacity__mw         6.93889e-18    -6.93889e-18      0.25034
+                                               region_ECA         6.93889e-18    -6.93889e-18     0.345917
+                                          wgi_any_missing         6.93889e-18     6.93889e-18     0.202296
+                           grp_benefit_cost_ratios__ratio         6.93889e-18    -6.93889e-18      0.25034
+                 grp_co2_emission_reductions__tonnes_co2e         6.93889e-18     6.93889e-18     0.233783
+                              planned_expenditure_missing         6.93889e-18    -6.93889e-18    0.0675219
+                               feature_completeness_ratio         6.93889e-18    -6.93889e-18     0.060869
+                               llm_features_present_ratio         6.93889e-18     6.93889e-18     0.060869
                                               region_MENA         6.93889e-18     6.93889e-18     0.247681
-                                          finance_is_loan         6.93889e-18    -6.93889e-18     0.423211
-                              grp_generation_capacity__mw         6.93889e-18     6.93889e-18      0.25034
-                                 planned_duration_missing         6.93889e-18    -6.93889e-18    0.0390434
-                    grp_financial_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.417297
-                                               region_LAC                   0               0      0.37387
+                                             cpia_missing         6.93889e-18    -6.93889e-18      0.49945
+                               llm_features_missing_count         6.93889e-18    -6.93889e-18     0.426083
+                    grp_financial_rate_of_return__percent         6.93889e-18     6.93889e-18     0.417297
+                     grp_economic_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.497525
+                                 planned_duration_missing         6.93889e-18     6.93889e-18    0.0390434
+                                           integratedness                   0               0      3.11706
+                                          finance_is_loan                   0               0     0.423211
                                            activity_scope                   0               0      1.25153
-                                                rep_org_2                   0               0     0.167832
-                                               region_AFE                   0               0     0.247681
                                                region_AFW                   0               0     0.307023
-                               llm_features_present_ratio                   0               0     0.060869
-                               llm_features_missing_count                   0               0     0.426083
-                               feature_completeness_ratio                   0               0     0.060869
+                                               region_LAC                   0               0      0.37387
+                                               region_EAP                   0               0     0.422245
+                                                rep_org_2                   0               0     0.167832
                         sector_cluster_Climate_adaptation                   0               0    0.0223676
-                                          wgi_any_missing                   0               0     0.202296
-                           grp_benefit_cost_ratios__ratio                   0               0      0.25034
-                 grp_co2_emission_reductions__tonnes_co2e                   0               0     0.233783
-                     grp_economic_rate_of_return__percent                   0               0     0.497525
+                                       gdp_percap_missing                   0               0     0.205712
+                                  sector_clusters_missing                   0               0     0.428849
+        grp_co2_emission_reductions__tonnes_co2e_per_year                   0               0     0.167832
+                       grp_water_connections__connections                   0               0      0.31091
 
 ====================================================================================================
 raw  out_raw_benefit_cost_ratios__ratio
@@ -5768,54 +5760,54 @@ raw  out_raw_benefit_cost_ratios__ratio
                                  expenditure_per_year_log         0.000317639     0.000317639      1.06746
                                                   targets         0.000273342    -0.000273342       13.421
                                   log_planned_expenditure         0.000118451     0.000118451      1.01671
+                                          finance_is_loan         8.32667e-17     8.32667e-17     0.477134
+                                               region_LAC         5.55112e-17     5.55112e-17     0.319058
+                                               region_SAS         5.55112e-17     5.55112e-17     0.355139
                                                 rep_org_1         5.55112e-17     5.55112e-17        0.127
-                                               cpia_score         5.55112e-17     5.55112e-17     0.266264
-           sector_cluster_Institutional_capacity_building         5.55112e-17    -5.55112e-17    0.0621096
+                                               region_ECA         5.55112e-17     5.55112e-17     0.319058
+                         sector_cluster_Financing_charges         5.55112e-17     5.55112e-17    0.0146561
+                                  sector_clusters_missing         5.55112e-17     5.55112e-17     0.449749
+                                             cpia_missing         5.55112e-17     5.55112e-17     0.497482
+                        sector_cluster_Climate_adaptation         5.55112e-17     5.55112e-17    0.0323273
+               sector_cluster_reduced_PM2.5_air_pollution         5.55112e-17    -5.55112e-17     0.119557
          sector_cluster_Improved_transport_infrastructure         5.55112e-17    -5.55112e-17     0.222004
-                                               gdp_percap         5.55112e-17    -5.55112e-17     0.944356
-                                          wgi_any_missing         5.55112e-17     5.55112e-17     0.216335
-                                       gdp_percap_missing         5.55112e-17     5.55112e-17     0.216335
-                                             cpia_missing         5.55112e-17    -5.55112e-17     0.497482
-                    sector_cluster_Urban_flood_protection         5.55112e-17     5.55112e-17     0.245658
-                         sector_cluster_Financing_charges         5.55112e-17    -5.55112e-17    0.0146561
-                                                  context         5.55112e-17     5.55112e-17      15.8806
-                                          finance_is_loan         5.55112e-17    -5.55112e-17     0.477134
-                                           activity_scope         5.55112e-17     5.55112e-17      1.44244
-                                                  finance                   0               0      8.66445
-                                               complexity                   0               0       18.231
-                                  implementer_performance                   0               0      5.96626
-                                               region_SAS                   0               0     0.355139
-                                              region_MENA                   0               0     0.216335
-                                               region_LAC                   0               0     0.319058
-                                               region_ECA                   0               0     0.319058
-                                               region_EAP                   0               0     0.441142
-                                               region_AFW                   0               0     0.337972
+                                                  umap3_x         5.55112e-17     5.55112e-17       1.9472
+                                               region_EAP         5.55112e-17     5.55112e-17     0.441142
+                                               complexity         5.55112e-17     5.55112e-17       18.231
+                                                  context         5.55112e-17    -5.55112e-17      15.8806
+                                  implementer_performance         5.55112e-17     5.55112e-17      5.96626
+                                          wgi_any_missing         5.55112e-17    -5.55112e-17     0.216335
+                                             umap_missing         5.55112e-17    -5.55112e-17     0.398304
+                                          sector_distance         5.55112e-17    -5.55112e-17    0.0415329
+         sector_cluster_Land_acquisition_and_resettlement         5.55112e-17    -5.55112e-17     0.159048
+                     sector_cluster_reduced_CO2_emissions         5.55112e-17    -5.55112e-17     0.235274
+                                         country_distance         5.55112e-17    -5.55112e-17    0.0336744
                                                region_AFE                   0               0     0.216335
                                                 rep_org_2                   0               0     0.178127
-                                                rep_org_0                   0               0        0.127
                                            integratedness                   0               0      4.33585
+                                                  finance                   0               0      8.66445
                                                     risks                   0               0      19.7492
-                                                  umap3_z                   0               0        1.095
-                 sector_cluster_increased_food_production                   0               0     0.213898
+                                               region_AFW                   0               0     0.337972
+                                               cpia_score                   0               0     0.266264
+                                               gdp_percap                   0               0     0.944356
+                                           activity_scope                   0               0      1.44244
+                                                rep_org_0                   0               0        0.127
+                                              region_MENA                   0               0     0.216335
+  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
+           sector_cluster_Institutional_capacity_building                   0               0    0.0621096
+                        sector_cluster_Project_Management                   0               0    0.0455351
+             sector_cluster_increased_managed_forest_land                   0               0     0.152487
                   sector_cluster_Green_growth_initiatives                   0               0   0.00873085
                   sector_cluster_Road_safety_improvements                   0               0     0.201265
-                                                  umap3_x                   0               0       1.9472
-  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
-                        sector_cluster_Project_Management                   0               0    0.0455351
-                     sector_cluster_reduced_CO2_emissions                   0               0     0.235274
-                        sector_cluster_Climate_adaptation                   0               0    0.0323273
-             sector_cluster_increased_managed_forest_land                   0               0     0.152487
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0     0.119557
-sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                              sector_cluster_Contingencies                   0               0    0.0270975
                                                   umap3_y                   0               0      1.07142
-                                  sector_clusters_missing                   0               0     0.449749
-         sector_cluster_Land_acquisition_and_resettlement                   0               0     0.159048
-                                 governance_missing_count                   0               0      1.30502
+                                                  umap3_z                   0               0        1.095
+                 sector_cluster_increased_food_production                   0               0     0.213898
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                               planned_expenditure_missing                   0               0        0.127
-                                         country_distance                   0               0    0.0336744
-                                             umap_missing                   0               0     0.398304
-                                          sector_distance                   0               0    0.0415329
+                                       gdp_percap_missing                   0               0     0.216335
+                    sector_cluster_Urban_flood_protection                   0               0     0.245658
+                                 governance_missing_count                   0               0      1.30502
 
 ====================================================================================================
 raw  out_raw_economic_rate_of_return__percent
@@ -6102,7 +6094,7 @@ sector_cluster_Capacity_Building_and_Technical_Assistance            0.811968   
   warnings.warn(
 /home/dmrivers/micromamba/envs/py311/lib/python3.11/site-packages/sklearn/utils/validation.py:2732: UserWarning: X has feature names, but StandardScaler was fitted without feature names
   warnings.warn(
-/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1042: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1022: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
   s = y_true.stack(dropna=True)  # MultiIndex: (activity_id, outcome_col) -> value
 
 
@@ -6490,37 +6482,37 @@ sector_cluster_Capacity_Building_and_Technical_Assistance           0.0228445   
              sector_cluster_increased_managed_forest_land         0.000793116    -0.000793116     0.151691
                sector_cluster_reduced_PM2.5_air_pollution         0.000203536     0.000203536    0.0968066
                  sector_cluster_increased_food_production         0.000170125    -0.000170125     0.201583
-                                           integratedness         1.38778e-17    -1.38778e-17      3.11706
-        grp_co2_emission_reductions__tonnes_co2e_per_year         1.38778e-17    -1.38778e-17     0.167832
-                                             umap_missing         1.38778e-17     1.38778e-17     0.312824
-                       grp_water_connections__connections         1.38778e-17    -1.38778e-17      0.31091
-                                  sector_clusters_missing         1.38778e-17    -1.38778e-17     0.428849
-                                       gdp_percap_missing         1.38778e-17     1.38778e-17     0.205712
-                              planned_expenditure_missing         1.38778e-17    -1.38778e-17    0.0675219
-                                               region_EAP         1.38778e-17     1.38778e-17     0.422245
-                                                rep_org_0         1.38778e-17     1.38778e-17    0.0390434
+                                               region_SAS         1.38778e-17    -1.38778e-17     0.307023
+                                                rep_org_0         1.38778e-17    -1.38778e-17    0.0390434
                                                 rep_org_1         1.38778e-17     1.38778e-17     0.163484
-                                               region_ECA         1.38778e-17    -1.38778e-17     0.345917
-                                             cpia_missing         6.93889e-18     6.93889e-18      0.49945
-                                               region_SAS         6.93889e-18    -6.93889e-18     0.307023
+                                             umap_missing         1.38778e-17    -1.38778e-17     0.312824
+                                               region_AFE         1.38778e-17     1.38778e-17     0.247681
+                              grp_generation_capacity__mw         6.93889e-18    -6.93889e-18      0.25034
+                                               region_ECA         6.93889e-18    -6.93889e-18     0.345917
+                                          wgi_any_missing         6.93889e-18     6.93889e-18     0.202296
+                           grp_benefit_cost_ratios__ratio         6.93889e-18    -6.93889e-18      0.25034
+                 grp_co2_emission_reductions__tonnes_co2e         6.93889e-18     6.93889e-18     0.233783
+                              planned_expenditure_missing         6.93889e-18    -6.93889e-18    0.0675219
+                               feature_completeness_ratio         6.93889e-18    -6.93889e-18     0.060869
+                               llm_features_present_ratio         6.93889e-18     6.93889e-18     0.060869
                                               region_MENA         6.93889e-18     6.93889e-18     0.247681
-                                          finance_is_loan         6.93889e-18    -6.93889e-18     0.423211
-                              grp_generation_capacity__mw         6.93889e-18     6.93889e-18      0.25034
-                                 planned_duration_missing         6.93889e-18    -6.93889e-18    0.0390434
-                    grp_financial_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.417297
-                                               region_LAC                   0               0      0.37387
+                                             cpia_missing         6.93889e-18    -6.93889e-18      0.49945
+                               llm_features_missing_count         6.93889e-18    -6.93889e-18     0.426083
+                    grp_financial_rate_of_return__percent         6.93889e-18     6.93889e-18     0.417297
+                     grp_economic_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.497525
+                                 planned_duration_missing         6.93889e-18     6.93889e-18    0.0390434
+                                           integratedness                   0               0      3.11706
+                                          finance_is_loan                   0               0     0.423211
                                            activity_scope                   0               0      1.25153
-                                                rep_org_2                   0               0     0.167832
-                                               region_AFE                   0               0     0.247681
                                                region_AFW                   0               0     0.307023
-                               llm_features_present_ratio                   0               0     0.060869
-                               llm_features_missing_count                   0               0     0.426083
-                               feature_completeness_ratio                   0               0     0.060869
+                                               region_LAC                   0               0      0.37387
+                                               region_EAP                   0               0     0.422245
+                                                rep_org_2                   0               0     0.167832
                         sector_cluster_Climate_adaptation                   0               0    0.0223676
-                                          wgi_any_missing                   0               0     0.202296
-                           grp_benefit_cost_ratios__ratio                   0               0      0.25034
-                 grp_co2_emission_reductions__tonnes_co2e                   0               0     0.233783
-                     grp_economic_rate_of_return__percent                   0               0     0.497525
+                                       gdp_percap_missing                   0               0     0.205712
+                                  sector_clusters_missing                   0               0     0.428849
+        grp_co2_emission_reductions__tonnes_co2e_per_year                   0               0     0.167832
+                       grp_water_connections__connections                   0               0      0.31091
 
 ====================================================================================================
 raw  out_raw_benefit_cost_ratios__ratio
@@ -6532,54 +6524,54 @@ raw  out_raw_benefit_cost_ratios__ratio
                                  expenditure_per_year_log         0.000317639     0.000317639      1.06746
                                                   targets         0.000273342    -0.000273342       13.421
                                   log_planned_expenditure         0.000118451     0.000118451      1.01671
+                                          finance_is_loan         8.32667e-17     8.32667e-17     0.477134
+                                               region_LAC         5.55112e-17     5.55112e-17     0.319058
+                                               region_SAS         5.55112e-17     5.55112e-17     0.355139
                                                 rep_org_1         5.55112e-17     5.55112e-17        0.127
-                                               cpia_score         5.55112e-17     5.55112e-17     0.266264
-           sector_cluster_Institutional_capacity_building         5.55112e-17    -5.55112e-17    0.0621096
+                                               region_ECA         5.55112e-17     5.55112e-17     0.319058
+                         sector_cluster_Financing_charges         5.55112e-17     5.55112e-17    0.0146561
+                                  sector_clusters_missing         5.55112e-17     5.55112e-17     0.449749
+                                             cpia_missing         5.55112e-17     5.55112e-17     0.497482
+                        sector_cluster_Climate_adaptation         5.55112e-17     5.55112e-17    0.0323273
+               sector_cluster_reduced_PM2.5_air_pollution         5.55112e-17    -5.55112e-17     0.119557
          sector_cluster_Improved_transport_infrastructure         5.55112e-17    -5.55112e-17     0.222004
-                                               gdp_percap         5.55112e-17    -5.55112e-17     0.944356
-                                          wgi_any_missing         5.55112e-17     5.55112e-17     0.216335
-                                       gdp_percap_missing         5.55112e-17     5.55112e-17     0.216335
-                                             cpia_missing         5.55112e-17    -5.55112e-17     0.497482
-                    sector_cluster_Urban_flood_protection         5.55112e-17     5.55112e-17     0.245658
-                         sector_cluster_Financing_charges         5.55112e-17    -5.55112e-17    0.0146561
-                                                  context         5.55112e-17     5.55112e-17      15.8806
-                                          finance_is_loan         5.55112e-17    -5.55112e-17     0.477134
-                                           activity_scope         5.55112e-17     5.55112e-17      1.44244
-                                                  finance                   0               0      8.66445
-                                               complexity                   0               0       18.231
-                                  implementer_performance                   0               0      5.96626
-                                               region_SAS                   0               0     0.355139
-                                              region_MENA                   0               0     0.216335
-                                               region_LAC                   0               0     0.319058
-                                               region_ECA                   0               0     0.319058
-                                               region_EAP                   0               0     0.441142
-                                               region_AFW                   0               0     0.337972
+                                                  umap3_x         5.55112e-17     5.55112e-17       1.9472
+                                               region_EAP         5.55112e-17     5.55112e-17     0.441142
+                                               complexity         5.55112e-17     5.55112e-17       18.231
+                                                  context         5.55112e-17    -5.55112e-17      15.8806
+                                  implementer_performance         5.55112e-17     5.55112e-17      5.96626
+                                          wgi_any_missing         5.55112e-17    -5.55112e-17     0.216335
+                                             umap_missing         5.55112e-17    -5.55112e-17     0.398304
+                                          sector_distance         5.55112e-17    -5.55112e-17    0.0415329
+         sector_cluster_Land_acquisition_and_resettlement         5.55112e-17    -5.55112e-17     0.159048
+                     sector_cluster_reduced_CO2_emissions         5.55112e-17    -5.55112e-17     0.235274
+                                         country_distance         5.55112e-17    -5.55112e-17    0.0336744
                                                region_AFE                   0               0     0.216335
                                                 rep_org_2                   0               0     0.178127
-                                                rep_org_0                   0               0        0.127
                                            integratedness                   0               0      4.33585
+                                                  finance                   0               0      8.66445
                                                     risks                   0               0      19.7492
-                                                  umap3_z                   0               0        1.095
-                 sector_cluster_increased_food_production                   0               0     0.213898
+                                               region_AFW                   0               0     0.337972
+                                               cpia_score                   0               0     0.266264
+                                               gdp_percap                   0               0     0.944356
+                                           activity_scope                   0               0      1.44244
+                                                rep_org_0                   0               0        0.127
+                                              region_MENA                   0               0     0.216335
+  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
+           sector_cluster_Institutional_capacity_building                   0               0    0.0621096
+                        sector_cluster_Project_Management                   0               0    0.0455351
+             sector_cluster_increased_managed_forest_land                   0               0     0.152487
                   sector_cluster_Green_growth_initiatives                   0               0   0.00873085
                   sector_cluster_Road_safety_improvements                   0               0     0.201265
-                                                  umap3_x                   0               0       1.9472
-  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
-                        sector_cluster_Project_Management                   0               0    0.0455351
-                     sector_cluster_reduced_CO2_emissions                   0               0     0.235274
-                        sector_cluster_Climate_adaptation                   0               0    0.0323273
-             sector_cluster_increased_managed_forest_land                   0               0     0.152487
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0     0.119557
-sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                              sector_cluster_Contingencies                   0               0    0.0270975
                                                   umap3_y                   0               0      1.07142
-                                  sector_clusters_missing                   0               0     0.449749
-         sector_cluster_Land_acquisition_and_resettlement                   0               0     0.159048
-                                 governance_missing_count                   0               0      1.30502
+                                                  umap3_z                   0               0        1.095
+                 sector_cluster_increased_food_production                   0               0     0.213898
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                               planned_expenditure_missing                   0               0        0.127
-                                         country_distance                   0               0    0.0336744
-                                             umap_missing                   0               0     0.398304
-                                          sector_distance                   0               0    0.0415329
+                                       gdp_percap_missing                   0               0     0.216335
+                    sector_cluster_Urban_flood_protection                   0               0     0.245658
+                                 governance_missing_count                   0               0      1.30502
 
 ====================================================================================================
 raw  out_raw_economic_rate_of_return__percent
@@ -6946,7 +6938,7 @@ Name: count, Length: 72, dtype: int64/home/dmrivers/micromamba/envs/py311/lib/py
   warnings.warn(
 /home/dmrivers/micromamba/envs/py311/lib/python3.11/site-packages/sklearn/utils/validation.py:2732: UserWarning: X has feature names, but StandardScaler was fitted without feature names
   warnings.warn(
-/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1042: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1022: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
   s = y_true.stack(dropna=True)  # MultiIndex: (activity_id, outcome_col) -> value
 
 Total in y: 72
@@ -7305,37 +7297,37 @@ sector_cluster_Capacity_Building_and_Technical_Assistance           0.0228445   
              sector_cluster_increased_managed_forest_land         0.000793116    -0.000793116     0.151691
                sector_cluster_reduced_PM2.5_air_pollution         0.000203536     0.000203536    0.0968066
                  sector_cluster_increased_food_production         0.000170125    -0.000170125     0.201583
-                                           integratedness         1.38778e-17    -1.38778e-17      3.11706
-        grp_co2_emission_reductions__tonnes_co2e_per_year         1.38778e-17    -1.38778e-17     0.167832
-                                             umap_missing         1.38778e-17     1.38778e-17     0.312824
-                       grp_water_connections__connections         1.38778e-17    -1.38778e-17      0.31091
-                                  sector_clusters_missing         1.38778e-17    -1.38778e-17     0.428849
-                                       gdp_percap_missing         1.38778e-17     1.38778e-17     0.205712
-                              planned_expenditure_missing         1.38778e-17    -1.38778e-17    0.0675219
-                                               region_EAP         1.38778e-17     1.38778e-17     0.422245
-                                                rep_org_0         1.38778e-17     1.38778e-17    0.0390434
+                                               region_SAS         1.38778e-17    -1.38778e-17     0.307023
+                                                rep_org_0         1.38778e-17    -1.38778e-17    0.0390434
                                                 rep_org_1         1.38778e-17     1.38778e-17     0.163484
-                                               region_ECA         1.38778e-17    -1.38778e-17     0.345917
-                                             cpia_missing         6.93889e-18     6.93889e-18      0.49945
-                                               region_SAS         6.93889e-18    -6.93889e-18     0.307023
+                                             umap_missing         1.38778e-17    -1.38778e-17     0.312824
+                                               region_AFE         1.38778e-17     1.38778e-17     0.247681
+                              grp_generation_capacity__mw         6.93889e-18    -6.93889e-18      0.25034
+                                               region_ECA         6.93889e-18    -6.93889e-18     0.345917
+                                          wgi_any_missing         6.93889e-18     6.93889e-18     0.202296
+                           grp_benefit_cost_ratios__ratio         6.93889e-18    -6.93889e-18      0.25034
+                 grp_co2_emission_reductions__tonnes_co2e         6.93889e-18     6.93889e-18     0.233783
+                              planned_expenditure_missing         6.93889e-18    -6.93889e-18    0.0675219
+                               feature_completeness_ratio         6.93889e-18    -6.93889e-18     0.060869
+                               llm_features_present_ratio         6.93889e-18     6.93889e-18     0.060869
                                               region_MENA         6.93889e-18     6.93889e-18     0.247681
-                                          finance_is_loan         6.93889e-18    -6.93889e-18     0.423211
-                              grp_generation_capacity__mw         6.93889e-18     6.93889e-18      0.25034
-                                 planned_duration_missing         6.93889e-18    -6.93889e-18    0.0390434
-                    grp_financial_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.417297
-                                               region_LAC                   0               0      0.37387
+                                             cpia_missing         6.93889e-18    -6.93889e-18      0.49945
+                               llm_features_missing_count         6.93889e-18    -6.93889e-18     0.426083
+                    grp_financial_rate_of_return__percent         6.93889e-18     6.93889e-18     0.417297
+                     grp_economic_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.497525
+                                 planned_duration_missing         6.93889e-18     6.93889e-18    0.0390434
+                                           integratedness                   0               0      3.11706
+                                          finance_is_loan                   0               0     0.423211
                                            activity_scope                   0               0      1.25153
-                                                rep_org_2                   0               0     0.167832
-                                               region_AFE                   0               0     0.247681
                                                region_AFW                   0               0     0.307023
-                               llm_features_present_ratio                   0               0     0.060869
-                               llm_features_missing_count                   0               0     0.426083
-                               feature_completeness_ratio                   0               0     0.060869
+                                               region_LAC                   0               0      0.37387
+                                               region_EAP                   0               0     0.422245
+                                                rep_org_2                   0               0     0.167832
                         sector_cluster_Climate_adaptation                   0               0    0.0223676
-                                          wgi_any_missing                   0               0     0.202296
-                           grp_benefit_cost_ratios__ratio                   0               0      0.25034
-                 grp_co2_emission_reductions__tonnes_co2e                   0               0     0.233783
-                     grp_economic_rate_of_return__percent                   0               0     0.497525
+                                       gdp_percap_missing                   0               0     0.205712
+                                  sector_clusters_missing                   0               0     0.428849
+        grp_co2_emission_reductions__tonnes_co2e_per_year                   0               0     0.167832
+                       grp_water_connections__connections                   0               0      0.31091
 
 ====================================================================================================
 raw  out_raw_benefit_cost_ratios__ratio
@@ -7347,54 +7339,54 @@ raw  out_raw_benefit_cost_ratios__ratio
                                  expenditure_per_year_log         0.000317639     0.000317639      1.06746
                                                   targets         0.000273342    -0.000273342       13.421
                                   log_planned_expenditure         0.000118451     0.000118451      1.01671
+                                          finance_is_loan         8.32667e-17     8.32667e-17     0.477134
+                                               region_LAC         5.55112e-17     5.55112e-17     0.319058
+                                               region_SAS         5.55112e-17     5.55112e-17     0.355139
                                                 rep_org_1         5.55112e-17     5.55112e-17        0.127
-                                               cpia_score         5.55112e-17     5.55112e-17     0.266264
-           sector_cluster_Institutional_capacity_building         5.55112e-17    -5.55112e-17    0.0621096
+                                               region_ECA         5.55112e-17     5.55112e-17     0.319058
+                         sector_cluster_Financing_charges         5.55112e-17     5.55112e-17    0.0146561
+                                  sector_clusters_missing         5.55112e-17     5.55112e-17     0.449749
+                                             cpia_missing         5.55112e-17     5.55112e-17     0.497482
+                        sector_cluster_Climate_adaptation         5.55112e-17     5.55112e-17    0.0323273
+               sector_cluster_reduced_PM2.5_air_pollution         5.55112e-17    -5.55112e-17     0.119557
          sector_cluster_Improved_transport_infrastructure         5.55112e-17    -5.55112e-17     0.222004
-                                               gdp_percap         5.55112e-17    -5.55112e-17     0.944356
-                                          wgi_any_missing         5.55112e-17     5.55112e-17     0.216335
-                                       gdp_percap_missing         5.55112e-17     5.55112e-17     0.216335
-                                             cpia_missing         5.55112e-17    -5.55112e-17     0.497482
-                    sector_cluster_Urban_flood_protection         5.55112e-17     5.55112e-17     0.245658
-                         sector_cluster_Financing_charges         5.55112e-17    -5.55112e-17    0.0146561
-                                                  context         5.55112e-17     5.55112e-17      15.8806
-                                          finance_is_loan         5.55112e-17    -5.55112e-17     0.477134
-                                           activity_scope         5.55112e-17     5.55112e-17      1.44244
-                                                  finance                   0               0      8.66445
-                                               complexity                   0               0       18.231
-                                  implementer_performance                   0               0      5.96626
-                                               region_SAS                   0               0     0.355139
-                                              region_MENA                   0               0     0.216335
-                                               region_LAC                   0               0     0.319058
-                                               region_ECA                   0               0     0.319058
-                                               region_EAP                   0               0     0.441142
-                                               region_AFW                   0               0     0.337972
+                                                  umap3_x         5.55112e-17     5.55112e-17       1.9472
+                                               region_EAP         5.55112e-17     5.55112e-17     0.441142
+                                               complexity         5.55112e-17     5.55112e-17       18.231
+                                                  context         5.55112e-17    -5.55112e-17      15.8806
+                                  implementer_performance         5.55112e-17     5.55112e-17      5.96626
+                                          wgi_any_missing         5.55112e-17    -5.55112e-17     0.216335
+                                             umap_missing         5.55112e-17    -5.55112e-17     0.398304
+                                          sector_distance         5.55112e-17    -5.55112e-17    0.0415329
+         sector_cluster_Land_acquisition_and_resettlement         5.55112e-17    -5.55112e-17     0.159048
+                     sector_cluster_reduced_CO2_emissions         5.55112e-17    -5.55112e-17     0.235274
+                                         country_distance         5.55112e-17    -5.55112e-17    0.0336744
                                                region_AFE                   0               0     0.216335
                                                 rep_org_2                   0               0     0.178127
-                                                rep_org_0                   0               0        0.127
                                            integratedness                   0               0      4.33585
+                                                  finance                   0               0      8.66445
                                                     risks                   0               0      19.7492
-                                                  umap3_z                   0               0        1.095
-                 sector_cluster_increased_food_production                   0               0     0.213898
+                                               region_AFW                   0               0     0.337972
+                                               cpia_score                   0               0     0.266264
+                                               gdp_percap                   0               0     0.944356
+                                           activity_scope                   0               0      1.44244
+                                                rep_org_0                   0               0        0.127
+                                              region_MENA                   0               0     0.216335
+  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
+           sector_cluster_Institutional_capacity_building                   0               0    0.0621096
+                        sector_cluster_Project_Management                   0               0    0.0455351
+             sector_cluster_increased_managed_forest_land                   0               0     0.152487
                   sector_cluster_Green_growth_initiatives                   0               0   0.00873085
                   sector_cluster_Road_safety_improvements                   0               0     0.201265
-                                                  umap3_x                   0               0       1.9472
-  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
-                        sector_cluster_Project_Management                   0               0    0.0455351
-                     sector_cluster_reduced_CO2_emissions                   0               0     0.235274
-                        sector_cluster_Climate_adaptation                   0               0    0.0323273
-             sector_cluster_increased_managed_forest_land                   0               0     0.152487
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0     0.119557
-sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                              sector_cluster_Contingencies                   0               0    0.0270975
                                                   umap3_y                   0               0      1.07142
-                                  sector_clusters_missing                   0               0     0.449749
-         sector_cluster_Land_acquisition_and_resettlement                   0               0     0.159048
-                                 governance_missing_count                   0               0      1.30502
+                                                  umap3_z                   0               0        1.095
+                 sector_cluster_increased_food_production                   0               0     0.213898
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                               planned_expenditure_missing                   0               0        0.127
-                                         country_distance                   0               0    0.0336744
-                                             umap_missing                   0               0     0.398304
-                                          sector_distance                   0               0    0.0415329
+                                       gdp_percap_missing                   0               0     0.216335
+                    sector_cluster_Urban_flood_protection                   0               0     0.245658
+                                 governance_missing_count                   0               0      1.30502
 
 ====================================================================================================
 raw  out_raw_economic_rate_of_return__percent
@@ -7788,7 +7780,7 @@ sector_cluster_Capacity_Building_and_Technical_Assistance          0.00649288   
   warnings.warn(
 /home/dmrivers/micromamba/envs/py311/lib/python3.11/site-packages/sklearn/utils/validation.py:2732: UserWarning: X has feature names, but StandardScaler was fitted without feature names
   warnings.warn(
-/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1042: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1022: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
   s = y_true.stack(dropna=True)  # MultiIndex: (activity_id, outcome_col) -> value
 
 
@@ -8227,37 +8219,37 @@ sector_cluster_Capacity_Building_and_Technical_Assistance           0.0228445   
              sector_cluster_increased_managed_forest_land         0.000793116    -0.000793116     0.151691
                sector_cluster_reduced_PM2.5_air_pollution         0.000203536     0.000203536    0.0968066
                  sector_cluster_increased_food_production         0.000170125    -0.000170125     0.201583
-                                           integratedness         1.38778e-17    -1.38778e-17      3.11706
-        grp_co2_emission_reductions__tonnes_co2e_per_year         1.38778e-17    -1.38778e-17     0.167832
-                                             umap_missing         1.38778e-17     1.38778e-17     0.312824
-                       grp_water_connections__connections         1.38778e-17    -1.38778e-17      0.31091
-                                  sector_clusters_missing         1.38778e-17    -1.38778e-17     0.428849
-                                       gdp_percap_missing         1.38778e-17     1.38778e-17     0.205712
-                              planned_expenditure_missing         1.38778e-17    -1.38778e-17    0.0675219
-                                               region_EAP         1.38778e-17     1.38778e-17     0.422245
-                                                rep_org_0         1.38778e-17     1.38778e-17    0.0390434
+                                               region_SAS         1.38778e-17    -1.38778e-17     0.307023
+                                                rep_org_0         1.38778e-17    -1.38778e-17    0.0390434
                                                 rep_org_1         1.38778e-17     1.38778e-17     0.163484
-                                               region_ECA         1.38778e-17    -1.38778e-17     0.345917
-                                             cpia_missing         6.93889e-18     6.93889e-18      0.49945
-                                               region_SAS         6.93889e-18    -6.93889e-18     0.307023
+                                             umap_missing         1.38778e-17    -1.38778e-17     0.312824
+                                               region_AFE         1.38778e-17     1.38778e-17     0.247681
+                              grp_generation_capacity__mw         6.93889e-18    -6.93889e-18      0.25034
+                                               region_ECA         6.93889e-18    -6.93889e-18     0.345917
+                                          wgi_any_missing         6.93889e-18     6.93889e-18     0.202296
+                           grp_benefit_cost_ratios__ratio         6.93889e-18    -6.93889e-18      0.25034
+                 grp_co2_emission_reductions__tonnes_co2e         6.93889e-18     6.93889e-18     0.233783
+                              planned_expenditure_missing         6.93889e-18    -6.93889e-18    0.0675219
+                               feature_completeness_ratio         6.93889e-18    -6.93889e-18     0.060869
+                               llm_features_present_ratio         6.93889e-18     6.93889e-18     0.060869
                                               region_MENA         6.93889e-18     6.93889e-18     0.247681
-                                          finance_is_loan         6.93889e-18    -6.93889e-18     0.423211
-                              grp_generation_capacity__mw         6.93889e-18     6.93889e-18      0.25034
-                                 planned_duration_missing         6.93889e-18    -6.93889e-18    0.0390434
-                    grp_financial_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.417297
-                                               region_LAC                   0               0      0.37387
+                                             cpia_missing         6.93889e-18    -6.93889e-18      0.49945
+                               llm_features_missing_count         6.93889e-18    -6.93889e-18     0.426083
+                    grp_financial_rate_of_return__percent         6.93889e-18     6.93889e-18     0.417297
+                     grp_economic_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.497525
+                                 planned_duration_missing         6.93889e-18     6.93889e-18    0.0390434
+                                           integratedness                   0               0      3.11706
+                                          finance_is_loan                   0               0     0.423211
                                            activity_scope                   0               0      1.25153
-                                                rep_org_2                   0               0     0.167832
-                                               region_AFE                   0               0     0.247681
                                                region_AFW                   0               0     0.307023
-                               llm_features_present_ratio                   0               0     0.060869
-                               llm_features_missing_count                   0               0     0.426083
-                               feature_completeness_ratio                   0               0     0.060869
+                                               region_LAC                   0               0      0.37387
+                                               region_EAP                   0               0     0.422245
+                                                rep_org_2                   0               0     0.167832
                         sector_cluster_Climate_adaptation                   0               0    0.0223676
-                                          wgi_any_missing                   0               0     0.202296
-                           grp_benefit_cost_ratios__ratio                   0               0      0.25034
-                 grp_co2_emission_reductions__tonnes_co2e                   0               0     0.233783
-                     grp_economic_rate_of_return__percent                   0               0     0.497525
+                                       gdp_percap_missing                   0               0     0.205712
+                                  sector_clusters_missing                   0               0     0.428849
+        grp_co2_emission_reductions__tonnes_co2e_per_year                   0               0     0.167832
+                       grp_water_connections__connections                   0               0      0.31091
 
 ====================================================================================================
 raw  out_raw_benefit_cost_ratios__ratio
@@ -8269,54 +8261,54 @@ raw  out_raw_benefit_cost_ratios__ratio
                                  expenditure_per_year_log         0.000317639     0.000317639      1.06746
                                                   targets         0.000273342    -0.000273342       13.421
                                   log_planned_expenditure         0.000118451     0.000118451      1.01671
+                                          finance_is_loan         8.32667e-17     8.32667e-17     0.477134
+                                               region_LAC         5.55112e-17     5.55112e-17     0.319058
+                                               region_SAS         5.55112e-17     5.55112e-17     0.355139
                                                 rep_org_1         5.55112e-17     5.55112e-17        0.127
-                                               cpia_score         5.55112e-17     5.55112e-17     0.266264
-           sector_cluster_Institutional_capacity_building         5.55112e-17    -5.55112e-17    0.0621096
+                                               region_ECA         5.55112e-17     5.55112e-17     0.319058
+                         sector_cluster_Financing_charges         5.55112e-17     5.55112e-17    0.0146561
+                                  sector_clusters_missing         5.55112e-17     5.55112e-17     0.449749
+                                             cpia_missing         5.55112e-17     5.55112e-17     0.497482
+                        sector_cluster_Climate_adaptation         5.55112e-17     5.55112e-17    0.0323273
+               sector_cluster_reduced_PM2.5_air_pollution         5.55112e-17    -5.55112e-17     0.119557
          sector_cluster_Improved_transport_infrastructure         5.55112e-17    -5.55112e-17     0.222004
-                                               gdp_percap         5.55112e-17    -5.55112e-17     0.944356
-                                          wgi_any_missing         5.55112e-17     5.55112e-17     0.216335
-                                       gdp_percap_missing         5.55112e-17     5.55112e-17     0.216335
-                                             cpia_missing         5.55112e-17    -5.55112e-17     0.497482
-                    sector_cluster_Urban_flood_protection         5.55112e-17     5.55112e-17     0.245658
-                         sector_cluster_Financing_charges         5.55112e-17    -5.55112e-17    0.0146561
-                                                  context         5.55112e-17     5.55112e-17      15.8806
-                                          finance_is_loan         5.55112e-17    -5.55112e-17     0.477134
-                                           activity_scope         5.55112e-17     5.55112e-17      1.44244
-                                                  finance                   0               0      8.66445
-                                               complexity                   0               0       18.231
-                                  implementer_performance                   0               0      5.96626
-                                               region_SAS                   0               0     0.355139
-                                              region_MENA                   0               0     0.216335
-                                               region_LAC                   0               0     0.319058
-                                               region_ECA                   0               0     0.319058
-                                               region_EAP                   0               0     0.441142
-                                               region_AFW                   0               0     0.337972
+                                                  umap3_x         5.55112e-17     5.55112e-17       1.9472
+                                               region_EAP         5.55112e-17     5.55112e-17     0.441142
+                                               complexity         5.55112e-17     5.55112e-17       18.231
+                                                  context         5.55112e-17    -5.55112e-17      15.8806
+                                  implementer_performance         5.55112e-17     5.55112e-17      5.96626
+                                          wgi_any_missing         5.55112e-17    -5.55112e-17     0.216335
+                                             umap_missing         5.55112e-17    -5.55112e-17     0.398304
+                                          sector_distance         5.55112e-17    -5.55112e-17    0.0415329
+         sector_cluster_Land_acquisition_and_resettlement         5.55112e-17    -5.55112e-17     0.159048
+                     sector_cluster_reduced_CO2_emissions         5.55112e-17    -5.55112e-17     0.235274
+                                         country_distance         5.55112e-17    -5.55112e-17    0.0336744
                                                region_AFE                   0               0     0.216335
                                                 rep_org_2                   0               0     0.178127
-                                                rep_org_0                   0               0        0.127
                                            integratedness                   0               0      4.33585
+                                                  finance                   0               0      8.66445
                                                     risks                   0               0      19.7492
-                                                  umap3_z                   0               0        1.095
-                 sector_cluster_increased_food_production                   0               0     0.213898
+                                               region_AFW                   0               0     0.337972
+                                               cpia_score                   0               0     0.266264
+                                               gdp_percap                   0               0     0.944356
+                                           activity_scope                   0               0      1.44244
+                                                rep_org_0                   0               0        0.127
+                                              region_MENA                   0               0     0.216335
+  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
+           sector_cluster_Institutional_capacity_building                   0               0    0.0621096
+                        sector_cluster_Project_Management                   0               0    0.0455351
+             sector_cluster_increased_managed_forest_land                   0               0     0.152487
                   sector_cluster_Green_growth_initiatives                   0               0   0.00873085
                   sector_cluster_Road_safety_improvements                   0               0     0.201265
-                                                  umap3_x                   0               0       1.9472
-  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
-                        sector_cluster_Project_Management                   0               0    0.0455351
-                     sector_cluster_reduced_CO2_emissions                   0               0     0.235274
-                        sector_cluster_Climate_adaptation                   0               0    0.0323273
-             sector_cluster_increased_managed_forest_land                   0               0     0.152487
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0     0.119557
-sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                              sector_cluster_Contingencies                   0               0    0.0270975
                                                   umap3_y                   0               0      1.07142
-                                  sector_clusters_missing                   0               0     0.449749
-         sector_cluster_Land_acquisition_and_resettlement                   0               0     0.159048
-                                 governance_missing_count                   0               0      1.30502
+                                                  umap3_z                   0               0        1.095
+                 sector_cluster_increased_food_production                   0               0     0.213898
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                               planned_expenditure_missing                   0               0        0.127
-                                         country_distance                   0               0    0.0336744
-                                             umap_missing                   0               0     0.398304
-                                          sector_distance                   0               0    0.0415329
+                                       gdp_percap_missing                   0               0     0.216335
+                    sector_cluster_Urban_flood_protection                   0               0     0.245658
+                                 governance_missing_count                   0               0      1.30502
 
 ====================================================================================================
 raw  out_raw_economic_rate_of_return__percent
@@ -8591,7 +8583,7 @@ Trained outcome models: 1
 === PER-ACTIVITY OUTCOME EVAL (TEST) ===
 kept activities: 10 (n_outcomes >= 1)
 
-R^2 (per-activity mean): -0.0463169/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1042: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
+R^2 (per-activity mean): -0.0463169/home/dmrivers/Code/forecasting_thesis_code/src/pipeline/L_cost_effectiveness_train_and_score.py:1022: FutureWarning: The previous implementation of stack is deprecated and will be removed in a future version of pandas. See the What's New notes for pandas 2.1.0 for details. Specify future_stack=True to adopt the new implementation and silence this warning.
   s = y_true.stack(dropna=True)  # MultiIndex: (activity_id, outcome_col) -> value
 
 R^2 (cell-wise):        -0.0463169
@@ -8828,37 +8820,37 @@ sector_cluster_Capacity_Building_and_Technical_Assistance           0.0228445   
              sector_cluster_increased_managed_forest_land         0.000793116    -0.000793116     0.151691
                sector_cluster_reduced_PM2.5_air_pollution         0.000203536     0.000203536    0.0968066
                  sector_cluster_increased_food_production         0.000170125    -0.000170125     0.201583
-                                           integratedness         1.38778e-17    -1.38778e-17      3.11706
-        grp_co2_emission_reductions__tonnes_co2e_per_year         1.38778e-17    -1.38778e-17     0.167832
-                                             umap_missing         1.38778e-17     1.38778e-17     0.312824
-                       grp_water_connections__connections         1.38778e-17    -1.38778e-17      0.31091
-                                  sector_clusters_missing         1.38778e-17    -1.38778e-17     0.428849
-                                       gdp_percap_missing         1.38778e-17     1.38778e-17     0.205712
-                              planned_expenditure_missing         1.38778e-17    -1.38778e-17    0.0675219
-                                               region_EAP         1.38778e-17     1.38778e-17     0.422245
-                                                rep_org_0         1.38778e-17     1.38778e-17    0.0390434
+                                               region_SAS         1.38778e-17    -1.38778e-17     0.307023
+                                                rep_org_0         1.38778e-17    -1.38778e-17    0.0390434
                                                 rep_org_1         1.38778e-17     1.38778e-17     0.163484
-                                               region_ECA         1.38778e-17    -1.38778e-17     0.345917
-                                             cpia_missing         6.93889e-18     6.93889e-18      0.49945
-                                               region_SAS         6.93889e-18    -6.93889e-18     0.307023
+                                             umap_missing         1.38778e-17    -1.38778e-17     0.312824
+                                               region_AFE         1.38778e-17     1.38778e-17     0.247681
+                              grp_generation_capacity__mw         6.93889e-18    -6.93889e-18      0.25034
+                                               region_ECA         6.93889e-18    -6.93889e-18     0.345917
+                                          wgi_any_missing         6.93889e-18     6.93889e-18     0.202296
+                           grp_benefit_cost_ratios__ratio         6.93889e-18    -6.93889e-18      0.25034
+                 grp_co2_emission_reductions__tonnes_co2e         6.93889e-18     6.93889e-18     0.233783
+                              planned_expenditure_missing         6.93889e-18    -6.93889e-18    0.0675219
+                               feature_completeness_ratio         6.93889e-18    -6.93889e-18     0.060869
+                               llm_features_present_ratio         6.93889e-18     6.93889e-18     0.060869
                                               region_MENA         6.93889e-18     6.93889e-18     0.247681
-                                          finance_is_loan         6.93889e-18    -6.93889e-18     0.423211
-                              grp_generation_capacity__mw         6.93889e-18     6.93889e-18      0.25034
-                                 planned_duration_missing         6.93889e-18    -6.93889e-18    0.0390434
-                    grp_financial_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.417297
-                                               region_LAC                   0               0      0.37387
+                                             cpia_missing         6.93889e-18    -6.93889e-18      0.49945
+                               llm_features_missing_count         6.93889e-18    -6.93889e-18     0.426083
+                    grp_financial_rate_of_return__percent         6.93889e-18     6.93889e-18     0.417297
+                     grp_economic_rate_of_return__percent         6.93889e-18    -6.93889e-18     0.497525
+                                 planned_duration_missing         6.93889e-18     6.93889e-18    0.0390434
+                                           integratedness                   0               0      3.11706
+                                          finance_is_loan                   0               0     0.423211
                                            activity_scope                   0               0      1.25153
-                                                rep_org_2                   0               0     0.167832
-                                               region_AFE                   0               0     0.247681
                                                region_AFW                   0               0     0.307023
-                               llm_features_present_ratio                   0               0     0.060869
-                               llm_features_missing_count                   0               0     0.426083
-                               feature_completeness_ratio                   0               0     0.060869
+                                               region_LAC                   0               0      0.37387
+                                               region_EAP                   0               0     0.422245
+                                                rep_org_2                   0               0     0.167832
                         sector_cluster_Climate_adaptation                   0               0    0.0223676
-                                          wgi_any_missing                   0               0     0.202296
-                           grp_benefit_cost_ratios__ratio                   0               0      0.25034
-                 grp_co2_emission_reductions__tonnes_co2e                   0               0     0.233783
-                     grp_economic_rate_of_return__percent                   0               0     0.497525
+                                       gdp_percap_missing                   0               0     0.205712
+                                  sector_clusters_missing                   0               0     0.428849
+        grp_co2_emission_reductions__tonnes_co2e_per_year                   0               0     0.167832
+                       grp_water_connections__connections                   0               0      0.31091
 
 ====================================================================================================
 raw  out_raw_benefit_cost_ratios__ratio
@@ -8870,54 +8862,54 @@ raw  out_raw_benefit_cost_ratios__ratio
                                  expenditure_per_year_log         0.000317639     0.000317639      1.06746
                                                   targets         0.000273342    -0.000273342       13.421
                                   log_planned_expenditure         0.000118451     0.000118451      1.01671
+                                          finance_is_loan         8.32667e-17     8.32667e-17     0.477134
+                                               region_LAC         5.55112e-17     5.55112e-17     0.319058
+                                               region_SAS         5.55112e-17     5.55112e-17     0.355139
                                                 rep_org_1         5.55112e-17     5.55112e-17        0.127
-                                               cpia_score         5.55112e-17     5.55112e-17     0.266264
-           sector_cluster_Institutional_capacity_building         5.55112e-17    -5.55112e-17    0.0621096
+                                               region_ECA         5.55112e-17     5.55112e-17     0.319058
+                         sector_cluster_Financing_charges         5.55112e-17     5.55112e-17    0.0146561
+                                  sector_clusters_missing         5.55112e-17     5.55112e-17     0.449749
+                                             cpia_missing         5.55112e-17     5.55112e-17     0.497482
+                        sector_cluster_Climate_adaptation         5.55112e-17     5.55112e-17    0.0323273
+               sector_cluster_reduced_PM2.5_air_pollution         5.55112e-17    -5.55112e-17     0.119557
          sector_cluster_Improved_transport_infrastructure         5.55112e-17    -5.55112e-17     0.222004
-                                               gdp_percap         5.55112e-17    -5.55112e-17     0.944356
-                                          wgi_any_missing         5.55112e-17     5.55112e-17     0.216335
-                                       gdp_percap_missing         5.55112e-17     5.55112e-17     0.216335
-                                             cpia_missing         5.55112e-17    -5.55112e-17     0.497482
-                    sector_cluster_Urban_flood_protection         5.55112e-17     5.55112e-17     0.245658
-                         sector_cluster_Financing_charges         5.55112e-17    -5.55112e-17    0.0146561
-                                                  context         5.55112e-17     5.55112e-17      15.8806
-                                          finance_is_loan         5.55112e-17    -5.55112e-17     0.477134
-                                           activity_scope         5.55112e-17     5.55112e-17      1.44244
-                                                  finance                   0               0      8.66445
-                                               complexity                   0               0       18.231
-                                  implementer_performance                   0               0      5.96626
-                                               region_SAS                   0               0     0.355139
-                                              region_MENA                   0               0     0.216335
-                                               region_LAC                   0               0     0.319058
-                                               region_ECA                   0               0     0.319058
-                                               region_EAP                   0               0     0.441142
-                                               region_AFW                   0               0     0.337972
+                                                  umap3_x         5.55112e-17     5.55112e-17       1.9472
+                                               region_EAP         5.55112e-17     5.55112e-17     0.441142
+                                               complexity         5.55112e-17     5.55112e-17       18.231
+                                                  context         5.55112e-17    -5.55112e-17      15.8806
+                                  implementer_performance         5.55112e-17     5.55112e-17      5.96626
+                                          wgi_any_missing         5.55112e-17    -5.55112e-17     0.216335
+                                             umap_missing         5.55112e-17    -5.55112e-17     0.398304
+                                          sector_distance         5.55112e-17    -5.55112e-17    0.0415329
+         sector_cluster_Land_acquisition_and_resettlement         5.55112e-17    -5.55112e-17     0.159048
+                     sector_cluster_reduced_CO2_emissions         5.55112e-17    -5.55112e-17     0.235274
+                                         country_distance         5.55112e-17    -5.55112e-17    0.0336744
                                                region_AFE                   0               0     0.216335
                                                 rep_org_2                   0               0     0.178127
-                                                rep_org_0                   0               0        0.127
                                            integratedness                   0               0      4.33585
+                                                  finance                   0               0      8.66445
                                                     risks                   0               0      19.7492
-                                                  umap3_z                   0               0        1.095
-                 sector_cluster_increased_food_production                   0               0     0.213898
+                                               region_AFW                   0               0     0.337972
+                                               cpia_score                   0               0     0.266264
+                                               gdp_percap                   0               0     0.944356
+                                           activity_scope                   0               0      1.44244
+                                                rep_org_0                   0               0        0.127
+                                              region_MENA                   0               0     0.216335
+  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
+           sector_cluster_Institutional_capacity_building                   0               0    0.0621096
+                        sector_cluster_Project_Management                   0               0    0.0455351
+             sector_cluster_increased_managed_forest_land                   0               0     0.152487
                   sector_cluster_Green_growth_initiatives                   0               0   0.00873085
                   sector_cluster_Road_safety_improvements                   0               0     0.201265
-                                                  umap3_x                   0               0       1.9472
-  sector_cluster_more_people_with_drinking_water_services                   0               0     0.274922
-                        sector_cluster_Project_Management                   0               0    0.0455351
-                     sector_cluster_reduced_CO2_emissions                   0               0     0.235274
-                        sector_cluster_Climate_adaptation                   0               0    0.0323273
-             sector_cluster_increased_managed_forest_land                   0               0     0.152487
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0     0.119557
-sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                              sector_cluster_Contingencies                   0               0    0.0270975
                                                   umap3_y                   0               0      1.07142
-                                  sector_clusters_missing                   0               0     0.449749
-         sector_cluster_Land_acquisition_and_resettlement                   0               0     0.159048
-                                 governance_missing_count                   0               0      1.30502
+                                                  umap3_z                   0               0        1.095
+                 sector_cluster_increased_food_production                   0               0     0.213898
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0    0.0631391
                               planned_expenditure_missing                   0               0        0.127
-                                         country_distance                   0               0    0.0336744
-                                             umap_missing                   0               0     0.398304
-                                          sector_distance                   0               0    0.0415329
+                                       gdp_percap_missing                   0               0     0.216335
+                    sector_cluster_Urban_flood_protection                   0               0     0.245658
+                                 governance_missing_count                   0               0      1.30502
 
 ====================================================================================================
 raw  out_raw_economic_rate_of_return__percent
@@ -9178,36 +9170,36 @@ dpu  out_dpu_water_connections__connections
                                                   umap3_z          0.00173677     -0.00173677     0.822022
                                                complexity           0.0010871       0.0010871      17.4064
                                                   targets         0.000375781     0.000375781       12.393
-                  sector_cluster_Road_safety_improvements         6.66134e-16     6.66134e-16    0.0828499
-                                  sector_clusters_missing         6.66134e-16    -6.66134e-16      0.42907
-                                               region_AFE         4.44089e-16     4.44089e-16     0.261365
-                                  implementer_performance         4.44089e-16     4.44089e-16      10.3776
-                                          finance_is_loan         4.44089e-16     4.44089e-16      0.30708
-                                               region_SAS         4.44089e-16     4.44089e-16     0.374634
-         sector_cluster_Improved_transport_infrastructure         4.44089e-16     4.44089e-16     0.233396
-                                               region_LAC         4.44089e-16     4.44089e-16      0.42907
-sector_cluster_Capacity_Building_and_Technical_Assistance         4.44089e-16    -4.44089e-16     0.047741
-                                              region_MENA                   0               0     0.243332
-                                               region_EAP                   0               0     0.343964
-                                               region_ECA                   0               0     0.332455
+                         sector_cluster_Financing_charges         4.44089e-16     4.44089e-16    0.0141078
+                    sector_cluster_Urban_flood_protection         4.44089e-16     4.44089e-16     0.112056
+                                             cpia_missing         4.44089e-16     4.44089e-16      0.48384
+         sector_cluster_Land_acquisition_and_resettlement         4.44089e-16    -4.44089e-16    0.0396524
+             sector_cluster_increased_managed_forest_land         4.44089e-16    -4.44089e-16   0.00830197
+               sector_cluster_reduced_PM2.5_air_pollution         4.44089e-16    -4.44089e-16    0.0408396
+         sector_cluster_Improved_transport_infrastructure         4.44089e-16    -4.44089e-16     0.233396
+                                              region_MENA         4.44089e-16     4.44089e-16     0.243332
+                                  implementer_performance         4.44089e-16    -4.44089e-16      10.3776
+                                           integratedness         4.44089e-16     4.44089e-16      3.18818
+                                               region_AFW         4.44089e-16    -4.44089e-16     0.277836
+           sector_cluster_Institutional_capacity_building         4.44089e-16     4.44089e-16    0.0639871
+                  sector_cluster_Road_safety_improvements         4.44089e-16     4.44089e-16    0.0828499
                                            activity_scope                   0               0      1.23077
-                                           integratedness                   0               0      3.18818
                                                   finance                   0               0        9.398
-                                               region_AFW                   0               0     0.277836
-                        sector_cluster_Project_Management                   0               0     0.051248
-                     sector_cluster_reduced_CO2_emissions                   0               0    0.0845479
-           sector_cluster_Institutional_capacity_building                   0               0    0.0639871
-               sector_cluster_reduced_PM2.5_air_pollution                   0               0    0.0408396
-             sector_cluster_increased_managed_forest_land                   0               0   0.00830197
+                                          finance_is_loan                   0               0      0.30708
+                                               region_LAC                   0               0      0.42907
+                                               region_ECA                   0               0     0.332455
+                                               region_EAP                   0               0     0.343964
+                                               region_AFE                   0               0     0.261365
+                                               region_SAS                   0               0     0.374634
                  sector_cluster_increased_food_production                   0               0     0.105503
                   sector_cluster_Green_growth_initiatives                   0               0    0.0150134
                              sector_cluster_Contingencies                   0               0    0.0805151
+                        sector_cluster_Project_Management                   0               0     0.051248
+                     sector_cluster_reduced_CO2_emissions                   0               0    0.0845479
+sector_cluster_Capacity_Building_and_Technical_Assistance                   0               0     0.047741
+                                  sector_clusters_missing                   0               0      0.42907
                               planned_expenditure_missing                   0               0     0.143576
                                        gdp_percap_missing                   0               0     0.102062
-                                             cpia_missing                   0               0      0.48384
-                         sector_cluster_Financing_charges                   0               0    0.0141078
-         sector_cluster_Land_acquisition_and_resettlement                   0               0    0.0396524
-                    sector_cluster_Urban_flood_protection                   0               0     0.112056
                                           wgi_any_missing                   0               0     0.102062
                                              umap_missing                   0               0     0.143576
 

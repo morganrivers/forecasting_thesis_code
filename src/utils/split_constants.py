@@ -93,7 +93,7 @@ def assert_split_matches_canonical(
     splits_csv = Path(splits_csv)
     if not splits_csv.exists():
         warnings.warn(
-            f"Split CSV does not exist: {splits_csv} -- skipping canonical check"
+            f"Split CSV does not exist: {splits_csv} -- skipping canonical check", stacklevel=2
         )
         return
 

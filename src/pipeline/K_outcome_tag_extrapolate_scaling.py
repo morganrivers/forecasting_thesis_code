@@ -59,44 +59,42 @@ N_WINDOWS = 10  # number of windows to slide
 
 # -- Imports from G_outcome_tag_train -----------------------------------------------
 from G_outcome_tag_train import (
-    build_feature_matrix,
-    get_feature_cols,
-    load_applied_tags,
-    split_latest_by_date_with_cutoff,
-    INFO_FOR_ACTIVITY_FORECASTING as INFO_CSV_PATH,
-    get_train_activity_ids_from_dates,
-    APPLIED_TAGS,
-    DROP_NOISY_FEATURE_GROUPS,
-    NOISY_FEATURE_GROUPS,
-    OUT_RESULTS as D_RESULTS_PATH,
-    apply_manual_factor_blend,
-    load_per_tag_strategies,
-    SKIP_START_YEAR_CORRECTION_TAGS,
-    apply_start_year_correction,
-    KEEP_REPORTING_ORGS,
-    LATEST_TRAIN_POINT,
-    LATEST_VALIDATION_POINT,
-    TOO_LATE_CUTOFF,
-    MIN_TAG_TRAIN_COUNT_LOW,
     ADD_START_YEAR_CORRECTION,
+    APPLIED_TAGS,
     CORRECT_RF_BEFORE_ET,
-    RF_PARAMS_BASE,
+    DROP_NOISY_FEATURE_GROUPS,
+    KEEP_REPORTING_ORGS,
+    LATEST_VALIDATION_POINT,
+    MIN_TAG_TRAIN_COUNT_LOW,
+    NOISY_FEATURE_GROUPS,
     OUT_REGULARIZATION,
-    train_rf_et_ensemble,
-    _eval_ensemble_probas,
+    SKIP_START_YEAR_CORRECTION_TAGS,
     TAG_RF_PARAMS_OVERRIDES,
     TAGS_SKIP_FEATURE_SELECTION,
+    apply_manual_factor_blend,
+    apply_start_year_correction,
+    build_feature_matrix,
+    get_feature_cols,
+    get_train_activity_ids_from_dates,
+    load_applied_tags,
+    load_per_tag_strategies,
+    split_latest_by_date_with_cutoff,
+    train_rf_et_ensemble,
+)
+from G_outcome_tag_train import (
+    INFO_FOR_ACTIVITY_FORECASTING as INFO_CSV_PATH,
 )
 from H_outcome_tag_evaluate import (
     TAG_GROUPS,
-    PREDICTIONS_PATH,
-    plot_from_results as _plot_from_results,
 )
-import H_outcome_tag_evaluate as _H_outcome_tag_evaluate
 from scoring_metrics import (
     pairwise_ordering_prob_excl_ties as pairwise_ordering_prob,
-    within_group_pairwise_ordering_prob as _wg_pop_fn,
+)
+from scoring_metrics import (
     side_accuracy,
+)
+from scoring_metrics import (
+    within_group_pairwise_ordering_prob as _wg_pop_fn,
 )
 
 # -- Curated tags --------------------------------------------------------------
@@ -832,7 +830,7 @@ def main() -> None:
                     )
                     print(f"\n{'='*70}")
                     print(
-                        f"[WG-POP DEBUG] Z_tag_generalizability --slowcorrectextrapolate (frac=0, sample=0)"
+                        "[WG-POP DEBUG] Z_tag_generalizability --slowcorrectextrapolate (frac=0, sample=0)"
                     )
                     print(f"  eval set          : {_eval_label_z}  n={len(eval_idx)}")
                     print(
@@ -920,7 +918,7 @@ def main() -> None:
                 )
             else:
                 with cache_C.open() as f:
-                    c_data = json.load(f)
+                    json.load(f)
         return
 
     if RUN_C:

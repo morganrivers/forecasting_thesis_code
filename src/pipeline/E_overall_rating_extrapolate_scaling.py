@@ -27,7 +27,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from adjustText import adjust_text
 
 # ---------------------------------------------------------------------------
 # Path setup -- add utils and C_forecast_outcomes so we can import from there.
@@ -42,51 +41,50 @@ for _p in [str(UTILS_DIR), str(PIPELINE_DIR)]:
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from scoring_metrics import (
-    rmse,
-    mae,
-    r2 as r2_metric,
-    true_hit_accuracy,
-    side_accuracy,
-    spearman_correlation,
-    pairwise_ordering_prob_excl_ties,
-    within_group_pairwise_ordering_prob,
-)
-from ml_models import (
-    run_random_forest_median_impute_noclip,
-    run_ridge_glm_median_impute_noclip,
-    bootstrap_ci,
-    apply_start_year_trend_correction,
-)
-from feature_engineering import (
-    load_grades,
-    load_is_completed,
-    load_ratings,
-    load_activity_scope,
-    load_gdp_percap,
-    load_implementing_org_type,
-    load_world_bank_indicators,
-    add_similarity_features,
-    pick_start_date,
-    add_dates_to_dataframe,
-    restrict_to_reporting_orgs_exact,
-    load_targets_context_maps_features,
-    add_enhanced_uncertainty_features,
-    data_sector_clusters,
-)
-from data_loan_disbursement import load_loan_or_disbursement
-from llm_load_predictions import load_predictions_from_jsonl, get_llm_prediction_configs
 from A_overall_rating_fit_and_evaluate import (
     KEEP_REPORTING_ORGS,
-    NUM_ORGS_KEEP,
     LATEST_TRAIN_POINT,
     LATEST_VALIDATION_POINT,
+    NUM_ORGS_KEEP,
     TOO_LATE_CUTOFF,
-    split_latest_by_date_with_cutoff,
     add_per_org_mode_baseline,
     add_rf_llm_residual_corrector,
-    load_llm_planned_expenditure,
     load_llm_planned_duration,
+    load_llm_planned_expenditure,
+)
+from data_loan_disbursement import load_loan_or_disbursement
+from feature_engineering import (
+    add_dates_to_dataframe,
+    add_enhanced_uncertainty_features,
+    add_similarity_features,
+    data_sector_clusters,
+    load_activity_scope,
+    load_gdp_percap,
+    load_grades,
+    load_implementing_org_type,
+    load_is_completed,
+    load_ratings,
+    load_targets_context_maps_features,
+    load_world_bank_indicators,
+    restrict_to_reporting_orgs_exact,
+)
+from llm_load_predictions import get_llm_prediction_configs, load_predictions_from_jsonl
+from ml_models import (
+    apply_start_year_trend_correction,
+    run_random_forest_median_impute_noclip,
+    run_ridge_glm_median_impute_noclip,
+)
+from scoring_metrics import (
+    mae,
+    pairwise_ordering_prob_excl_ties,
+    rmse,
+    side_accuracy,
+    spearman_correlation,
+    true_hit_accuracy,
+    within_group_pairwise_ordering_prob,
+)
+from scoring_metrics import (
+    r2 as r2_metric,
 )
 
 # ---------------------------------------------------------------------------
@@ -303,12 +301,12 @@ def analysis_17_learning_curve(
         f"  pop_proj_5x at n_full={n_full}: {pop_at_n_full_fitted:.4f}  ->  "
         f"pop_proj_5x = {float(pop_proj):.4f}  (Delta={float(pop_proj)-pop_at_n_full_fitted:+.4f})"
     )
-    print(f"\n  Caveat: 5x projection assumes same domain distribution.")
+    print("\n  Caveat: 5x projection assumes same domain distribution.")
 
     BASE_FS = 18
     ns_curve = np.linspace(ns.min() * 0.5, n_proj, 300)
     r2_curve = a_r2 + b_r2 * np.log(ns_curve)
-    inv_curve = a_inv + b_inv * np.log(ns_curve)
+    a_inv + b_inv * np.log(ns_curve)
 
     _lc_suffix = "" if set_label == "val" else f"_{set_label}"
 
@@ -624,10 +622,10 @@ def _refit_umap_for_fold(
 
     try:
         import umap as umap_lib
-    except ImportError:
+    except ImportError as err:
         raise ImportError(
             "umap-learn is required for analysis_6. Install with: pip install umap-learn"
-        )
+        ) from err
 
     # Training fold embeddings (only those that have an embedding)
     tr_ids_with_emb = [str(aid) for aid in tr_idx if str(aid) in emb_dict]
@@ -850,7 +848,7 @@ def analysis_6_temporal_kfold(
         d["rating_delta"] = y_delta
 
         # RF + ExtraTrees (trained on delta, prediction converted back to absolute)
-        print(f"  Training RF+ExtraTrees on y_delta...")
+        print("  Training RF+ExtraTrees on y_delta...")
         rf_delta, _ = run_random_forest_median_impute_noclip(
             data=d,
             feature_cols=kfold_feature_cols,
@@ -870,7 +868,7 @@ def analysis_6_temporal_kfold(
         d["pred_rf_corr_rounded"] = d["pred_rf_corrected"].round()
 
         # Ridge GLM (trained on delta, converted back to absolute)
-        print(f"  Training Ridge GLM on y_delta...")
+        print("  Training Ridge GLM on y_delta...")
         ridge_delta, _ = run_ridge_glm_median_impute_noclip(
             data=d,
             feature_cols=kfold_feature_cols,
@@ -950,7 +948,7 @@ def analysis_6_temporal_kfold(
             d["start_year"] = d["start_date"].dt.year
 
         print(
-            f"\n  Per-org breakdown (R2 + same-year-pair POP, both methods vs baseline):"
+            "\n  Per-org breakdown (R2 + same-year-pair POP, both methods vs baseline):"
         )
         print(
             f"  {'Org':<12} {'Method':<18} {'R2':>8} {'DeltaR2':>9} {'POP(yr)':>9} {'DeltaPOP(yr)':>10} {'n':>4}"
@@ -1096,16 +1094,16 @@ def analysis_6_temporal_kfold(
         )
         if not neg.empty:
             print(
-                f"  *** WORSE than baseline in fold(s): "
+                "  *** WORSE than baseline in fold(s): "
                 + ", ".join(str(int(f)) for f in neg["fold"])
                 + " ***"
             )
         else:
             print(f"  Beats baseline in all {n_folds_run} valid folds.")
 
-    print(f"\n  ok = mean > 0 and SD < |mean| (advantage stable across folds).")
+    print("\n  ok = mean > 0 and SD < |mean| (advantage stable across folds).")
     print(
-        f"  Rounded variants are the apples-to-apples comparison with per-org mode (also integer)."
+        "  Rounded variants are the apples-to-apples comparison with per-org mode (also integer)."
     )
 
     # ---- Per-org summary across folds ----
@@ -1115,7 +1113,7 @@ def analysis_6_temporal_kfold(
         print(
             "ANALYSIS 6 -- PER-ORG SUMMARY (both methods vs baseline, same-year-pair POP)"
         )
-        print(f"  Only pairs started in the same calendar year count towards POP.")
+        print("  Only pairs started in the same calendar year count towards POP.")
         print(f"{'='*80}")
         hdr_org = (
             f"  {'Org':<12} {'Method':<18} {'mean DeltaR^2':>10} {'SD DeltaR^2':>8} "
@@ -1150,7 +1148,7 @@ def analysis_6_temporal_kfold(
                 )
 
         # Also print raw fold values for transparency
-        print(f"\n  Fold-by-fold detail:")
+        print("\n  Fold-by-fold detail:")
         print(
             f"  {'fold':>5} {'org':<12} {'method':<18} {'R2_base':>9} {'R2_rf':>8} {'DeltaR2':>8}"
             f" {'POP_base':>9} {'POP_rf':>8} {'DeltaPOP':>8} {'n':>4} {'yr-pairs':>9}"

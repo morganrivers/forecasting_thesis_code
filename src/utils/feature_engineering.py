@@ -3,16 +3,13 @@ Builds the feature matrix for overall rating prediction from raw IATI activity
 data, including organisation, sector, financial, scope, and similarity features.
 """
 
-from collections import Counter
+import glob
+import json
+import pprint
 import re
 import unicodedata
-import pprint
-from typing import Dict, Any, Iterable, List, Optional, Set
 from pathlib import Path
-import json
-import glob
-
-from sklearn.metrics import r2_score
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -333,13 +330,11 @@ _ALIAS_TO_CANON = {
     "moderadamente insatisfatoria": "moderately unsatisfactory",
     "muito insatisfatorio": "highly unsatisfactory",
     "muito insatisfatoria": "highly unsatisfactory",
-    "excelente": "highly satisfactory",
     "muito bom": "highly satisfactory",
     "muito boa": "highly satisfactory",
     "bom": "satisfactory",
     "boa": "satisfactory",
     "razoavel": "moderately satisfactory",
-    "regular": "moderately satisfactory",
     "fraco": "unsatisfactory",
     "fraca": "unsatisfactory",
     "muito fraco": "highly unsatisfactory",
@@ -475,7 +470,6 @@ _ALIAS_TO_CANON = {
     "very high level": "highly satisfactory",
     "largely exceeded expectations, representing very impressive value for money": "highly satisfactory",
     "a - meets expectations": "satisfactory",
-    "a - meets expectations": "satisfactory",
     "resultado satisfactorio": "satisfactory",
 }
 
@@ -496,12 +490,12 @@ def _extract_numbers(x) -> list[float]:
     return [float(m) for m in re.findall(r"(?<!\w)[+-]?\d+(?:\.\d+)?", s)]
 
 
-def _coerce_num(x) -> Optional[float]:
+def _coerce_num(x) -> float | None:
     ns = _extract_numbers(x)
     return ns[0] if ns else None
 
 
-def _parse_percent(x) -> Optional[float]:
+def _parse_percent(x) -> float | None:
     s = "" if x is None else str(x)
     m = re.search(r"(\d+(?:[.,]\d+)?)\s*%", s)
     if not m:
@@ -607,9 +601,9 @@ def get_success_measure_from_rating_value_wrapped(
 
         v = v.split(" als ")[-1].strip()
 
-        lo = _coerce_num(min_rating)
-        hi = _coerce_num(max_rating)
-        nums = _extract_numbers(v)
+        _coerce_num(min_rating)
+        _coerce_num(max_rating)
+        _extract_numbers(v)
 
     pct = _parse_percent(v)
     if pct is not None:
@@ -846,7 +840,7 @@ def load_grades(pattern):
         )
         print(f"Loading {feature_name}...")
 
-        with open(filepath, "r") as f:
+        with open(filepath) as f:
             for line in f:
                 data = json.loads(line)
                 activity_id = data["activity_id"]
@@ -868,11 +862,6 @@ def load_grades(pattern):
     return pd.DataFrame.from_dict(grades_data, orient="index")
 
 
-from pathlib import Path
-from typing import Optional, List, Dict, Any
-import json
-import re
-import numpy as np
 import pandas as pd
 
 _NUM_RE = re.compile(r"\d+")
@@ -881,8 +870,8 @@ _NUM_RE = re.compile(r"\d+")
 def load_targets_context_maps_features(
     path: Path,
     *,
-    sector_levels: Optional[List[str]] = None,
-    drop_sector: Optional[str] = None,
+    sector_levels: list[str] | None = None,
+    drop_sector: str | None = None,
 ) -> pd.DataFrame:
     """
     Loads ../../data/outputs_targets_context_maps.jsonl and returns a DF indexed by activity_id with:
@@ -895,20 +884,20 @@ def load_targets_context_maps_features(
     """
     path = Path(path)
 
-    sector_by_aid: Dict[str, Optional[str]] = {}
-    umap2_by_aid: Dict[str, List[float]] = {}
-    umap3_by_aid: Dict[str, List[float]] = {}
-    umap4_by_aid: Dict[str, List[float]] = {}
-    text_parts_by_aid: Dict[str, List[str]] = {}
-    sector_dist_by_aid: Dict[str, float] = {}
-    country_dist_by_aid: Dict[str, float] = {}
+    sector_by_aid: dict[str, str | None] = {}
+    umap2_by_aid: dict[str, list[float]] = {}
+    umap3_by_aid: dict[str, list[float]] = {}
+    umap4_by_aid: dict[str, list[float]] = {}
+    text_parts_by_aid: dict[str, list[str]] = {}
+    sector_dist_by_aid: dict[str, float] = {}
+    country_dist_by_aid: dict[str, float] = {}
 
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             s = line.strip()
             if not s:
                 continue
-            obj: Dict[str, Any] = json.loads(s)
+            obj: dict[str, Any] = json.loads(s)
 
             aid = str(obj.get("activity_id", "")).strip()
             if not aid:
@@ -1061,7 +1050,7 @@ def load_targets_context_maps_features(
     # print("[tc_maps] columns:", list(out.columns))
 
     # NaN rates (top 25)
-    nan_pct = (out.isna().mean() * 100).sort_values(ascending=False)
+    (out.isna().mean() * 100).sort_values(ascending=False)
     # print("\n[tc_maps] NaN % (top 25):")
     # print(nan_pct.head(25).to_string())
 
@@ -1069,12 +1058,12 @@ def load_targets_context_maps_features(
     # print("\n[tc_maps] sector label counts:")
     # print(sector_s.value_counts(dropna=False).to_string())
 
-    sec_cols = [c for c in out.columns if c.startswith("sector_")]
+    [c for c in out.columns if c.startswith("sector_")]
     # print("\n[tc_maps] sector dummy sums:")
     # print(out[sec_cols].sum().sort_values(ascending=False).to_string())
 
     # 5 full random rows
-    n = min(5, len(out))
+    min(5, len(out))
     # print("\n[tc_maps] sample rows:")
     # print(out.sample(n=n, random_state=0).to_string())
 
@@ -1099,7 +1088,7 @@ def load_ratings(filepath: str) -> pd.Series:
     """
     ratings = {}
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         for line in f:
             s = line.strip()
             if not s:
@@ -1588,7 +1577,6 @@ def add_enhanced_uncertainty_features(data, feature_cols_llm=None):
     if umap_cols_present:
         data["umap_missing"] = data[umap_cols_present].isna().any(axis=1).astype(float)
 
-    n_features = 12  # 5 aggregate + 7 individual flags
     # print(f"  Added {n_features} enhanced uncertainty features")
 
     return data

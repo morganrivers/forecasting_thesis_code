@@ -44,12 +44,10 @@ REQUIRED_FILES = [
     "src/pipeline/K_outcome_tag_extrapolate_scaling.py",
     "src/pipeline/J_outcome_tag_results_table.py",
     # Utility modules
-    "src/utils/data_analysis_similarity_recency.py",
     "src/utils/data_currency_conversion.py",
     "src/utils/data_loan_disbursement.py",
     "src/utils/llm_extraction_and_grading.py",
     "src/utils/overall_rating_feature_labels.py",
-    "src/utils/data_similar_activities.py",
     "src/utils/feature_engineering.py",
     "src/utils/data_sector_clusters.py",
     "src/utils/overall_rating_rf_conformal.py",
@@ -91,11 +89,9 @@ def test_util_module_importable(module_name):
 
 LIGHT_IO_MODULES = [
     "ml_models",
-    "data_similar_activities",
     "data_sector_clusters",
     "feature_engineering",
     "llm_extraction_and_grading",
-    "data_analysis_similarity_recency",
 ]
 
 

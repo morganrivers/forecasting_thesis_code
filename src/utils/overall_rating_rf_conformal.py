@@ -4,13 +4,6 @@ Split-conformal prediction intervals using absolute residual quantiles.
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.isotonic import IsotonicRegression
-
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import Ridge
 
 USE_CONFORMAL_PREDICTION = True
 USE_FIXED_WIDTH_CONFORMAL = True

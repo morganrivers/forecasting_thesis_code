@@ -12,6 +12,7 @@ Returns DataFrame with:
 import json
 import pickle
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
@@ -33,7 +34,7 @@ def _parse_sector_records(
     Returns the set of activity_ids added.
     """
     added = set()
-    with open(path, "r") as f:
+    with open(path) as f:
         for line in f:
             data = json.loads(line.strip())
             activity_id = data.get("activity_id")
@@ -215,7 +216,7 @@ def process_finance_sectors_to_clusters(
     # Map sector_label -> cluster_id
     sector_to_cluster = {
         label: int(cluster)
-        for label, cluster in zip(regular_sector_labels, cluster_labels)
+        for label, cluster in zip(regular_sector_labels, cluster_labels, strict=False)
     }
 
     # Find most common sector_label in each cluster for naming

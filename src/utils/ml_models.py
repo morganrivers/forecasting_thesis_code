@@ -4,37 +4,22 @@ and ordinal regression used in overall rating prediction.
 """
 
 from __future__ import annotations
-import inspect
-from statsmodels.miscmodels.ordinal_model import OrderedModel
-import pandas as pd
-from sklearn.metrics import r2_score
-from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import Ridge, RidgeCV
-import xgboost as xgb
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import make_pipeline
-from sklearn.linear_model import LogisticRegressionCV
-from sklearn.preprocessing import StandardScaler
-import statsmodels.api as sm
-import pprint
-from pathlib import Path
-import arviz as az
-import numpy as np
-import pymc as pm
-
-
-from pathlib import Path
-
 
 import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import xgboost as xgb
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import Ridge, RidgeCV
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
 
 UTILS_DIR = Path(__file__).resolve().parent.parent / "utils"
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
-import numpy as np
-import pandas as pd
 
 DISABLE_ET = False
 
@@ -327,17 +312,6 @@ def one_sd_shift_importance(
 # ---------------------------------------------------------------------------
 # Binary tag classifiers (shared by D_train_tag_predictors.py)
 # ---------------------------------------------------------------------------
-
-from sklearn.metrics import (
-    roc_auc_score,
-    average_precision_score,
-    brier_score_loss,
-    log_loss,
-)
-from sklearn.calibration import CalibratedClassifierCV
-from scoring_metrics import (
-    pairwise_ordering_prob_excl_ties as pairwise_ordering_prob,
-)
 
 
 def bootstrap_ci(

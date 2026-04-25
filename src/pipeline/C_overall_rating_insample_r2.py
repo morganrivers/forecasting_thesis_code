@@ -102,7 +102,7 @@ def ridge_coef_contribution(
     contributions = beta_scaled * corr_with_y
     rows = [
         {"feature": name, "coef_contribution": float(c)}
-        for name, c in zip(feature_names, contributions)
+        for name, c in zip(feature_names, contributions, strict=False)
     ]
     df = (
         pd.DataFrame(rows)

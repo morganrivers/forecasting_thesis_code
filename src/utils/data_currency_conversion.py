@@ -13,15 +13,14 @@ RESCALE_EXTREMES_BY_MILLION is True.
 Main export: return_misc_disbursement_or_planned_disbursement(FORECAST_CSV, OUT_MISC)
 """
 
+import csv
 import json
 import math
 import re
 from pathlib import Path
 
-import pandas as pd
-
-import csv
 import numpy as np
+import pandas as pd
 
 PATH = Path("../../data/outputs_misc.jsonl")
 BINS = 30

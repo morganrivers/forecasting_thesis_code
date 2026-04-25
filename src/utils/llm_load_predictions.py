@@ -36,7 +36,7 @@ def load_predictions_from_jsonl(filepath, parser, series_name):
     """
     preds = {}
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

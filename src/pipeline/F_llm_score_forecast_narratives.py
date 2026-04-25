@@ -43,18 +43,17 @@ OUTPUT:
     - Paired bootstrap CIs printed to console
 """
 
+import asyncio
 import json
 import sys
-import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Set, Tuple
-from concurrent.futures import ThreadPoolExecutor
+from typing import Any
 
-import pandas as pd
-import numpy as np
-from scipy.stats import pearsonr
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from adjustText import adjust_text
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
@@ -63,29 +62,25 @@ UTILS_DIR = Path(__file__).resolve().parent.parent / "utils"
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
-from llm_extraction_and_grading import (
-    loop_over_rows_to_call_model,
-)
 from feature_engineering import (
     parse_last_line_label_after_forecast,
 )
-
-from llm_grading_utils import (
-    load_jsonl_by_activity_id,
-    extract_forecast_ratings,
-    calculate_metrics,
-    load_ground_truth_ratings,
+from leakage_risk import EXCLUDE_TEST_LEAKAGE_RISK, LEAKAGE_IDS_BY_SOURCE
+from llm_extraction_and_grading import (
+    loop_over_rows_to_call_model,
 )
+from llm_grading_utils import (
+    calculate_metrics,
+    extract_forecast_ratings,
+    load_ground_truth_ratings,
+    load_jsonl_by_activity_id,
+)
+from ml_models import bootstrap_ci
 from scoring_metrics import (
-    mae,
-    rmse,
-    side_accuracy,
     pairwise_ordering_prob_excl_ties,
+    side_accuracy,
     within_group_pairwise_ordering_prob,
 )
-
-from ml_models import bootstrap_ci
-from leakage_risk import EXCLUDE_TEST_LEAKAGE_RISK, LEAKAGE_IDS_BY_SOURCE
 
 # ---------------------------------------------------------------------------
 # CONFIGURATION
@@ -172,8 +167,8 @@ GRADES_OUTPUT_DIR = Path("../../data/forecast_grades")
 
 
 def extract_ratings_and_remove_last_lines(
-    forecasts: Dict[str, str],
-) -> tuple[Dict[str, str], Dict[str, Any]]:
+    forecasts: dict[str, str],
+) -> tuple[dict[str, str], dict[str, Any]]:
     """
     For each forecast:
     1. Extract numeric rating from last line using parse_last_line_label_after_forecast
@@ -206,12 +201,12 @@ def extract_ratings_and_remove_last_lines(
 # ---------------------------------------------------------------------------
 
 
-def load_outcomes(outcomes_path: Path) -> Dict[str, str]:
+def load_outcomes(outcomes_path: Path) -> dict[str, str]:
     """Load outcomes JSONL file."""
     return load_jsonl_by_activity_id(outcomes_path)
 
 
-def load_risks_as_forecasts(risks_path: Path, set_ids: Set[str]) -> Dict[str, str]:
+def load_risks_as_forecasts(risks_path: Path, set_ids: set[str]) -> dict[str, str]:
     """Load risks JSONL, return {activity_id: response_text} filtered to set_ids."""
     risks = {}
     with open(risks_path) as f:
@@ -234,13 +229,13 @@ def load_risks_as_forecasts(risks_path: Path, set_ids: Set[str]) -> Dict[str, st
 
 
 def build_grading_prompts(
-    forecasts: Dict[str, str],
-    outcomes: Dict[str, str],
-) -> Dict[str, Dict[str, Any]]:
+    forecasts: dict[str, str],
+    outcomes: dict[str, str],
+) -> dict[str, dict[str, Any]]:
     """
     Build prompts that ask gemini-2.5-flash-lite to grade each forecast.
     """
-    prompts: Dict[str, Dict[str, Any]] = {}
+    prompts: dict[str, dict[str, Any]] = {}
 
     # Only grade activities where we have both forecast and outcome
     common_aids = set(forecasts.keys()) & set(outcomes.keys())
@@ -310,11 +305,11 @@ def grade_forecast_set(
 
     Note: loop_over_rows_to_call_model automatically skips already-graded IDs.
     """
-    print(f"\nLoading forecasts and outcomes...")
+    print("\nLoading forecasts and outcomes...")
     raw_forecasts = load_jsonl_by_activity_id(forecast_path)
     outcomes = load_outcomes(outcomes_path)
 
-    print(f"Extracting ratings and removing last lines...")
+    print("Extracting ratings and removing last lines...")
     forecasts_cleaned, extracted_ratings = extract_ratings_and_remove_last_lines(
         raw_forecasts
     )
@@ -351,7 +346,7 @@ def grade_forecast_set(
     missing_ids = all_ids_to_grade - already_graded_ids
 
     print(f"\n{'=' * 80}")
-    print(f"GRADING SUMMARY:")
+    print("GRADING SUMMARY:")
     print(f"  Total activities with forecasts+outcomes: {len(all_ids_to_grade)}")
     print(f"  Already graded:                           {len(already_graded_ids)}")
     print(f"  Missing grades (will run):                {len(missing_ids)}")
@@ -364,7 +359,7 @@ def grade_forecast_set(
     input(f"\nPress Enter to proceed with grading {len(missing_ids)} activities...")
 
     print(f"\nCalling gemini-2.5-flash-lite for {len(missing_ids)} missing grades...")
-    print(f"(loop_over_rows will skip already-graded IDs automatically)")
+    print("(loop_over_rows will skip already-graded IDs automatically)")
 
     asyncio.run(
         loop_over_rows_to_call_model(
@@ -381,7 +376,7 @@ def grade_forecast_set(
 
 
 def grade_risks(
-    risks: Dict[str, str],
+    risks: dict[str, str],
     outcomes_path: Path,
     output_path: Path,
     execpool: ThreadPoolExecutor,
@@ -484,7 +479,7 @@ def paired_bootstrap_metric_diff(
     metric_fn,
     n_boot: int = 10000,
     seed: int = 0,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Paired bootstrap CI for (metric(A) - metric(B)) using resampling of items.
     Returns mean diff and percentile CI.
@@ -518,9 +513,8 @@ def paired_win_rate(
     return float(np.mean((ea < eb) + 0.5 * (ea == eb)))
 
 
-def load_grades_with_ids(path: Path) -> Dict[str, float]:
+def load_grades_with_ids(path: Path) -> dict[str, float]:
     """Load grades JSONL and return dict of activity_id -> numeric grade."""
-    import re
 
     grades = {}
     if not path.exists():
@@ -555,7 +549,7 @@ def load_grades_with_ids(path: Path) -> Dict[str, float]:
 
 
 def plot_2pane_comparison(
-    results_a: Dict[str, Dict[str, Any]],
+    results_a: dict[str, dict[str, Any]],
     set_name_a: str,
     output_path: Path,
     human_proxy_mean_grade: float = None,
@@ -604,7 +598,7 @@ def plot_2pane_comparison(
             "Run src/D_data_analysis/D_overall_rating_generate_oos_predictions.py first to generate OOS predictions."
         )
     _rf_df = pd.read_csv(_oos_path)
-    pred_rf_map = dict(zip(_rf_df["activity_id"], _rf_df["pred_rf_oos"]))
+    pred_rf_map = dict(zip(_rf_df["activity_id"], _rf_df["pred_rf_oos"], strict=False))
     print(
         f"  [RF forced] using OOS val predictions from {_oos_path.name} ({len(pred_rf_map)} activities)"
     )
@@ -612,7 +606,7 @@ def plot_2pane_comparison(
         "a_r2": (results_a, True),
         "a_pw": (results_a, False),
     }
-    for key, (names, x, y) in panel_data.items():
+    for key, (names, _x, y) in panel_data.items():
         results_dict, is_r2 = panel_override_info[key]
         for i, name in enumerate(names):
             if "forced" in name.lower() and name in results_dict:
@@ -632,7 +626,7 @@ def plot_2pane_comparison(
     # Compute avg pred tie% and truth tie% across all methods (for y-axis label)
     pred_tie_pcts = []
     truth_tie_pct = None
-    for name, data in results_a.items():
+    for _name, data in results_a.items():
         y_pred_arr = data.get("y_pred", np.array([]))
         y_true_arr = data.get("y_true", np.array([]))
         if len(y_pred_arr) >= 2:
@@ -673,7 +667,7 @@ def plot_2pane_comparison(
 
     for ax, (names, x, y), ylabel, ylim, is_top in panel_specs:
         if len(names) < 2:
-            ax.set_title(f"(need >= 2 methods)", fontsize=28, fontweight="bold")
+            ax.set_title("(need >= 2 methods)", fontsize=28, fontweight="bold")
             continue
 
         for i, name in enumerate(names):
@@ -859,9 +853,9 @@ def plot_2pane_comparison(
 
 
 def generate_latex_table(
-    results: Dict[str, Dict[str, Any]],
+    results: dict[str, dict[str, Any]],
     set_name: str,
-    enabled_configs: List[Dict[str, Any]],
+    enabled_configs: list[dict[str, Any]],
 ) -> str:
     latex = []
     latex.append("\\begin{table}[htbp]")
@@ -928,7 +922,7 @@ def ensure_graded_output(
 
 def compare_forecast_set(
     set_name: str,
-    forecast_configs: List[Dict[str, Any]],
+    forecast_configs: list[dict[str, Any]],
     ground_truth_ratings: pd.Series,
     outcomes_path: Path,
     data_dir: Path,
@@ -958,7 +952,7 @@ def compare_forecast_set(
             print(f"WARNING: Set-defining file not found: {set_defining_file}")
 
     outcomes = load_outcomes(outcomes_path)
-    print(f"\nDEBUG - Data availability:")
+    print("\nDEBUG - Data availability:")
     print(f"  Ground truth ratings: {len(ground_truth_ratings)}")
     print(f"  Outcomes available:   {len(outcomes)}")
     if set_ids:
@@ -1235,7 +1229,7 @@ def compare_forecast_set(
             "pairwise_ci": pairwise_ci,
         }
 
-        grades_numeric_filtered = {
+        {
             aid: grades_numeric[aid]
             for aid in graded_ids_sorted
             if aid in grades_numeric
@@ -1258,7 +1252,7 @@ def compare_forecast_set(
     # Print comparison table
     print("\n" + "=" * 110)
     print(f"METRICS SUMMARY - {set_name}")
-    print(f"(Forecast ratings vs ground truth, graded activities only)")
+    print("(Forecast ratings vs ground truth, graded activities only)")
     print("=" * 110)
 
     # Header
@@ -1282,104 +1276,6 @@ def compare_forecast_set(
             f"{mean_grade:>10.2f} {median_grade:>12.2f}"
         )
 
-    # Paired bootstrap comparisons
-    def run_paired_comparison(results, method_a, method_b, label, n_boot=10000, seed=0):
-        if method_a not in results or method_b not in results:
-            print(f"\nPAIRED: {label}: missing one method, skipping")
-            return
-
-        ids_a = results[method_a]["graded_ids_sorted"]
-        ids_b = results[method_b]["graded_ids_sorted"]
-        common_ids = sorted(set(ids_a) & set(ids_b))
-
-        if len(common_ids) < 5:
-            print(
-                f"\nPAIRED: {label}: only {len(common_ids)} overlapping items, skipping"
-            )
-            return
-
-        # Build aligned arrays by id lookup
-        a_map = {aid: i for i, aid in enumerate(ids_a)}
-        b_map = {aid: i for i, aid in enumerate(ids_b)}
-
-        y_true = np.array(
-            [results[method_a]["y_true"][a_map[aid]] for aid in common_ids], dtype=float
-        )
-        y_a = np.array(
-            [results[method_a]["y_pred"][a_map[aid]] for aid in common_ids], dtype=float
-        )
-        y_b = np.array(
-            [results[method_b]["y_pred"][b_map[aid]] for aid in common_ids], dtype=float
-        )
-
-        mae = paired_bootstrap_metric_diff(
-            y_true, y_a, y_b, _metric_mae, n_boot=n_boot, seed=seed
-        )
-        rmse = paired_bootstrap_metric_diff(
-            y_true, y_a, y_b, _metric_rmse, n_boot=n_boot, seed=seed + 1
-        )
-        side = paired_bootstrap_metric_diff(
-            y_true,
-            y_a,
-            y_b,
-            lambda yt, yp: _metric_sideacc_3_5(yt, yp, thr=3.5),
-            n_boot=n_boot,
-            seed=seed + 2,
-        )
-        win = paired_win_rate(y_true, y_a, y_b)
-
-        print(f"\nPAIRED: {label} (A - B), overlap n={len(common_ids)}")
-        print(
-            f"  MAE diff:  {mae['diff_mean']:+.4f}  (95% CI [{mae['ci_low']:+.4f}, {mae['ci_high']:+.4f}])"
-        )
-        print(
-            f"  RMSE diff: {rmse['diff_mean']:+.4f} (95% CI [{rmse['ci_low']:+.4f}, {rmse['ci_high']:+.4f}])"
-        )
-        print(
-            f"  SideAcc@3.5 diff: {side['diff_mean']:+.4f} (95% CI [{side['ci_low']:+.4f}, {side['ci_high']:+.4f}])"
-        )
-        print(f"  Win rate (A better abs err): {win:.3f}")
-
-    print("\n" + "=" * 80)
-    print("PAIRED BOOTSTRAP COMPARISONS")
-    print("=" * 80)
-
-    if "set_a" in set_name.lower():
-        run_paired_comparison(
-            results,
-            "Baseline (no KNN, no RAG, no S1, no S2)",
-            "Deepseek (KNN+RAG+S1+S2)",
-            "Baseline vs Deepseek (KNN+RAG+S1+S2)",
-            n_boot=10000,
-            seed=0,
-        )
-        run_paired_comparison(
-            results,
-            "Gemini 3 Pro (KNN+RAG+S1+S2)",
-            "Deepseek (KNN+RAG+S1+S2)",
-            "Gemini (KNN+RAG+S1+S2) vs Deepseek (KNN+RAG+S1+S2)",
-            n_boot=10000,
-            seed=10,
-        )
-
-    if "set_b" in set_name.lower():
-        run_paired_comparison(
-            results,
-            "gemini-2.5-flash KNN+RAG+S1+S2 finetuned",
-            "gemini-2.5-flash KNN+RAG+S1+S2",
-            "Vertex finetuned vs No finetune",
-            n_boot=10000,
-            seed=20,
-        )
-        run_paired_comparison(
-            results,
-            "Gemini3Pro s3",
-            "DeepSeek RAG variant, KNN+RAG+S1+S2",
-            "Gemini3Pro s3 vs DeepSeek RAG variant (KNN+RAG+S1+S2)",
-            n_boot=10000,
-            seed=30,
-        )
-
     # Generate and print LaTeX table
     print("\n" + "=" * 80)
     print("LATEX TABLE")
@@ -1395,7 +1291,7 @@ def compare_forecast_set(
 
 def analyze_variance_across_runs(
     set_name: str,
-    forecast_configs: List[Dict[str, Any]],
+    forecast_configs: list[dict[str, Any]],
     ground_truth_ratings: pd.Series,
     data_dir: Path,
 ) -> None:
@@ -1440,7 +1336,7 @@ def analyze_variance_across_runs(
     common_ids = common_ids & set(ground_truth_ratings.index)
 
     print(f"\n{'=' * 80}")
-    print(f"COMMON ACTIVITIES:")
+    print("COMMON ACTIVITIES:")
     print(f"  Total unique activity IDs across all runs: {len(all_activity_ids)}")
     print(f"  Activities present in ALL runs AND ground truth: {len(common_ids)}")
     print(f"{'=' * 80}\n")
@@ -1777,7 +1673,7 @@ def main():
         print_test_set_wg_pairwise(DATA_DIR, ground_truth, org_labels)
 
         print("\n" + "=" * 80)
-        print(f"All comparisons complete!")
+        print("All comparisons complete!")
         print(f"Output directory: {GRADES_OUTPUT_DIR}")
         print(
             f"Completed in {(datetime.now() - _program_start).total_seconds():.2f}s\n"

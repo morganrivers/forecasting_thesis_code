@@ -3,19 +3,14 @@ Drives LLM prompt construction, API calls (OpenAI and Gemini), and response
 extraction for generating and grading forecast narratives.
 """
 
-import contextlib
-
-import io
-import csv
-import time
+import asyncio
 import json
+import os
 import pprint
 import sys
-import asyncio
-from datetime import datetime
-from typing import Optional, Set, Dict, Any, Tuple, List
+import time
 from pathlib import Path
-import os
+from typing import Any
 
 try:
     from openai import OpenAI
@@ -26,16 +21,7 @@ from google import genai  # loads the package once
 types = genai.types  # just an attribute access, no re-import
 
 
-import traceback
-
-
-import re
-import os
-import asyncio
 import tempfile
-from collections import defaultdict
-from typing import List, Dict, Any, Tuple
-from functools import partial  # <-- add this
 
 try:
     from pypdf import PdfReader, PdfWriter
@@ -139,7 +125,7 @@ def wait_file_active(client, uploaded, *, timeout=60, interval=1.0):
     """Poll the uploaded file until ACTIVE, or raise on FAILED/timeout."""
     t0 = time.time()
     # Some client versions expose 'name' (e.g., 'files/abc123'), others 'id'
-    file_name = getattr(uploaded, "name", None) or getattr(uploaded, "id")
+    file_name = getattr(uploaded, "name", None) or uploaded.id
     while True:
         f = client.files.get(name=file_name)  # raises if not found
         state = getattr(f, "state", getattr(f, "display_state", None))
@@ -156,7 +142,7 @@ def wait_file_active(client, uploaded, *, timeout=60, interval=1.0):
         time.sleep(interval)
 
 
-async def assemble_and_upload_activity_pdf(bundle: Dict[str, Any], client, executor):
+async def assemble_and_upload_activity_pdf(bundle: dict[str, Any], client, executor):
     with tempfile.TemporaryDirectory() as tmpdir:
         slice_path_unedited = os.path.join(tmpdir, "combined.pdf")
         try:
@@ -226,7 +212,7 @@ async def assemble_and_upload_activity_pdf(bundle: Dict[str, Any], client, execu
 async def run_one_row(
     response_schema, prompt, row, client, seen_keys, output_jsonl, execpool, model
 ):
-    obj: Dict[str, Any] = {}
+    obj: dict[str, Any] = {}
 
     # Skip if this row was already processed before
     key = get_key(row)
@@ -336,7 +322,7 @@ async def run_one_row(
                 }
             )
 
-        request_obj: Dict[str, Any] = {
+        request_obj: dict[str, Any] = {
             "contents": [
                 {
                     "role": "user",
@@ -518,7 +504,7 @@ async def run_one_row_openai(
     if model == "gemini":
         model = MODEL_NAME
 
-    obj: Dict[str, Any] = {}
+    obj: dict[str, Any] = {}
 
     # Skip if this row was already processed before
     key = get_key(row)
@@ -596,12 +582,12 @@ async def run_one_row_openai(
 
 
 # was: -> Set[Tuple[...]]
-def load_seen_keys(output_jsonl_path: str) -> Set[str]:
-    seen: Set[str] = set()
+def load_seen_keys(output_jsonl_path: str) -> set[str]:
+    seen: set[str] = set()
     p = Path(output_jsonl_path)
     if not p.exists():
         raise FileNotFoundError(f"Seen keys JSONL not found: {p}")
-    with open(p, "r", encoding="utf-8") as f:
+    with open(p, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:

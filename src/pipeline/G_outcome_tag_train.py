@@ -21,7 +21,6 @@ import json
 import sys
 import warnings
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -54,31 +53,35 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
-from ml_models import DISABLE_ET
+from data_loan_disbursement import load_loan_or_disbursement
 from feature_engineering import (
-    load_ratings,
-    load_grades,
+    add_dates_to_dataframe,
+    add_enhanced_uncertainty_features,
+    add_similarity_features,
+    data_sector_clusters,
     load_activity_scope,
     load_gdp_percap,
-    load_world_bank_indicators,
+    load_grades,
     load_implementing_org_type,
+    load_is_completed,
+    load_ratings,
     load_targets_context_maps_features,
-    add_similarity_features,
-    add_enhanced_uncertainty_features,
-    add_dates_to_dataframe,
+    load_world_bank_indicators,
     pick_start_date,
     restrict_to_reporting_orgs_exact,
-    data_sector_clusters,
-    load_is_completed,
 )
-from data_loan_disbursement import load_loan_or_disbursement
-from sklearn.metrics import roc_auc_score, average_precision_score
+from ml_models import DISABLE_ET
 from scoring_metrics import (
-    pairwise_ordering_prob_excl_ties as pairwise_ordering_prob,
-    within_group_pairwise_ordering_prob as _wg_pop_fn,
     brier_skill_score,
     side_accuracy,
 )
+from scoring_metrics import (
+    pairwise_ordering_prob_excl_ties as pairwise_ordering_prob,
+)
+from scoring_metrics import (
+    within_group_pairwise_ordering_prob as _wg_pop_fn,
+)
+from sklearn.metrics import average_precision_score, roc_auc_score
 
 # ---- Paths (match C_run_GLM_nobayes.py) ----
 INFO_FOR_ACTIVITY_FORECASTING = (
@@ -100,13 +103,13 @@ OUT_REGULARIZATION = OUT_DIR / "tag_regularization_results.json"  # written by F
 OUT_YEAR_CORR = OUT_DIR / "tag_year_correction_data.pkl"
 
 # ---- Split config (same as GLM) ----
+from leakage_risk import EXCLUDE_TEST_LEAKAGE_RISK, TEST_LEAKAGE_RISK_IDS
 from split_constants import (
     LATEST_TRAIN_POINT,
     LATEST_VALIDATION_POINT,
     TOO_LATE_CUTOFF,
     split_latest_by_date_with_cutoff,
 )
-from leakage_risk import EXCLUDE_TEST_LEAKAGE_RISK, TEST_LEAKAGE_RISK_IDS
 
 # ---- Model config ----
 ACC_SKILL_MIN_IMPROVEMENT = (
@@ -606,7 +609,7 @@ def apply_manual_factor_blend(
          d_weight = clip((minority - BLEND_LO) / (BLEND_HI - BLEND_LO), 0, 1).
       5. Re-evaluate on val and update all_results and all_probas in-place.
     """
-    from sklearn.ensemble import RandomForestRegressor, ExtraTreesRegressor
+    from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 
     available_tags = [t for t in TAGS_FACTOR_BLEND if t in data.columns]
     if not available_tags:
@@ -1456,8 +1459,7 @@ def train_rf_et_ensemble(
     Probas are for X_all.  The caller averages rf_p and et_p, optionally applying
     start-year correction to rf_p first (CORRECT_RF_BEFORE_ET).
     """
-    from sklearn.calibration import CalibratedClassifierCV
-    from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+    from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 
     meds = X_tr.median()
     X_tr_imp = X_tr.fillna(meds)
@@ -1492,7 +1494,7 @@ def train_rf_et_ensemble(
             "bootstrap",
         ]
         print(
-            f"  [RF effective params] "
+            "  [RF effective params] "
             + "  ".join(f"{k}={rf_params.get(k)}" for k in _keys)
         )
 
@@ -1620,9 +1622,7 @@ def main() -> None:
         OUT_MODELS = OUT_DIR / f"tag_models{s_nl}.pkl"
         OUT_YEAR_CORR = OUT_DIR / f"tag_year_correction_data{s_nl}.pkl"
         print("[nolimits] USE_PER_TAG_STRATEGY=False, TAG_RF_PARAMS_OVERRIDES cleared.")
-        print(
-            f"[nolimits] All tags use 45 non-noisy features, leaf=5, no depth limits."
-        )
+        print("[nolimits] All tags use 45 non-noisy features, leaf=5, no depth limits.")
         print(f"[nolimits] Output paths suffixed with '{s_nl}'")
 
     val_model_types: dict[str, str] = (
@@ -1820,13 +1820,13 @@ def main() -> None:
         print("=" * W)
 
         # Overall shape
-        print(f"\n[Overall data shape]")
+        print("\n[Overall data shape]")
         print(f"  Total rows (after org restrict + merge): {len(data)}")
         print(f"  Total columns:                           {data.shape[1]}")
         print(f"  Index name:                              {data.index.name}")
 
         # Split summary with date ranges
-        print(f"\n[Split summary]")
+        print("\n[Split summary]")
         for split_name, idx in [
             ("train", train_idx),
             ("val", val_idx),
@@ -1850,7 +1850,7 @@ def main() -> None:
 
         # Reporting org breakdown
         if "reporting_orgs" in data.columns:
-            print(f"\n[Reporting org counts (train / val / test)]")
+            print("\n[Reporting org counts (train / val / test)]")
             for org in KEEP_REPORTING_ORGS:
                 tr = (data.loc[train_idx, "reporting_orgs"] == org).sum()
                 vl = (data.loc[val_idx, "reporting_orgs"] == org).sum()
@@ -2033,15 +2033,14 @@ def main() -> None:
             ):
                 active_feat_cols = ["rating"] + active_feat_cols
             X_train_tag = X_train.loc[y_train_col.index, active_feat_cols]
-            X_val_tag = X_val.loc[y_val_col.index, active_feat_cols]
+            X_val.loc[y_val_col.index, active_feat_cols]
             X_all_tag = X_all[active_feat_cols]
-            train_medians_tag = train_medians[active_feat_cols]
+            train_medians[active_feat_cols]
         else:
             active_feat_cols = feature_cols
             X_train_tag = X_train.loc[y_train_col.index]
-            X_val_tag = X_val.loc[y_val_col.index]
+            X_val.loc[y_val_col.index]
             X_all_tag = X_all
-            train_medians_tag = train_medians
 
         # ---- Train RF+ET ensemble (single source of truth for hyperparams) ----
         rf_all_p, et_all_p, rf_clf, et_clf = train_rf_et_ensemble(
@@ -2175,7 +2174,7 @@ def main() -> None:
                 if frozen_mt == "const_base" and col in TAGS_SKIP_CONST_BASE_GATE:
                     frozen_mt = "rf+ET"
                     print(
-                        f"  +- OVERRIDING frozen const_base -> rf+ET (TAGS_SKIP_CONST_BASE_GATE)"
+                        "  +- OVERRIDING frozen const_base -> rf+ET (TAGS_SKIP_CONST_BASE_GATE)"
                     )
                 if frozen_mt == "const_base":
                     base_rate = float(y_train_col.mean())
@@ -2205,7 +2204,7 @@ def main() -> None:
                                     y_vl_arr, np.full(len(y_vl_arr), base_rate)
                                 )
                             )
-                        except ValueError as e:
+                        except ValueError:
                             cb_res["val_ap"] = float(
                                 "nan"
                             )  # e.g. only one class present
@@ -2216,7 +2215,7 @@ def main() -> None:
                     )
                     all_results[-1] = cb_res
                     trained_models[col] = {"base_rate": base_rate}
-                    print(f"  +- FROZEN: const_base (val-run decision)")
+                    print("  +- FROZEN: const_base (val-run decision)")
                 else:
                     print(f"  +- FROZEN: {frozen_mt} (val-run decision)")
             else:
@@ -2261,7 +2260,7 @@ def main() -> None:
                                     y_vl_arr, np.full(len(y_vl_arr), base_rate)
                                 )
                             )
-                        except ValueError as e:
+                        except ValueError:
                             cb_res["val_ap"] = float(
                                 "nan"
                             )  # e.g. only one class present
@@ -2414,7 +2413,7 @@ def main() -> None:
     n_trained = len([r for r in all_results if r])
     print(f"\n{'='*60}")
     print(f"Trained {n_trained} models")
-    print(f"\nResults summary (sorted by val AUC):")
+    print("\nResults summary (sorted by val AUC):")
     results_sorted = sorted(
         all_results, key=lambda r: r.get("val_auc") or 0, reverse=True
     )
@@ -2494,7 +2493,7 @@ def main() -> None:
     _org_counts_d = data.loc[_eval_idx_d, "reporting_orgs"].value_counts().to_dict()
     _unique_grps_d = _group_key_d.nunique()
     print(f"\n{'='*70}")
-    print(f"[WG-POP DEBUG] D_train_staged")
+    print("[WG-POP DEBUG] D_train_staged")
     print(f"  eval set          : {_eval_label_d}  n={len(_eval_idx_d)}")
     print(f"  train set size    : {len(train_idx)}")
     print(

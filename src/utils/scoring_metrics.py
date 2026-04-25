@@ -3,11 +3,8 @@ Unified scoring rules / metrics for regression and classification evaluation.
 """
 
 import numpy as np
-from scipy.stats import spearmanr, pearsonr
+from scipy.stats import spearmanr
 from sklearn.metrics import r2_score
-from scipy.stats import kendalltau
-
-import pandas as pd
 
 # ---------------------------------------------------------------------------
 # Regression Metrics

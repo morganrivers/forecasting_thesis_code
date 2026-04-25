@@ -6,14 +6,15 @@ Usage:
     python B_overall_rating_plot_shap.py
 """
 
-from pathlib import Path
-import sys
-import json
 import csv
+import json
 import pickle
+import sys
+from pathlib import Path
+
+import matplotlib
 import numpy as np
 import pandas as pd
-import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -76,7 +77,7 @@ display_names = [get_display_name(f) for f in top10_feats]
 X_top10.columns = display_names
 
 print("Top 15 features:")
-for feat, val, disp in zip(top10_feats, mean_abs[top10_idx], display_names):
+for feat, val, disp in zip(top10_feats, mean_abs[top10_idx], display_names, strict=False):
     print(f"  {feat:<50}  mean|SHAP|={val:.4f}  ->  '{disp}'")
 
 # ---------------------------------------------------------------------------
@@ -123,7 +124,7 @@ if EXTRA_PKL.exists():
     et_X_top.columns = et_display_names
 
     print("Top 15 features (ExtraTrees):")
-    for feat, val, disp in zip(et_top_feats, et_mean_abs[et_top_idx], et_display_names):
+    for feat, val, disp in zip(et_top_feats, et_mean_abs[et_top_idx], et_display_names, strict=False):
         print(f"  {feat:<50}  mean|SHAP|={val:.4f}  ->  '{disp}'")
 
     fig2 = plt.figure(figsize=(9, 7.5))
@@ -151,7 +152,7 @@ if EXTRA_PKL.exists():
 
     print("Top 15 features (RF+ET average):")
     for feat, val, disp in zip(
-        avg_top_feats, avg_mean_abs[avg_top_idx], avg_display_names
+        avg_top_feats, avg_mean_abs[avg_top_idx], avg_display_names, strict=False
     ):
         print(f"  {feat:<50}  mean|SHAP|={val:.4f}  ->  '{disp}'")
 

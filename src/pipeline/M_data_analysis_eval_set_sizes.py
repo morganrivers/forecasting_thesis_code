@@ -35,6 +35,7 @@ Evaluation sets:
 """
 
 from pathlib import Path
+
 import pandas as pd
 
 DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
@@ -51,7 +52,7 @@ SOURCES = {
 def load_split(path: Path, label: str) -> pd.DataFrame | None:
     if not path.exists():
         print(f"  MISSING: {path}")
-        print(f"    Run the corresponding script first to generate this file.")
+        print("    Run the corresponding script first to generate this file.")
         return None
     df = pd.read_csv(path, dtype={"activity_id": str})
     df["activity_id"] = df["activity_id"].str.strip()
@@ -123,26 +124,26 @@ def main():
         dfs["overall_ratings"][dfs["overall_ratings"]["split"] == "val"]["activity_id"]
     )
 
-    print(f"\n  overall_ratings == outcome_tags?  ", end="")
+    print("\n  overall_ratings == outcome_tags?  ", end="")
     if s_rat == s_tag:
         print("YES -- identical activity sets")
     else:
         only_rat = s_rat - s_tag
         only_tag = s_tag - s_rat
-        print(f"NO")
+        print("NO")
         print(f"    In overall_ratings only: {len(only_rat)}")
         print(f"    In outcome_tags only:    {len(only_tag)}")
 
-    print(f"\n  overall_ratings subset cost_effectiveness?  ", end="")
+    print("\n  overall_ratings subset cost_effectiveness?  ", end="")
     if s_rat <= s_ce:
         print("YES")
     else:
         print(f"NO -- {len(s_rat - s_ce)} rated activities not in cost_effectiveness")
         print(
-            f"    (these are likely rated but not marked is_completed in the outcomes script)"
+            "    (these are likely rated but not marked is_completed in the outcomes script)"
         )
 
-    print(f"\n  cost_effectiveness subset overall_ratings?  ", end="")
+    print("\n  cost_effectiveness subset overall_ratings?  ", end="")
     if s_ce <= s_rat:
         print("YES")
     else:
@@ -150,9 +151,9 @@ def main():
         print(
             f"NO -- {len(ce_only)} cost_effectiveness activities not in overall_ratings"
         )
-        print(f"    (these have quantitative outcomes but no overall rating)")
+        print("    (these have quantitative outcomes but no overall rating)")
 
-    print(f"\n  ai_forecasting subset val_split(overall_ratings)?  ", end="")
+    print("\n  ai_forecasting subset val_split(overall_ratings)?  ", end="")
     if s_ai <= val_rat:
         print("YES")
     else:
@@ -161,7 +162,7 @@ def main():
 
     n_removed_llm = len(val_rat) - len(s_ai)
     print(f"\n  Val activities NOT covered by ai_forecasting: {len(val_rat - s_ai)}")
-    print(f"\n  LLM FILTERING SUMMARY:")
+    print("\n  LLM FILTERING SUMMARY:")
     print(f"    Overall-ratings val split:        {len(val_rat):>4}")
     print(f"    Removed (no forecast/grade/parse):{n_removed_llm:>4}")
     print(f"    AI forecasting set (kept):        {len(s_ai):>4}")
@@ -186,7 +187,7 @@ def main():
     print(r"\toprule")
     print(r"Dataset & Train & Val & Test & Total \\")
     print(r"\midrule")
-    for name, df in dfs.items():
+    for name, _df in dfs.items():
         c = counts[name]
         label = DISPLAY[name]
         if name == "ai_forecasting":

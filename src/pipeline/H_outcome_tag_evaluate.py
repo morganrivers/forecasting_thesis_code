@@ -29,12 +29,11 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 import matplotlib.ticker
 import numpy as np
 import pandas as pd
-
 from adjustText import adjust_text as _adjust_text
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -42,21 +41,16 @@ UTILS_DIR = SCRIPT_DIR.parent / "utils"
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
-from ml_models import bootstrap_ci
-from scoring_metrics import (
-    adjusted_r2,
-    within_group_pairwise_ordering_prob,
-    within_group_spearman_correlation,
-    brier_skill_score,
-    side_accuracy,
-    pairwise_ordering_prob_excl_ties,
-)
 from G_outcome_tag_train import (
     LATEST_TRAIN_POINT,
     LATEST_VALIDATION_POINT,
     TOO_LATE_CUTOFF,
 )
 from leakage_risk import EXCLUDE_TEST_LEAKAGE_RISK, TEST_LEAKAGE_RISK_IDS
+from scoring_metrics import (
+    adjusted_r2,
+    within_group_pairwise_ordering_prob,
+)
 
 DATA_DIR = SCRIPT_DIR.parent.parent / "data"
 OUT_DIR = DATA_DIR / "outcome_tags"
@@ -189,7 +183,7 @@ def _scatter_with_labels(ax, xs, ys, labels, colors, markers, sizes, edges, lws)
     """Plot scatter points and return adjustText Text objects."""
     texts = []
     for x, y, lbl, c, mk, s, ec, lw in zip(
-        xs, ys, labels, colors, markers, sizes, edges, lws
+        xs, ys, labels, colors, markers, sizes, edges, lws, strict=False
     ):
         ax.scatter(
             x,
@@ -476,7 +470,7 @@ def print_grouped_tag_summary(summary_by_pop: list[dict]) -> None:
     total_n = len(labels_df)
 
     # Load ratings for Pearson correlation (graceful fallback)
-    ratings: "pd.Series | None" = None
+    ratings: pd.Series | None = None
     try:
         from feature_engineering import load_ratings
 
@@ -514,7 +508,7 @@ def print_grouped_tag_summary(summary_by_pop: list[dict]) -> None:
     print(
         f"Activity %: percent of {total_n:,} applicable activities containing the tag"
     )
-    print(f"Ratio: Accuracy ratio to baseline of mean prediction")
+    print("Ratio: Accuracy ratio to baseline of mean prediction")
     print(f"{'='*85}")
 
     all_grouped_tags: set[str] = set()
@@ -569,7 +563,7 @@ def print_grouped_tag_summary(summary_by_pop: list[dict]) -> None:
         if r["model_type"] == "const_base" and r["tag"] not in all_grouped_tags
     ]
     if not_predicted:
-        print(f"\nExtracted but not able to be predicted:")
+        print("\nExtracted but not able to be predicted:")
         for r in not_predicted:
             name = short_name(r["tag"])
             print(f" - {name[0].upper()}{name[1:]}")
@@ -894,7 +888,7 @@ def plot_from_results(
 
     bw = 0.35
     bars_pop = ax.bar(x - bw / 2, pops, bw, color=bar_colors, alpha=0.9, label="POP")
-    for bar, hatch in zip(bars_pop, hatches):
+    for bar, hatch in zip(bars_pop, hatches, strict=False):
         bar.set_hatch(hatch)
 
     ax2 = ax.twinx()
@@ -908,7 +902,7 @@ def plot_from_results(
         linewidth=0.4,
         label="Acc ratio",
     )
-    for bar, hatch in zip(bars_acc, hatches):
+    for bar, hatch in zip(bars_acc, hatches, strict=False):
         bar.set_hatch(hatch)
     ax2.set_ylim(right_bot, right_top)
     ax2.set_ylabel("Accuracy / baseline accuracy", fontsize=10)
@@ -959,7 +953,7 @@ def plot_from_results(
     ]
 
     bars3 = ax.bar(x, briers, 0.7, color=bar_colors3, alpha=0.9)
-    for bar, hatch in zip(bars3, hatches):
+    for bar, hatch in zip(bars3, hatches, strict=False):
         bar.set_hatch(hatch)
 
     ax.axhline(0, color="black", linewidth=1.2, label="Brier skill = 0 (baseline)")
@@ -1063,7 +1057,7 @@ def plot_from_results(
     show_baseline = bool(base_pop_by_tag)
 
     print(
-        f"\n=== Tag model summary (sorted by POP) -- RF+ET rows; [CB] = const_base fallback ==="
+        "\n=== Tag model summary (sorted by POP) -- RF+ET rows; [CB] = const_base fallback ==="
     )
     hdr = (
         f"{'model':10s}  {'kind':4s}  {'tag':52s}  {'val_pop':>7s}  {'wg_pop':>7s}"
@@ -1189,10 +1183,10 @@ def plot_from_results(
             default=0,
         )
         print(f"\n{'='*70}")
-        print(f"[WG-POP DEBUG] E_plot_staged")
+        print("[WG-POP DEBUG] E_plot_staged")
         print(f"  predictions file  : {PREDICTIONS_PATH}")
         print(f"  eval set          : {_eval_label_e}  n~={_eval_n_e}")
-        print(f"  group key         : reporting_orgs + start_year")
+        print("  group key         : reporting_orgs + start_year")
         print(
             f"  n_orgs / n_years (max across tags): orgs={max((s.get('n_orgs',0) for s in wg_stats.values()), default=0)}  years={max((s.get('n_years',0) for s in wg_stats.values()), default=0)}"
         )
@@ -1264,7 +1258,7 @@ def plot_from_results(
         print(
             f"WEIGHTED ACCURACY -- ALL {n_real} real-model tags (excl. const_base fallbacks)"
         )
-        print(f"  Includes curated and non-curated tags; weights by val_n")
+        print("  Includes curated and non-curated tags; weights by val_n")
         print(f"  Constant baseline (majority class): {_mean_base:.1%}")
         print(f"  Chosen model:                       {_mean_model:.1%}")
         print(f"  Improvement:                        {_mean_model - _mean_base:+.1%}")
@@ -1376,7 +1370,7 @@ def plot_from_results(
         mean_model_13 = np.mean([b["model"] for b in brier_rows_13])
         mean_base_13 = np.mean([b["baseline"] for b in brier_rows_13])
         print(f"\n{'-'*62}")
-        print(f"MEAN BRIER SCORE -- curated tags (lower = better)")
+        print("MEAN BRIER SCORE -- curated tags (lower = better)")
         print(
             f"  All {len(brier_rows)} tags:   baseline={mean_base_14:.4f}  model={mean_model_14:.4f}  diff={mean_model_14-mean_base_14:+.4f}"
         )

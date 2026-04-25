@@ -6,3 +6,4 @@ __pycache__/
 **/*.pyo
 coverage_html
 remove_uncovered.py
+*.txt

@@ -337,7 +337,7 @@ def main():
 
     D.USE_PER_TAG_STRATEGY = False
     D.TAG_RF_PARAMS_OVERRIDES = {}
-    print(f"[nolimits] USE_PER_TAG_STRATEGY=False, TAG_RF_PARAMS_OVERRIDES cleared.")
+    print("[nolimits] USE_PER_TAG_STRATEGY=False, TAG_RF_PARAMS_OVERRIDES cleared.")
     print(f"Output paths suffixed with '{SUFFIX}'")
     print(
         f"n_estimators={N_ESTIMATORS} (reduced from G_outcome_tag_train default for speed)"

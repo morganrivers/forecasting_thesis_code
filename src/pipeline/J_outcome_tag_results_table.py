@@ -50,26 +50,24 @@ for _p in [str(UTILS_DIR), str(SCRIPT_DIR)]:
 
 import numpy as np
 import pandas as pd
-
 from G_outcome_tag_train import (
-    OUT_YEAR_CORR,
-    SKIP_START_YEAR_CORRECTION_TAGS,
-    CORRECT_RF_BEFORE_ET,
-    LATEST_VALIDATION_POINT,
-    LATEST_TRAIN_POINT,
-    TOO_LATE_CUTOFF,
-    MERGED_OVERALL_RATINGS,
-    INFO_FOR_ACTIVITY_FORECASTING,
     APPLIED_TAGS,
+    CORRECT_RF_BEFORE_ET,
+    INFO_FOR_ACTIVITY_FORECASTING,
+    LATEST_TRAIN_POINT,
+    LATEST_VALIDATION_POINT,
+    MERGED_OVERALL_RATINGS,
+    SKIP_START_YEAR_CORRECTION_TAGS,
+    TOO_LATE_CUTOFF,
     load_applied_tags,
 )
+from H_outcome_tag_evaluate import TAG_GROUPS
 from leakage_risk import EXCLUDE_TEST_LEAKAGE_RISK, TEST_LEAKAGE_RISK_IDS
 from scoring_metrics import (
+    brier_skill_score,
     within_group_pairwise_ordering_prob,
     within_group_spearman_correlation,
-    brier_skill_score,
 )
-from H_outcome_tag_evaluate import TAG_GROUPS
 
 # -- Feature abbreviation map --------------------------------------------------
 FEAT_ABBREV: dict[str, str] = {
@@ -290,7 +288,7 @@ def get_consistent_features(
     # Compute synthetic abs/signed means per split
     synth_abs_list: list[np.ndarray] = []
     synth_signed_list: list[np.ndarray] = []
-    for abs_raw, signed_raw in zip(split_abs_means, split_signed_means):
+    for abs_raw, signed_raw in zip(split_abs_means, split_signed_means, strict=False):
         s_abs, s_signed = _collapse(abs_raw, signed_raw)
         synth_abs_list.append(s_abs)
         synth_signed_list.append(s_signed)
@@ -501,7 +499,7 @@ def main() -> None:
             f"ERROR: Missing output files. Run G_outcome_tag_train.py {cmd_flags} first.",
             file=sys.stderr,
         )
-        for p, n in _missing:
+        for p, _n in _missing:
             print(f"  MISSING: {p}", file=sys.stderr)
         print("=" * 70 + "\n", file=sys.stderr)
         sys.exit(1)
@@ -940,9 +938,8 @@ def main() -> None:
 
     # -- Tag-vs-success correlation and cross-tag SHAP direction analysis -----
     if split_data:
-        import pandas as _pd2
-        from scipy.stats import pearsonr as _pearsonr
         from feature_engineering import load_ratings as _load_ratings
+        from scipy.stats import pearsonr as _pearsonr
 
         _ratings = _load_ratings(
             str(MERGED_OVERALL_RATINGS)

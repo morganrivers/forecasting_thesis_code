@@ -5,20 +5,18 @@ Utility functions for grading and analyzing LLM forecast outputs.
 import json
 import re
 import sys
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
-from pathlib import Path
-from typing import Dict, Any, List, Set, Optional
-from collections import Counter
-import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score
 
 UTILS_DIR = Path(__file__).resolve().parent.parent / "utils"
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
 from feature_engineering import load_ratings
-from scoring_metrics import rmse, mae, side_accuracy, r2 as r2_metric
+from scoring_metrics import mae, rmse, side_accuracy
+from scoring_metrics import r2 as r2_metric
 
 # ---------------------------------------------------------------------------
 # LOADING AND BASIC PARSING
@@ -27,14 +25,14 @@ from scoring_metrics import rmse, mae, side_accuracy, r2 as r2_metric
 
 def load_jsonl_by_activity_id(
     path: Path, content_key: str = "response"
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """
     Load JSONL and return dict: activity_id -> text content.
 
     For forecasts: extract from response.content, response.text, or response_text
     For outcomes: extract from response.content, response.text, or response_text
     """
-    out: Dict[str, str] = {}
+    out: dict[str, str] = {}
 
     if not path.exists():
         raise FileNotFoundError(f"JSONL file not found: {path}")
@@ -121,10 +119,10 @@ def extract_forecast_ratings(path: Path, parser=None) -> pd.Series:
             )
 
             parser = parse_last_line_label_after_forecast
-        except ImportError:
+        except ImportError as err:
             raise ValueError(
                 "Must provide parser function or have feature_engineering available"
-            )
+            ) from err
 
     preds = {}
 

@@ -3,29 +3,22 @@ Trains and evaluates cost-effectiveness prediction models using RF/ET ensembles,
 with SHAP feature importance analysis and out-of-sample scoring.
 """
 
-import pickle
-import os
-import numpy as np
-from datetime import datetime
-import matplotlib
-import matplotlib.pyplot as plt
-from typing import Any, Dict, List, Set
-from collections import Counter
-import re
-import pprint
 import json
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from pathlib import Path
-import glob
-import shap
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import r2_score
-from collections import defaultdict
+import pickle
+import pprint
+import re
 
 # scipy.stats.spearmanr now wrapped in scoring_metrics.spearman_correlation
-
 import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import shap
+from sklearn.metrics import r2_score
 
 ONLY_USE_THESE_AND_ASSERT_EXIST_WITH_COUNTS = [
     "out_raw_benefit_cost_ratios__ratio",
@@ -67,53 +60,42 @@ DATA_DIR = REPO_ROOT / "data"
 if str(UTILS_DIR) not in sys.path:
     sys.path.insert(0, str(UTILS_DIR))
 
-from ml_models import (
-    run_random_forest_median_impute_noclip,
-    run_ridge_glm_median_impute_noclip,
-    one_sd_shift_importance,
-    bootstrap_ci,
-    apply_start_year_trend_correction,
-)
-from scoring_metrics import (
-    rmse,
-    mae,
-    r2 as r2_metric,
-    true_hit_accuracy,
-    side_accuracy,
-    spearman_correlation,
-    pairwise_ordering_prob_excl_ties as pairwise_ordering_prob,
-    within_group_pairwise_ordering_prob,
-)
-
-from data_similar_activities import find_similar_activities_semantic
+from data_currency_conversion import return_misc_disbursement_or_planned_disbursement
+from data_loan_disbursement import load_loan_or_disbursement
 from feature_engineering import (
-    get_success_measure_from_rating_value_wrapped,
-    load_grades,
-    load_is_completed,
-    load_ratings,
+    add_dates_to_dataframe,
+    add_enhanced_uncertainty_features,
+    add_similarity_features,
+    data_sector_clusters,
     load_activity_scope,
     load_gdp_percap,
+    load_grades,
     load_implementing_org_type,
-    load_world_bank_indicators,
-    add_similarity_features,
-    pick_start_date,
-    parse_last_line_label_after_forecast,
-    add_dates_to_dataframe,
-    restrict_to_reporting_orgs_exact,
+    load_is_completed,
+    load_ratings,
     load_targets_context_maps_features,
-    add_enhanced_uncertainty_features,
-    data_sector_clusters,
+    load_world_bank_indicators,
+    restrict_to_reporting_orgs_exact,
 )
-from data_loan_disbursement import load_loan_or_disbursement
-from data_currency_conversion import return_misc_disbursement_or_planned_disbursement
+from ml_models import (
+    apply_start_year_trend_correction,
+    bootstrap_ci,
+    one_sd_shift_importance,
+    run_random_forest_median_impute_noclip,
+    run_ridge_glm_median_impute_noclip,
+)
+from scoring_metrics import (
+    pairwise_ordering_prob_excl_ties as pairwise_ordering_prob,
+)
+from scoring_metrics import (
+    spearman_correlation,
+    within_group_pairwise_ordering_prob,
+)
 
 MODEL_TO_USE = "logit_and_ordinal"
 
 NUM_ORGS_KEEP = 4
 from split_constants import (
-    LATEST_TRAIN_POINT,
-    LATEST_VALIDATION_POINT,
-    TOO_LATE_CUTOFF,
     split_latest_by_date_with_cutoff as _split_canonical,
 )
 
@@ -252,9 +234,9 @@ def zagg_metrics_per_outcome(
 def build_long_outcome_rows(
     data_wide: pd.DataFrame,
     *,
-    outcome_cols: List[str],
-    feature_cols: List[str],
-    meta_by_col: Dict[str, Dict[str, Any]] = None,
+    outcome_cols: list[str],
+    feature_cols: list[str],
+    meta_by_col: dict[str, dict[str, Any]] = None,
     group_col_name: str = "which_group",
 ):
     """
@@ -317,8 +299,8 @@ def split_activity_ids_by_date_with_cutoff(base_df: pd.DataFrame, date_col: str)
 def filter_groups_min_counts(
     long_df: pd.DataFrame,
     *,
-    train_aids: Set[str],
-    test_aids: Set[str],
+    train_aids: set[str],
+    test_aids: set[str],
     group_col: str = "which_group",
     min_train: int = 10,
     min_test: int = 10,
@@ -349,7 +331,7 @@ def filter_groups_min_counts(
 def add_groupwise_z(
     long_df: pd.DataFrame,
     *,
-    train_aids: Set[str],
+    train_aids: set[str],
     group_col: str = "which_group",
     y_col: str = "y_raw",
     z_col: str = "y_z",
@@ -910,8 +892,6 @@ def train_rfs_for_outcomes(
     return trained
 
 
-from sklearn.inspection import permutation_importance
-
 # pairwise_ordering_prob and spearman_correlation now imported from utils/scoring_metrics.py
 
 
@@ -927,7 +907,7 @@ def evaluate_outcomes_once_per_activity(
     test_idx = pd.Index(test_idx).astype(str)
 
     pred_cols = [f"{pred_prefix}{c}" for c in outcome_cols]
-    have = [c for c, p in zip(outcome_cols, pred_cols) if p in data.columns]
+    have = [c for c, p in zip(outcome_cols, pred_cols, strict=False) if p in data.columns]
     outcome_cols = have
     pred_cols = [f"{pred_prefix}{c}" for c in outcome_cols]
     if not outcome_cols:
@@ -1074,7 +1054,7 @@ def load_predictions_from_jsonl(filepath, parser, series_name):
     """
     preds = {}
 
-    with open(filepath, "r", encoding="utf-8") as f:
+    with open(filepath, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
@@ -1164,7 +1144,7 @@ def only_use_these_and_assert_exist_with_counts(
 
     # ---- rows with zero selected outcomes ----
     row_has_any = data[only_cols].notna().any(axis=1)
-    n_empty = int((~row_has_any).sum())
+    int((~row_has_any).sum())
 
     too_small = counts[counts < int(min_nonnull)]
     if len(too_small):
@@ -1489,7 +1469,7 @@ def main():
                 "which_units": "ratio",
             }
 
-            print(f"  Added out_ratio__outcome_over_target to train_outcome_cols")
+            print("  Added out_ratio__outcome_over_target to train_outcome_cols")
             print(
                 f"  Activities with ratio: {data['out_ratio__outcome_over_target'].notna().sum()} / {len(data)}"
             )
@@ -1862,7 +1842,7 @@ def main():
             ].isin(test_aids)
             long_df = long_df[~ratio_test_mask].copy()
 
-            print(f"\n=== Ratio filtering (train only) ===")
+            print("\n=== Ratio filtering (train only) ===")
             print(f"  Ratio rows in TRAIN: {ratio_train_before} (kept)")
             print(f"  Ratio rows in TEST: {ratio_test_before} (removed)")
             print(f"  Total long_df rows after filter: {len(long_df)}")
@@ -1920,7 +1900,7 @@ def main():
 
         # Rows per activity stats (for zagg averaging)
         rows_per_act = long_df.groupby("activity_id").size()
-        print(f"\nRows per activity (for zagg aggregation):")
+        print("\nRows per activity (for zagg aggregation):")
         print(f"  Mean: {rows_per_act.mean():.1f}")
         print(f"  Median: {rows_per_act.median():.0f}")
         print(f"  Min: {rows_per_act.min()}")
@@ -2073,7 +2053,7 @@ def main():
             print("\n" + "=" * 80)
             print("FEATURE IMPORTANCE RANKING (RF on zagg y_z)")
             print("=" * 80)
-            print(f"\nTop 30 features by importance_abs_1sd:")
+            print("\nTop 30 features by importance_abs_1sd:")
             print(
                 "\n"
                 + imp_zagg[
@@ -2083,7 +2063,7 @@ def main():
                 .to_string(index=False)
             )
 
-            print(f"\n\nBottom 10 features (least important):")
+            print("\n\nBottom 10 features (least important):")
             print(
                 imp_zagg[
                     ["feature", "importance_abs_1sd", "delta_pred_1sd", "sd_train"]
@@ -2491,12 +2471,12 @@ def main():
                 print(f"  Spearman: {corr_simple:.4f}")
                 print(f"  z_pairwise: {z_pairwise_simp:.4f}")
 
-                print(f"\nFull Model Results (Test Set, for comparison):")
+                print("\nFull Model Results (Test Set, for comparison):")
                 print(f"  R^2: {z_r2:.4f}")
                 print(f"  RMSE: {z_rmse:.4f}")
                 print(f"  Spearman: {z_spearman:.4f}")
 
-                print(f"\nDifference (Full - Simple):")
+                print("\nDifference (Full - Simple):")
                 print(f"  DeltaR^2: {z_r2 - r2_simple:+.4f}")
                 print(f"  DeltaRMSE: {z_rmse - rmse_simple:+.4f}")
                 print(f"  DeltaSpearman: {z_spearman - corr_simple:+.4f}")
@@ -2595,7 +2575,7 @@ def main():
                 _iati_out_dir.mkdir(parents=True, exist_ok=True)
                 _shutil.copy(predictions_path, _iati_out_dir / "zagg_predictions.csv")
                 print(
-                    f"  Copied zagg predictions to iati_extractions/quantitative_outcomes/"
+                    "  Copied zagg predictions to iati_extractions/quantitative_outcomes/"
                 )
             else:
                 print("Warning: No zagg predictions to save")
@@ -2617,7 +2597,7 @@ def main():
                 _shutil.copy(
                     _outcome_vals_path, _iati_out_dir / "all_outcome_values.csv"
                 )
-                print(f"  Copied to iati_extractions/quantitative_outcomes/")
+                print("  Copied to iati_extractions/quantitative_outcomes/")
         else:
             print("Warning: long_df not available or missing y_z/pred_z columns")
 

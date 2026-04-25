@@ -99,7 +99,7 @@ def load_default_finance_types(path: Path) -> dict[str, str]:
         raise FileNotFoundError(f"Default finance types CSV not found: {path}")
 
     df = pd.read_csv(path, dtype=str)
-    return dict(zip(df["activity_id"], df["default_finance_type_code"]))
+    return dict(zip(df["activity_id"], df["default_finance_type_code"], strict=False))
 
 
 # Finance Type classification: loan vs disbursement vs other
