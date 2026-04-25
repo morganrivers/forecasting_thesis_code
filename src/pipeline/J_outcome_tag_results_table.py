@@ -892,7 +892,6 @@ def main() -> None:
             file=sys.stderr,
         )
 
-
     # -- Summary metrics (WG-POP and Brier skill across curated 14 tags) -------
     curated_tags = [tag for _grp in TAG_GROUPS.values() for _lbl, tag in _grp]
 

@@ -737,8 +737,13 @@ def main():
     print("Loading grades data...")
     grades_df = load_grades(ALL_GRADES)
 
-    if EXCLUDE_TEST_LEAKAGE_RISK and LEAKAGE_HANDLING_METHOD in ("median_impute", "replace_predictions"):
-        _leaky_in_grades = grades_df.index.intersection(pd.Index(list(GRADE_LEAKAGE_IDS)))
+    if EXCLUDE_TEST_LEAKAGE_RISK and LEAKAGE_HANDLING_METHOD in (
+        "median_impute",
+        "replace_predictions",
+    ):
+        _leaky_in_grades = grades_df.index.intersection(
+            pd.Index(list(GRADE_LEAKAGE_IDS))
+        )
         if len(_leaky_in_grades):
             grades_df.loc[_leaky_in_grades, :] = float("nan")
             print(
@@ -1738,7 +1743,8 @@ def main():
     # ---- Leakage prediction replacement ----
     if EXCLUDE_TEST_LEAKAGE_RISK and LEAKAGE_HANDLING_METHOD == "replace_predictions":
         _llm_blend_cols = [
-            c for c in [
+            c
+            for c in [
                 "pred_rf_llm_modded",
                 "pred_rf_llm_modded_no_yr_corr",
                 "pred_rf_llm_simple_avg",
@@ -1750,7 +1756,9 @@ def main():
         _grade_leaky_test = test_idx.intersection(pd.Index(list(GRADE_LEAKAGE_IDS)))
         if len(_grade_leaky_test):
             for _col in _llm_blend_cols:
-                data.loc[_grade_leaky_test, _col] = data.loc[_grade_leaky_test, "pred_rf_no_llm"]
+                data.loc[_grade_leaky_test, _col] = data.loc[
+                    _grade_leaky_test, "pred_rf_no_llm"
+                ]
             print(
                 f"[leakage] replace_predictions: swapped {len(_grade_leaky_test)} grade-leakage "
                 f"activities to pred_rf_no_llm in {_llm_blend_cols}"
@@ -1761,7 +1769,9 @@ def main():
         )
         if len(_forecast_only_test):
             for _col in _llm_blend_cols:
-                data.loc[_forecast_only_test, _col] = data.loc[_forecast_only_test, "pred_rf"]
+                data.loc[_forecast_only_test, _col] = data.loc[
+                    _forecast_only_test, "pred_rf"
+                ]
             print(
                 f"[leakage] replace_predictions: swapped {len(_forecast_only_test)} forecast-only "
                 f"leakage activities to pred_rf in {_llm_blend_cols}"

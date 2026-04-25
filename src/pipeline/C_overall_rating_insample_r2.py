@@ -32,7 +32,6 @@ if str(UTILS_DIR) not in sys.path:
 
 from scoring_metrics import (
     adjusted_r2,
-    pairwise_ordering_prob_excl_ties,
     within_group_pairwise_ordering_prob,
 )
 

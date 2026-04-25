@@ -13,6 +13,7 @@ import pandas as pd
 # Regression Metrics
 # ---------------------------------------------------------------------------
 
+
 def rmse(y_true, y_pred) -> float:
     """Root Mean Squared Error."""
     y_true = np.asarray(y_true, dtype=float)
@@ -30,7 +31,6 @@ def mae(y_true, y_pred) -> float:
 def r2(y_true, y_pred) -> float:
     """R-squared (coefficient of determination). Wraps sklearn."""
     return float(r2_score(y_true, y_pred))
-
 
 
 def adjusted_r2(r2: float, n: int, p: int) -> float:

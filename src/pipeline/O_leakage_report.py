@@ -23,7 +23,9 @@ EVAL_DIR = DATA_DIR / "eval_set_sizes"
 def load_leakage() -> dict:
     with LEAKAGE_PATH.open() as f:
         raw = json.load(f)
-    return {k: v for k, v in raw.items() if isinstance(v, dict) and "leakage_sources" in v}
+    return {
+        k: v for k, v in raw.items() if isinstance(v, dict) and "leakage_sources" in v
+    }
 
 
 def has_grade(entry: dict) -> bool:
@@ -71,28 +73,38 @@ def main() -> None:
     eval_ids = val_ids | test_ids
     grade_eval = grade_ids & eval_ids
     print(f"  Test set size              : {len(test_ids)}")
-    print(f"  Grade-leakage items (test) : {len(grade_test)}  "
-          f"({pct(len(grade_test), len(test_ids))} of test set)")
+    print(
+        f"  Grade-leakage items (test) : {len(grade_test)}  "
+        f"({pct(len(grade_test), len(test_ids))} of test set)"
+    )
     print(f"  Grade-leakage items (val)  : {len(grade_val)}")
-    print(f"  Grade-leakage overall      : {len(grade_eval)}  "
-          f"({pct(len(grade_eval), len(eval_ids))} of val+test combined)")
+    print(
+        f"  Grade-leakage overall      : {len(grade_eval)}  "
+        f"({pct(len(grade_eval), len(eval_ids))} of val+test combined)"
+    )
 
     report_section("LLM FORECAST NARRATIVE LEAKAGE  (val vs test)")
     forecast_val = forecast_ids & val_ids
     forecast_test = forecast_ids & test_ids
     print(f"  Val  set size              : {len(val_ids)}")
     print(f"  Test set size              : {len(test_ids)}")
-    print(f"  Forecast-leakage (val)     : {len(forecast_val)}  "
-          f"({pct(len(forecast_val), len(val_ids))} of val set)")
-    print(f"  Forecast-leakage (test)    : {len(forecast_test)}  "
-          f"({pct(len(forecast_test), len(test_ids))} of test set)")
+    print(
+        f"  Forecast-leakage (val)     : {len(forecast_val)}  "
+        f"({pct(len(forecast_val), len(val_ids))} of val set)"
+    )
+    print(
+        f"  Forecast-leakage (test)    : {len(forecast_test)}  "
+        f"({pct(len(forecast_test), len(test_ids))} of test set)"
+    )
     report_section("COMBINED  (any leakage, test set)")
     any_test = any_ids & test_ids
     grade_only_test = (grade_ids - forecast_ids) & test_ids
     forecast_only_test = (forecast_ids - grade_ids) & test_ids
     both_test = (grade_ids & forecast_ids) & test_ids
-    print(f"  Any leakage                : {len(any_test)}  "
-          f"({pct(len(any_test), len(test_ids))} of test set)")
+    print(
+        f"  Any leakage                : {len(any_test)}  "
+        f"({pct(len(any_test), len(test_ids))} of test set)"
+    )
     print(f"    Grade-only               : {len(grade_only_test)}")
     print(f"    Forecast-only            : {len(forecast_only_test)}")
     print(f"    Both grade + forecast    : {len(both_test)}")
