@@ -500,19 +500,6 @@ def paired_bootstrap_metric_diff(
         "ci_high": float(np.percentile(diffs, 97.5)),
     }
 
-
-def paired_win_rate(
-    y_true: np.ndarray, y_pred_a: np.ndarray, y_pred_b: np.ndarray
-) -> float:
-    """
-    Fraction of items where A has lower absolute error than B.
-    Ties count as 0.5.
-    """
-    ea = np.abs(y_true - y_pred_a)
-    eb = np.abs(y_true - y_pred_b)
-    return float(np.mean((ea < eb) + 0.5 * (ea == eb)))
-
-
 def load_grades_with_ids(path: Path) -> dict[str, float]:
     """Load grades JSONL and return dict of activity_id -> numeric grade."""
 
