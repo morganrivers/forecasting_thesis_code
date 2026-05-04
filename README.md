@@ -1,3 +1,7 @@
+# About
+
+This codebase reproduces my thesis results reported in detail [here](https://github.com/morganrivers/forecasting_earth_system/blob/previews/master/thesis.pdf). All data used for reproducing the results are located in this folder. A simpler-to-navigate, data-only repository is located [here](https://github.com/morganrivers/iati_extraction).
+
 # How to Reproduce Thesis Results
 
 To reproduce all thesis results in one shot, run from the repo root:
