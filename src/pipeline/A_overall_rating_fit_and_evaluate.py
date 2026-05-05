@@ -44,6 +44,7 @@ from feature_engineering import (
     load_ratings,
     load_targets_context_maps_features,
     load_world_bank_indicators,
+    pick_start_date,
     restrict_to_reporting_orgs_exact,
 )
 from leakage_risk import (
@@ -734,7 +735,29 @@ def main():
     tc_maps_df = load_targets_context_maps_features(_maps_path)
 
     print("Loading sector cluster allocations...")
-    sector_clusters_df = data_sector_clusters(FINANCE_SECTORS)
+    # Fit KMeans on activities up to the same cutoff used for the targets/context
+    # maps and UMAP (train-only for val eval, train+val for test eval).
+    _sc_cutoff = pd.Timestamp(
+        LATEST_VALIDATION_POINT if USE_VAL_IN_TRAIN else LATEST_TRAIN_POINT
+    )
+    _sc_info = pd.read_csv(
+        INFO_FOR_ACTIVITY_FORECASTING,
+        usecols=[
+            "activity_id",
+            "txn_first_date",
+            "actual_start_date",
+            "original_planned_start_date",
+        ],
+        dtype={"activity_id": str},
+    )
+    for _c in ("txn_first_date", "actual_start_date", "original_planned_start_date"):
+        _sc_info[_c] = pd.to_datetime(_sc_info[_c], errors="coerce")
+    _sc_info["start_date"] = _sc_info.apply(pick_start_date, axis=1)
+    _sc_mask = _sc_info["start_date"].isna() | (_sc_info["start_date"] <= _sc_cutoff)
+    sc_train_activity_ids = set(_sc_info.loc[_sc_mask, "activity_id"].astype(str))
+    sector_clusters_df = data_sector_clusters(
+        FINANCE_SECTORS, train_activity_ids=sc_train_activity_ids
+    )
     sector_clusters_df.to_csv(DATA_DIR / "sector_cluster_mapping_iati.csv")
 
     print("\nMerging datasets...")
